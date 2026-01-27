@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Truck } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
@@ -48,9 +49,11 @@ export const Navbar = () => {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm">
-              Login
-            </Button>
+            <Link to="/login">
+              <Button variant="ghost" size="sm">
+                Login
+              </Button>
+            </Link>
             <Button variant="hero" size="sm">
               Get Started
             </Button>
@@ -88,9 +91,11 @@ export const Navbar = () => {
                 </a>
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                <Button variant="ghost" className="justify-start">
-                  Login
-                </Button>
+                <Link to="/login" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="justify-start w-full">
+                    Login
+                  </Button>
+                </Link>
                 <Button variant="hero">Get Started</Button>
               </div>
             </div>
