@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Truck, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,9 +15,17 @@ import {
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [role, setRole] = useState<string>("");
   const [region, setRegion] = useState<string>("");
   const isTransporter = role === "transporter";
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // TODO: Add actual registration logic here
+    // For now, just redirect to dashboard
+    navigate("/user/dashboard");
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
@@ -59,7 +67,7 @@ const Register = () => {
             </p>
 
             {/* Register Form */}
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
