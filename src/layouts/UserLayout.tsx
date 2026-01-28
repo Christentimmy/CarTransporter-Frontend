@@ -18,8 +18,6 @@ import {
   LayoutDashboard,
   Truck,
   FileText,
-  Gavel,
-  Package,
   User,
   Bell,
   LogOut,
@@ -42,16 +40,6 @@ const menuItems = [
     title: "My Requests",
     icon: FileText,
     url: "/user/my-requests",
-  },
-  {
-    title: "View Bids",
-    icon: Gavel,
-    url: "/user/bids",
-  },
-  {
-    title: "My Shipments",
-    icon: Package,
-    url: "/user/shipments",
   },
   {
     title: "Notifications",
