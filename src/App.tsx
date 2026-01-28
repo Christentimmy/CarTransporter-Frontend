@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import { UserLayout } from "./layouts/UserLayout";
 import UserDashboard from "./pages/user/Dashboard";
 import PostRequest from "./pages/user/PostRequest";
+import MyRequests from "./pages/user/MyRequests";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route index element={<Navigate to="/user/dashboard" replace />} />
             <Route path="dashboard" element={<UserDashboard />} />
             <Route path="post-request" element={<PostRequest />} />
+            <Route path="my-requests" element={<MyRequests />} />
             {/* Add more user routes here */}
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
