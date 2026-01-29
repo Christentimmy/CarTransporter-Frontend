@@ -127,29 +127,29 @@ const PostRequest = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold tracking-tight">Post Vehicle Request</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Post Vehicle Request</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Create a new vehicle transport request and let transporters bid on it.
         </p>
       </motion.div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Pickup Location */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />
               Pickup Location
             </CardTitle>
-            <CardDescription>Where should the vehicle be picked up?</CardDescription>
+            <CardDescription className="text-sm">Where should the vehicle be picked up?</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="space-y-2">
               <Label htmlFor="pickup-address">Address</Label>
               <Input
@@ -160,7 +160,7 @@ const PostRequest = () => {
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="pickup-city">City</Label>
                 <Input
@@ -182,7 +182,7 @@ const PostRequest = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="pickup-country">Country</Label>
                 <Input
@@ -209,14 +209,14 @@ const PostRequest = () => {
 
         {/* Delivery Location */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />
               Delivery Location
             </CardTitle>
-            <CardDescription>Where should the vehicle be delivered?</CardDescription>
+            <CardDescription className="text-sm">Where should the vehicle be delivered?</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="space-y-2">
               <Label htmlFor="delivery-address">Address</Label>
               <Input
@@ -227,7 +227,7 @@ const PostRequest = () => {
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="delivery-city">City</Label>
                 <Input
@@ -249,7 +249,7 @@ const PostRequest = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="delivery-country">Country</Label>
                 <Input
@@ -276,15 +276,15 @@ const PostRequest = () => {
 
         {/* Vehicle Details */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Truck className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <Truck className="h-4 w-4 sm:h-5 sm:w-5" />
               Vehicle Details
             </CardTitle>
-            <CardDescription>Information about the vehicle to be transported</CardDescription>
+            <CardDescription className="text-sm">Information about the vehicle to be transported</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="make">Make</Label>
                 <Input
@@ -392,15 +392,15 @@ const PostRequest = () => {
 
         {/* Pickup Window */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               Pickup Window
             </CardTitle>
-            <CardDescription>When can the vehicle be picked up?</CardDescription>
+            <CardDescription className="text-sm">When can the vehicle be picked up?</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label>Pickup Window Start</Label>
                 <Popover>
@@ -465,14 +465,14 @@ const PostRequest = () => {
 
         {/* Delivery Deadline */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               Delivery Deadline
             </CardTitle>
-            <CardDescription>When must the vehicle be delivered by?</CardDescription>
+            <CardDescription className="text-sm">When must the vehicle be delivered by?</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             <div className="space-y-2">
               <Label>Delivery Deadline</Label>
               <Popover>
@@ -507,12 +507,12 @@ const PostRequest = () => {
 
         {/* Auction Settings */}
         <Card>
-          <CardHeader>
-            <CardTitle>Auction Settings</CardTitle>
-            <CardDescription>Configure how the bidding will work</CardDescription>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl">Auction Settings</CardTitle>
+            <CardDescription className="text-sm">Configure how the bidding will work</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="auction-duration">Auction Duration (hours)</Label>
                 <Input
@@ -591,7 +591,7 @@ const PostRequest = () => {
               />
             </div>
             {photos.length > 0 && (
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {photos.map((photo, index) => (
                   <div key={index} className="relative">
                     <img
@@ -616,15 +616,16 @@ const PostRequest = () => {
         </Card>
 
         {/* Submit Button */}
-        <div className="flex justify-end gap-4">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
           <Button
             type="button"
             variant="outline"
             onClick={() => navigate("/user/dashboard")}
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
-          <Button type="submit" variant="hero" size="lg">
+          <Button type="submit" variant="hero" size="lg" className="w-full sm:w-auto">
             Create Request
           </Button>
         </div>

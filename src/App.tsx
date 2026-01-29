@@ -10,8 +10,14 @@ import { UserLayout } from "./layouts/UserLayout";
 import UserDashboard from "./pages/user/Dashboard";
 import PostRequest from "./pages/user/PostRequest";
 import MyRequests from "./pages/user/MyRequests";
+import UserAuction from "./pages/user/Auction";
 import Notifications from "./pages/user/Notifications";
 import Profile from "./pages/user/Profile";
+import { TransporterLayout } from "./layouts/TransporterLayout";
+import TransporterDashboard from "./pages/transporter/Dashboard";
+import AvailableRequests from "./pages/transporter/AvailableRequests";
+import Auction from "./pages/transporter/Auction";
+import MyShipments from "./pages/transporter/MyShipments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,9 +38,19 @@ const App = () => (
             <Route path="dashboard" element={<UserDashboard />} />
             <Route path="post-request" element={<PostRequest />} />
             <Route path="my-requests" element={<MyRequests />} />
+            <Route path="auction/:id" element={<UserAuction />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="profile" element={<Profile />} />
             {/* Add more user routes here */}
+          </Route>
+          {/* Transporter Module Routes */}
+          <Route path="/transporter" element={<TransporterLayout />}>
+            <Route index element={<Navigate to="/transporter/dashboard" replace />} />
+            <Route path="dashboard" element={<TransporterDashboard />} />
+            <Route path="available-requests" element={<AvailableRequests />} />
+            <Route path="auction/:id" element={<Auction />} />
+            <Route path="my-shipments" element={<MyShipments />} />
+            {/* Add more transporter routes here */}
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

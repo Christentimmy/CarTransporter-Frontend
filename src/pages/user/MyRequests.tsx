@@ -208,21 +208,21 @@ const MyRequests = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Requests</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">My Requests</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             View and manage all your vehicle transport requests
           </p>
         </div>
-        <Link to="/user/post-request">
+        <Link to="/user/post-request" className="w-full sm:w-auto">
           <Button variant="hero" className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             New Request
@@ -297,22 +297,24 @@ const MyRequests = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <Card className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                          <Truck className="h-6 w-6 text-primary" />
+                <CardHeader className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
+                          <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <CardTitle className="text-xl">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                            <CardTitle className="text-lg sm:text-xl truncate">
                               {request.vehicleDetails.year} {request.vehicleDetails.make}{" "}
                               {request.vehicleDetails.model}
                             </CardTitle>
-                            {getStatusBadge(request.status)}
+                            <div className="flex-shrink-0">
+                              {getStatusBadge(request.status)}
+                            </div>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-muted-foreground">
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4" />
                               <span>
@@ -332,12 +334,21 @@ const MyRequests = () => {
                       </div>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2">
-                      <Link to={`/user/bids?requestId=${request._id}`}>
-                        <Button variant="outline" size="sm">
-                          <Gavel className="mr-2 h-4 w-4" />
-                          View Bids ({request.bidCount})
-                        </Button>
-                      </Link>
+                      {request.status === "LIVE" ? (
+                        <Link to={`/user/auction/${request._id}`}>
+                          <Button variant="hero" size="sm">
+                            <Gavel className="mr-2 h-4 w-4" />
+                            View Live Auction
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Link to={`/user/bids?requestId=${request._id}`}>
+                          <Button variant="outline" size="sm">
+                            <Gavel className="mr-2 h-4 w-4" />
+                            View Bids ({request.bidCount})
+                          </Button>
+                        </Link>
+                      )}
                       <Button variant="outline" size="sm">
                         <Eye className="mr-2 h-4 w-4" />
                         View Details
@@ -345,8 +356,8 @@ const MyRequests = () => {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 pt-3 sm:pt-4 border-t">
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">Current Bid</p>
                       <p className="text-lg font-semibold">

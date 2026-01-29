@@ -13,12 +13,12 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
   Truck,
-  FileText,
+  Search,
+  Package,
   User,
   Bell,
   LogOut,
@@ -30,63 +30,47 @@ const menuItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    url: "/user/dashboard",
+    url: "/transporter/dashboard",
   },
   {
-    title: "Post Vehicle Request",
-    icon: Truck,
-    url: "/user/post-request",
+    title: "Available Requests",
+    icon: Search,
+    url: "/transporter/available-requests",
   },
   {
-    title: "My Requests",
-    icon: FileText,
-    url: "/user/my-requests",
+    title: "My Shipments",
+    icon: Package,
+    url: "/transporter/my-shipments",
   },
   {
     title: "Notifications",
     icon: Bell,
-    url: "/user/notifications",
+    url: "/transporter/notifications",
   },
   {
     title: "Profile",
     icon: User,
-    url: "/user/profile",
+    url: "/transporter/profile",
   },
 ];
 
-export const UserLayout = () => {
+export const TransporterLayout = () => {
   const location = useLocation();
 
   return (
     <SidebarProvider>
-      <SidebarContentWrapper location={location} />
-    </SidebarProvider>
-  );
-};
-
-const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLocation> }) => {
-  const { setOpenMobile, isMobile } = useSidebar();
-
-  const handleLinkClick = () => {
-    if (isMobile) {
-      setOpenMobile(false);
-    }
-  };
-
-  return (
-    <>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild>
-                <Link to="/user/dashboard" onClick={handleLinkClick}>
+                <Link to="/transporter/dashboard">
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                     <Truck className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">BID4TOW</span>
-                    <span className="truncate text-xs">User Dashboard</span>
+                    <span className="truncate text-xs">Transporter Dashboard</span>
                   </div>
                 </Link>
               </SidebarMenuButton>
@@ -108,7 +92,7 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
                         isActive={isActive}
                         tooltip={item.title}
                       >
-                        <Link to={item.url} onClick={handleLinkClick}>
+                        <Link to={item.url}>
                           <Icon />
                           <span>{item.title}</span>
                         </Link>
@@ -124,7 +108,7 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Back to Home">
-                <Link to="/" onClick={handleLinkClick}>
+                <Link to="/">
                   <Home />
                   <span>Back to Home</span>
                 </Link>
@@ -132,7 +116,7 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Logout">
-                <Link to="/login" onClick={handleLinkClick}>
+                <Link to="/login">
                   <LogOut />
                   <span>Logout</span>
                 </Link>
@@ -147,10 +131,10 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
           <SidebarTrigger className="-ml-1" />
           <div className="flex-1" />
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-3 sm:p-4 md:p-6">
+        <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
           <Outlet />
         </div>
       </main>
-    </>
+    </SidebarProvider>
   );
 };

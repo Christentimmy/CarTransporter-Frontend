@@ -23,8 +23,12 @@ const Register = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: Add actual registration logic here
-    // For now, just redirect to dashboard
-    navigate("/user/dashboard");
+    // Redirect based on role
+    if (role === "transporter") {
+      navigate("/transporter/dashboard");
+    } else {
+      navigate("/user/dashboard");
+    }
   };
 
   return (

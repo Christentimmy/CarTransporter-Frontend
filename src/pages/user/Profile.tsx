@@ -107,17 +107,17 @@ const Profile = () => {
   const RoleIcon = roleConfig[mockUser.role]?.icon || User;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Profile</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage your account information and settings
           </p>
         </div>
@@ -207,14 +207,14 @@ const Profile = () => {
 
         {/* Personal Information */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <User className="h-4 w-4 sm:h-5 sm:w-5" />
               Personal Information
             </CardTitle>
-            <CardDescription>Your basic account information</CardDescription>
+            <CardDescription className="text-sm">Your basic account information</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -322,14 +322,14 @@ const Profile = () => {
 
         {/* Security */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="h-5 w-5" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
               Security
             </CardTitle>
-            <CardDescription>Manage your password and security settings</CardDescription>
+            <CardDescription className="text-sm">Manage your password and security settings</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             <Button
               type="button"
               variant="outline"
