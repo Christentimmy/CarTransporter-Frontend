@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -100,9 +101,11 @@ export const UserCompanySection = () => {
                 ))}
               </ul>
 
-              <Button variant="neon" className="group/btn">
-                Register Your Company
-                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              <Button variant="neon" className="group/btn" asChild>
+                <Link to="/register">
+                  Register Your Company
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </Link>
               </Button>
             </div>
           </motion.div>

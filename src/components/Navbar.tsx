@@ -24,14 +24,14 @@ export const Navbar = () => {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-2 group">
             <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
               <Truck className="w-5 h-5 text-primary" />
             </div>
             <span className="font-display text-xl font-bold">
-              BID<span className="text-primary">4</span>TOW
-            </span>
-          </a>
+                BID<span className="text-primary">4</span>TOW
+              </span>
+          </Link>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
@@ -54,9 +54,16 @@ export const Navbar = () => {
                 Login
               </Button>
             </Link>
-            <Button variant="hero" size="sm">
-              Get Started
-            </Button>
+            <Link to="/register">
+              <Button variant="outline" size="sm">
+                Register
+              </Button>
+            </Link>
+            <Link to="/login">
+              <Button variant="hero" size="sm">
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -96,7 +103,14 @@ export const Navbar = () => {
                     Login
                   </Button>
                 </Link>
-                <Button variant="hero">Get Started</Button>
+                <Link to="/register" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" className="justify-start w-full">
+                    Register
+                  </Button>
+                </Link>
+                <Link to="/login" onClick={() => setIsOpen(false)}>
+                  <Button variant="hero" className="w-full">Get Started</Button>
+                </Link>
               </div>
             </div>
           </motion.div>
