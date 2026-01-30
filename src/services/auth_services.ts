@@ -26,6 +26,15 @@ export interface AuthResponse {
   message: string;
 }
 
+export interface VerifyOtpPayload {
+  email: string;
+  otp: string;
+}
+
+export interface ResendOtpPayload {
+  email: string;
+}
+
 class AuthService {
   private static instance: AuthService;
 
@@ -105,7 +114,58 @@ class AuthService {
     return !!getAuthHeader();
   }
 
-  // Add other authentication related methods here
+  public async verifyOtp(data: VerifyOtpPayload): Promise<{ message: string }> {
+    try {
+      const response = await fetch(API_ENDPOINTS.AUTH.VERIFY_OTP, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          otp: data.otp,
+          email: data.email,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "OTP verification failed");
+      }
+
+      const result = await response.json();
+      if (result.token) {
+        storeAuthToken(result.token);
+      }
+      return result;
+    } catch (error) {
+      console.error("OTP Verification error:", error);
+      throw error;
+    }
+  }
+
+  public async resendOtp(data: ResendOtpPayload): Promise<{ message: string }> {
+    try {
+      const response = await fetch(API_ENDPOINTS.AUTH.SEND_OTP, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.email,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to send OTP");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Send OTP error:", error);
+      throw error;
+    }
+  }
 }
 
 export const authService = AuthService.getInstance();

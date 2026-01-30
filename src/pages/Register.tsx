@@ -41,18 +41,17 @@ const Register = () => {
       setIsLoading(true);
       const response = await authService.register(data);
       
-      toast.success("Registration successful! 🎉", {
-        style: {
-          background: '#10b981', // Green for success
-          color: '#ffffff',
-        },
+      toast.success("Registration successful! Please check your email for the verification code.", {
+        style: { background: '#10b981', color: '#ffffff' },
       });
       
-      if (data.role === "transporter") {
-        navigate("/transporter/dashboard");
-      } else {
-        navigate("/user/dashboard");
-      }
+      // Redirect to OTP verification page
+      navigate('/verify-otp', {
+        state: { 
+          email: data.email,
+          role: data.role 
+        }
+      });
     } catch (error: any) {
       toast.error(error.message || "Registration failed. Please try again.", {
         style: {

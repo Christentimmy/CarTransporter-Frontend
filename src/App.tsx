@@ -18,6 +18,7 @@ import TransporterDashboard from "./pages/transporter/Dashboard";
 import AvailableRequests from "./pages/transporter/AvailableRequests";
 import Auction from "./pages/transporter/Auction";
 import MyShipments from "./pages/transporter/MyShipments";
+import VerifyOtp from "./pages/VerifyOtp";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
           {/* User Module Routes */}
           <Route path="/user" element={<UserLayout />}>
             <Route index element={<Navigate to="/user/dashboard" replace />} />

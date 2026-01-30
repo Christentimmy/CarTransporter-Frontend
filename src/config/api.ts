@@ -5,6 +5,8 @@ export const API_ENDPOINTS = {
   AUTH: {
     REGISTER: `${API_BASE_URL}/auth/register`,
     LOGIN: `${API_BASE_URL}/auth/login`,
+    VERIFY_OTP: `${API_BASE_URL}/auth/verify-otp`,
+    SEND_OTP: `${API_BASE_URL}/auth/send-otp`,
     // Add other auth endpoints here
   },
   // Add other API endpoints here
