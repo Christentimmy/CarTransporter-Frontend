@@ -7,7 +7,9 @@ export const API_ENDPOINTS = {
     LOGIN: `${API_BASE_URL}/auth/login`,
     VERIFY_OTP: `${API_BASE_URL}/auth/verify-otp`,
     SEND_OTP: `${API_BASE_URL}/auth/send-otp`,
-    // Add other auth endpoints here
+  },
+  USER: {
+    DASHBOARD: `${API_BASE_URL}/user/get-user-dashboard`,
   },
   // Add other API endpoints here
 };
