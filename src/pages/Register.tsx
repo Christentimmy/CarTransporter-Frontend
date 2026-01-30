@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Truck, ArrowLeft } from "lucide-react";
+import { Truck, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,21 +14,56 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { authService, RegisterPayload } from "@/services/auth_services";
+import { toast } from "sonner";
 
 const Register = () => {
   const navigate = useNavigate();
-  const [role, setRole] = useState<string>("");
-  const [region, setRegion] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<RegisterPayload>({
+    defaultValues: {
+      role: "user",
+      region: "",
+    },
+  });
+
+  const role = watch("role");
   const isTransporter = role === "transporter";
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // TODO: Add actual registration logic here
-    // Redirect based on role
-    if (role === "transporter") {
-      navigate("/transporter/dashboard");
-    } else {
-      navigate("/user/dashboard");
+  const onSubmit = async (data: RegisterPayload) => {
+    try {
+      setIsLoading(true);
+      const response = await authService.register(data);
+      
+      toast.success("Registration successful! 🎉", {
+        style: {
+          background: '#10b981', // Green for success
+          color: '#ffffff',
+        },
+      });
+      
+      if (data.role === "transporter") {
+        navigate("/transporter/dashboard");
+      } else {
+        navigate("/user/dashboard");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Registration failed. Please try again.", {
+        style: {
+          background: '#ef4444', // Red for error
+          color: '#ffffff',
+          border: '1px solid #fecaca',
+        },
+        icon: '❌',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -71,7 +107,7 @@ const Register = () => {
             </p>
 
             {/* Register Form */}
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -80,8 +116,11 @@ const Register = () => {
                   type="email"
                   placeholder="Enter your email"
                   className="w-full"
-                  required
+                  {...register("email", { required: "Email is required" })}
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
               </div>
 
               {/* Phone Number */}
@@ -92,8 +131,11 @@ const Register = () => {
                   type="tel"
                   placeholder="Enter your phone number"
                   className="w-full"
-                  required
+                  {...register("phone_number", { required: "Phone number is required" })}
                 />
+                {errors.phone_number && (
+                  <p className="text-sm text-red-500">{errors.phone_number.message}</p>
+                )}
               </div>
 
               {/* Password */}
@@ -104,14 +146,27 @@ const Register = () => {
                   type="password"
                   placeholder="Enter your password"
                   className="w-full"
-                  required
+                  {...register("password", { 
+                    required: "Password is required",
+                    minLength: { value: 6, message: "Password must be at least 6 characters" }
+                  })}
                 />
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password.message}</p>
+                )}
               </div>
 
               {/* Role */}
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
-                <Select value={role} onValueChange={setRole} required>
+                <Select
+                  {...register("role", { required: "Please select a role" })}
+                  onValueChange={(value) => register("role").onChange({ target: { value } })}
+                  value={role}
+                >
+                  {errors.role && (
+                    <p className="text-sm text-red-500">{errors.role.message}</p>
+                  )}
                   <SelectTrigger id="role" className="w-full">
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
@@ -140,8 +195,13 @@ const Register = () => {
                         type="text"
                         placeholder="Enter your company name"
                         className="w-full"
-                        required={isTransporter}
+                        {...register("company_name", {
+                          required: isTransporter ? "Company name is required" : false,
+                        })}
                       />
+                      {errors.company_name && (
+                        <p className="text-sm text-red-500">{errors.company_name.message}</p>
+                      )}
                     </div>
 
                     {/* Business Address */}
@@ -152,8 +212,13 @@ const Register = () => {
                         type="text"
                         placeholder="Enter your business address"
                         className="w-full"
-                        required={isTransporter}
+                        {...register("business_address", {
+                          required: isTransporter ? "Business address is required" : false,
+                        })}
                       />
+                      {errors.business_address && (
+                        <p className="text-sm text-red-500">{errors.business_address.message}</p>
+                      )}
                     </div>
 
                     {/* Tax Number */}
@@ -164,14 +229,25 @@ const Register = () => {
                         type="text"
                         placeholder="Enter your tax number"
                         className="w-full"
-                        required={isTransporter}
+                        {...register("tax_number", {
+                          required: isTransporter ? "Tax number is required" : false,
+                        })}
                       />
+                      {errors.tax_number && (
+                        <p className="text-sm text-red-500">{errors.tax_number.message}</p>
+                      )}
                     </div>
 
                     {/* Region */}
                     <div className="space-y-2">
                       <Label htmlFor="region">Region</Label>
-                      <Select value={region} onValueChange={setRegion} required={isTransporter}>
+                      <Select
+                        {...register("region", {
+                          required: isTransporter ? "Region is required" : false,
+                        })}
+                        onValueChange={(value) => register("region").onChange({ target: { value } })}
+                        value={watch("region")}
+                      >
                         <SelectTrigger id="region" className="w-full">
                           <SelectValue placeholder="Select your region" />
                         </SelectTrigger>
@@ -183,13 +259,29 @@ const Register = () => {
                           <SelectItem value="central">Central</SelectItem>
                         </SelectContent>
                       </Select>
+                      {errors.region && (
+                        <p className="text-sm text-red-500">{errors.region.message}</p>
+                      )}
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <Button variant="hero" className="w-full" size="lg" type="submit">
-                Sign Up
+              <Button
+                variant="hero"
+                className="w-full"
+                size="lg"
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
               </Button>
             </form>
 
