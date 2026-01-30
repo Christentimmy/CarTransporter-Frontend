@@ -16,7 +16,7 @@ export const HeroSection = () => {
           >
             <Zap className="w-4 h-4 text-primary" />
             <span className="text-sm text-primary font-medium">
-              The Future of Car Transport
+              The Future of Vehicles transport 
             </span>
           </motion.div>
 
