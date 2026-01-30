@@ -37,7 +37,7 @@ export const UserCompanySection = () => {
 
             <div className="relative z-10">
               <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
-                For Car Owners
+                For Car Owners,insurance company,dealerships, car auction and Auto-Club
               </span>
               <h3 className="font-display text-2xl md:text-3xl font-bold mb-4">
                 Ship Your Vehicle with Confidence
