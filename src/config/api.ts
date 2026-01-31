@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
   },
   USER: {
     DASHBOARD: `${API_BASE_URL}/user/get-user-dashboard`,
+    CREATE_SHIPMENT: `${API_BASE_URL}/user/create-shipment`,
   },
   // Add other API endpoints here
 };

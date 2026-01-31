@@ -6,7 +6,6 @@ import { CalendarIcon, MapPin, Truck, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -15,23 +14,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PlacesAutocomplete } from "@/components/PlacesAutocomplete";
+import { createShipment } from "@/services/shipmentService";
+import { type CreateShipmentLocation, toShipmentLocationPayload } from "@/types/shipment";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const PostRequest = () => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Location states
+  // Pickup: address string for input + full location from Places (with coordinates)
   const [pickupAddress, setPickupAddress] = useState("");
-  const [pickupCity, setPickupCity] = useState("");
-  const [pickupState, setPickupState] = useState("");
-  const [pickupCountry, setPickupCountry] = useState("");
-  const [pickupZipCode, setPickupZipCode] = useState("");
+  const [pickupLocation, setPickupLocation] = useState<CreateShipmentLocation | null>(null);
 
   const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [deliveryCity, setDeliveryCity] = useState("");
-  const [deliveryState, setDeliveryState] = useState("");
-  const [deliveryCountry, setDeliveryCountry] = useState("");
-  const [deliveryZipCode, setDeliveryZipCode] = useState("");
+  const [deliveryLocation, setDeliveryLocation] = useState<CreateShipmentLocation | null>(null);
 
   // Vehicle details
   const [make, setMake] = useState("");
@@ -48,9 +46,9 @@ const PostRequest = () => {
   const [pickupWindowEnd, setPickupWindowEnd] = useState<Date>();
   const [deliveryDeadline, setDeliveryDeadline] = useState<Date>();
   const [auctionStartTime, setAuctionStartTime] = useState<Date>();
+  const [auctionEndTime, setAuctionEndTime] = useState<Date>();
 
   // Auction settings
-  const [auctionDuration, setAuctionDuration] = useState("24");
   const [instantAcceptPrice, setInstantAcceptPrice] = useState("");
 
   // Photos
@@ -70,35 +68,49 @@ const PostRequest = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Calculate auction end time
-    const auctionEndTime = auctionStartTime
-      ? new Date(auctionStartTime.getTime() + parseInt(auctionDuration) * 60 * 60 * 1000)
-      : undefined;
+    if (!pickupLocation?.coordinates?.length) {
+      toast.error("Please select a pickup address from the suggestions.");
+      return;
+    }
+    if (!deliveryLocation?.coordinates?.length) {
+      toast.error("Please select a delivery address from the suggestions.");
+      return;
+    }
+    if (!pickupWindowStart || !pickupWindowEnd) {
+      toast.error("Please set the pickup window dates.");
+      return;
+    }
+    if (!deliveryDeadline) {
+      toast.error("Please set the delivery deadline.");
+      return;
+    }
+    if (!auctionStartTime) {
+      toast.error("Please set the auction start date and time.");
+      return;
+    }
+    if (!auctionEndTime) {
+      toast.error("Please set the auction end date and time.");
+      return;
+    }
+    if (auctionEndTime.getTime() <= auctionStartTime.getTime()) {
+      toast.error("Auction end must be after auction start.");
+      return;
+    }
 
-    // TODO: Get coordinates from address (you might want to use a geocoding service)
-    const formData = {
-      pickupLocation: {
-        type: "Point",
-        coordinates: [0, 0], // TODO: Get from geocoding
-        address: pickupAddress,
-        city: pickupCity,
-        state: pickupState,
-        country: pickupCountry,
-        zipCode: pickupZipCode,
-      },
-      deliveryLocation: {
-        type: "Point",
-        coordinates: [0, 0], // TODO: Get from geocoding
-        address: deliveryAddress,
-        city: deliveryCity,
-        state: deliveryState,
-        country: deliveryCountry,
-        zipCode: deliveryZipCode,
-      },
-      vehicleDetails: {
+    const durationHours = Math.round(
+      (auctionEndTime.getTime() - auctionStartTime.getTime()) / (60 * 60 * 1000)
+    );
+
+    const form = new FormData();
+
+    form.append("pickupLocation", JSON.stringify(toShipmentLocationPayload(pickupLocation)));
+    form.append("deliveryLocation", JSON.stringify(toShipmentLocationPayload(deliveryLocation)));
+    form.append(
+      "vehicleDetails",
+      JSON.stringify({
         make,
         model,
-        year: parseInt(year),
+        year: parseInt(year, 10),
         isRunning,
         weight: weight ? parseFloat(weight) : undefined,
         size: {
@@ -106,24 +118,33 @@ const PostRequest = () => {
           width: width ? parseFloat(width) : undefined,
           height: height ? parseFloat(height) : undefined,
         },
-      },
-      pickupWindow: {
-        start: pickupWindowStart,
-        end: pickupWindowEnd,
-      },
-      deliveryDeadline,
-      auctionDuration: parseInt(auctionDuration),
-      instantAcceptPrice: instantAcceptPrice ? parseFloat(instantAcceptPrice) : undefined,
-      auctionStartTime: auctionStartTime || new Date(),
-      auctionEndTime,
-    };
+      })
+    );
+    form.append(
+      "pickupWindow",
+      JSON.stringify({
+        start: pickupWindowStart.toISOString(),
+        end: pickupWindowEnd.toISOString(),
+      })
+    );
+    form.append("deliveryDeadline", deliveryDeadline.toISOString());
+    form.append("auctionDuration", String(durationHours));
+    form.append("auctionStartTime", auctionStartTime.toISOString());
+    form.append("auctionEndTime", auctionEndTime.toISOString());
+    if (instantAcceptPrice) form.append("instantAcceptPrice", instantAcceptPrice);
 
-    // TODO: Upload photos and add to formData
-    // TODO: Make API call to create shipment
-    console.log("Form Data:", formData);
+    photos.forEach((file) => form.append("photos", file));
 
-    // For now, just navigate back to dashboard
-    navigate("/user/dashboard");
+    setIsSubmitting(true);
+    try {
+      await createShipment(form);
+      toast.success("Shipment request created.");
+      navigate("/user/my-requests");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to create shipment.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -147,62 +168,26 @@ const PostRequest = () => {
               <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />
               Pickup Location
             </CardTitle>
-            <CardDescription className="text-sm">Where should the vehicle be picked up?</CardDescription>
+            <CardDescription className="text-sm">Where should the vehicle be picked up? Start typing and select an address.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+          <CardContent className="p-4 sm:p-6 pt-0">
             <div className="space-y-2">
               <Label htmlFor="pickup-address">Address</Label>
-              <Input
+              <PlacesAutocomplete
                 id="pickup-address"
                 value={pickupAddress}
-                onChange={(e) => setPickupAddress(e.target.value)}
-                placeholder="Street address"
-                required
+                onChange={setPickupAddress}
+                onPlaceSelect={(loc) => {
+                  setPickupLocation(loc);
+                  setPickupAddress(loc.address ?? "");
+                }}
+                placeholder="Street address, city, state..."
               />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="pickup-city">City</Label>
-                <Input
-                  id="pickup-city"
-                  value={pickupCity}
-                  onChange={(e) => setPickupCity(e.target.value)}
-                  placeholder="City"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="pickup-state">State</Label>
-                <Input
-                  id="pickup-state"
-                  value={pickupState}
-                  onChange={(e) => setPickupState(e.target.value)}
-                  placeholder="State"
-                  required
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="pickup-country">Country</Label>
-                <Input
-                  id="pickup-country"
-                  value={pickupCountry}
-                  onChange={(e) => setPickupCountry(e.target.value)}
-                  placeholder="Country"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="pickup-zip">Zip Code</Label>
-                <Input
-                  id="pickup-zip"
-                  value={pickupZipCode}
-                  onChange={(e) => setPickupZipCode(e.target.value)}
-                  placeholder="Zip Code"
-                  required
-                />
-              </div>
+              {pickupLocation && (
+                <p className="text-xs text-muted-foreground">
+                  {[pickupLocation.city, pickupLocation.state, pickupLocation.country, pickupLocation.zipCode].filter(Boolean).join(", ")}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -214,62 +199,26 @@ const PostRequest = () => {
               <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />
               Delivery Location
             </CardTitle>
-            <CardDescription className="text-sm">Where should the vehicle be delivered?</CardDescription>
+            <CardDescription className="text-sm">Where should the vehicle be delivered? Start typing and select an address.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+          <CardContent className="p-4 sm:p-6 pt-0">
             <div className="space-y-2">
               <Label htmlFor="delivery-address">Address</Label>
-              <Input
+              <PlacesAutocomplete
                 id="delivery-address"
                 value={deliveryAddress}
-                onChange={(e) => setDeliveryAddress(e.target.value)}
-                placeholder="Street address"
-                required
+                onChange={setDeliveryAddress}
+                onPlaceSelect={(loc) => {
+                  setDeliveryLocation(loc);
+                  setDeliveryAddress(loc.address ?? "");
+                }}
+                placeholder="Street address, city, state..."
               />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="delivery-city">City</Label>
-                <Input
-                  id="delivery-city"
-                  value={deliveryCity}
-                  onChange={(e) => setDeliveryCity(e.target.value)}
-                  placeholder="City"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="delivery-state">State</Label>
-                <Input
-                  id="delivery-state"
-                  value={deliveryState}
-                  onChange={(e) => setDeliveryState(e.target.value)}
-                  placeholder="State"
-                  required
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="delivery-country">Country</Label>
-                <Input
-                  id="delivery-country"
-                  value={deliveryCountry}
-                  onChange={(e) => setDeliveryCountry(e.target.value)}
-                  placeholder="Country"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="delivery-zip">Zip Code</Label>
-                <Input
-                  id="delivery-zip"
-                  value={deliveryZipCode}
-                  onChange={(e) => setDeliveryZipCode(e.target.value)}
-                  placeholder="Zip Code"
-                  required
-                />
-              </div>
+              {deliveryLocation && (
+                <p className="text-xs text-muted-foreground">
+                  {[deliveryLocation.city, deliveryLocation.state, deliveryLocation.country, deliveryLocation.zipCode].filter(Boolean).join(", ")}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -509,62 +458,57 @@ const PostRequest = () => {
         <Card>
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-lg sm:text-xl">Auction Settings</CardTitle>
-            <CardDescription className="text-sm">Configure how the bidding will work</CardDescription>
+            <CardDescription className="text-sm">Configure how the bidding will work. Pick date and time for start and end.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="auction-duration">Auction Duration (hours)</Label>
+                <Label htmlFor="auction-start">Auction Start Time (date & time) *</Label>
                 <Input
-                  id="auction-duration"
-                  type="number"
-                  value={auctionDuration}
-                  onChange={(e) => setAuctionDuration(e.target.value)}
-                  min="1"
+                  id="auction-start"
+                  type="datetime-local"
                   required
+                  value={auctionStartTime ? format(auctionStartTime, "yyyy-MM-dd'T'HH:mm") : ""}
+                  onChange={(e) =>
+                    setAuctionStartTime(e.target.value ? new Date(e.target.value) : undefined)
+                  }
+                  min={format(new Date(), "yyyy-MM-dd'T'HH:mm")}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="instant-accept">Instant Accept Price ($) - Optional</Label>
+                <Label htmlFor="auction-end">Auction End Time (date & time) *</Label>
                 <Input
-                  id="instant-accept"
-                  type="number"
-                  value={instantAcceptPrice}
-                  onChange={(e) => setInstantAcceptPrice(e.target.value)}
-                  placeholder="Buy it now price"
-                  min="0"
-                  step="0.01"
+                  id="auction-end"
+                  type="datetime-local"
+                  required
+                  value={auctionEndTime ? format(auctionEndTime, "yyyy-MM-dd'T'HH:mm") : ""}
+                  onChange={(e) =>
+                    setAuctionEndTime(e.target.value ? new Date(e.target.value) : undefined)
+                  }
+                  min={
+                    auctionStartTime
+                      ? format(auctionStartTime, "yyyy-MM-dd'T'HH:mm")
+                      : format(new Date(), "yyyy-MM-dd'T'HH:mm")
+                  }
                 />
               </div>
             </div>
+            {auctionStartTime && auctionEndTime && (
+              <p className="text-sm text-muted-foreground">
+                Duration: {Math.round((auctionEndTime.getTime() - auctionStartTime.getTime()) / (60 * 60 * 1000))} hours
+              </p>
+            )}
             <div className="space-y-2">
-              <Label>Auction Start Time (Optional)</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !auctionStartTime && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {auctionStartTime ? (
-                      format(auctionStartTime, "PPP")
-                    ) : (
-                      <span>Defaults to now</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={auctionStartTime}
-                    onSelect={setAuctionStartTime}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label htmlFor="instant-accept">Instant Accept Price ($) - Optional</Label>
+              <Input
+                id="instant-accept"
+                type="number"
+                value={instantAcceptPrice}
+                onChange={(e) => setInstantAcceptPrice(e.target.value)}
+                placeholder="Buy it now price"
+                min="0"
+                step="0.01"
+              />
             </div>
           </CardContent>
         </Card>
@@ -625,8 +569,8 @@ const PostRequest = () => {
           >
             Cancel
           </Button>
-          <Button type="submit" variant="hero" size="lg" className="w-full sm:w-auto">
-            Create Request
+          <Button type="submit" variant="hero" size="lg" className="w-full sm:w-auto" disabled={isSubmitting}>
+            {isSubmitting ? "Creating..." : "Create Request"}
           </Button>
         </div>
       </form>
