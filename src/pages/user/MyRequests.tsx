@@ -135,23 +135,23 @@ const MyRequests = () => {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6 min-w-0">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4"
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
       >
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">My Requests</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            View and manage all your vehicle transport requests
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold tracking-tight sm:text-3xl">My Requests</h1>
+          <p className="text-xs text-muted-foreground sm:text-base">
+            View and manage your transport requests
           </p>
         </div>
-        <Link to="/user/post-request" className="w-full sm:w-auto">
-          <Button variant="hero" className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
+        <Link to="/user/post-request" className="w-full sm:w-auto shrink-0">
+          <Button variant="hero" className="w-full sm:w-auto" size="sm">
+            <Plus className="mr-2 h-4 w-4 shrink-0" />
             New Request
           </Button>
         </Link>
@@ -162,21 +162,21 @@ const MyRequests = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="flex flex-col sm:flex-row gap-4"
+        className="flex flex-col gap-3 sm:flex-row sm:gap-4"
       >
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <div className="relative min-w-0 flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 shrink-0 text-muted-foreground" />
           <Input
-            placeholder="Search by vehicle, city..."
+            placeholder="Search vehicle, city..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="h-9 pl-9 sm:h-10"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <Filter className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="Filter by status" />
+          <SelectTrigger className="h-9 w-full sm:h-10 sm:w-[180px]">
+            <Filter className="mr-2 h-4 w-4 shrink-0" />
+            <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
@@ -216,50 +216,57 @@ const MyRequests = () => {
         </Card>
       ) : (
         <>
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {filteredShipments.map((request, index) => (
               <motion.div
                 key={request._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
+                className="min-w-0"
               >
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="p-3 sm:p-6">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                        <div className="flex gap-3 sm:gap-4">
                           {request.photos?.[0] ? (
                             <img
                               src={request.photos[0]}
                               alt={`${request.vehicleDetails.make} ${request.vehicleDetails.model}`}
-                              className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover flex-shrink-0"
+                              className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg object-cover flex-shrink-0"
                             />
                           ) : (
-                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
-                              <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                            <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
+                              <Truck className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
                             </div>
                           )}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                              <CardTitle className="text-lg sm:text-xl truncate">
+                          <div className="flex-1 min-w-0 overflow-hidden">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1.5">
+                              <CardTitle className="text-base sm:text-xl truncate">
                                 {request.vehicleDetails.year} {request.vehicleDetails.make}{" "}
                                 {request.vehicleDetails.model}
                               </CardTitle>
-                              <div className="flex-shrink-0">
-                                {getStatusBadge(request.status)}
-                              </div>
+                              {getStatusBadge(request.status)}
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4 flex-shrink-0" />
-                                <span>
-                                  {formatLocation(request.pickupLocation)} →{" "}
+                            {/* Mobile: stack pickup → delivery on two lines */}
+                            <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
+                              <div className="flex gap-2 min-w-0">
+                                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words line-clamp-2 min-w-0">
+                                  <span className="text-muted-foreground/80">From </span>
+                                  {formatLocation(request.pickupLocation)}
+                                </span>
+                              </div>
+                              <div className="flex gap-2 min-w-0">
+                                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 opacity-60" />
+                                <span className="break-words line-clamp-2 min-w-0">
+                                  <span className="text-muted-foreground/80">To </span>
                                   {formatLocation(request.deliveryLocation)}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 flex-shrink-0" />
+                              <div className="flex items-center gap-2 pt-0.5 min-w-0">
+                                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                                 <span>
                                   Pickup:{" "}
                                   {parseDate(request.pickupWindow.start)
@@ -276,57 +283,57 @@ const MyRequests = () => {
                         </div>
                       </div>
                       {request.status === "LIVE" && (
-                        <Link to={`/user/auction/${request._id}`}>
-                          <Button variant="hero" size="sm">
-                            <Gavel className="mr-2 h-4 w-4" />
+                        <Link to={`/user/auction/${request._id}`} className="w-full sm:w-auto shrink-0">
+                          <Button variant="hero" size="sm" className="w-full sm:w-auto">
+                            <Gavel className="mr-2 h-4 w-4 shrink-0" />
                             View Live Auction
                           </Button>
                         </Link>
                       )}
                     </div>
                   </CardHeader>
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 pt-3 sm:pt-4 border-t">
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Delivery Deadline</p>
-                        <p className="text-sm font-medium">
+                  <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-2 sm:gap-4 pt-3 sm:pt-4 border-t">
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Delivery Deadline</p>
+                        <p className="text-xs sm:text-sm font-medium truncate" title={parseDate(request.deliveryDeadline) ? format(parseDate(request.deliveryDeadline)!, "MMM d, yyyy") : undefined}>
                           {parseDate(request.deliveryDeadline)
                             ? format(parseDate(request.deliveryDeadline)!, "MMM d, yyyy")
                             : "—"}
                         </p>
                       </div>
                       {request.distance != null && (
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Distance</p>
-                          <p className="text-sm font-medium">
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Distance</p>
+                          <p className="text-xs sm:text-sm font-medium">
                             {(request.distance / 1000).toFixed(1)} km
                           </p>
                         </div>
                       )}
                       {request.estimatedTime != null && (
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Est. Time</p>
-                          <p className="text-sm font-medium">
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Est. Time</p>
+                          <p className="text-xs sm:text-sm font-medium">
                             ~{Math.round(request.estimatedTime / 60)} hrs
                           </p>
                         </div>
                       )}
                       {request.status === "DRAFT" && request.auctionStartTime && (
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Auction Starts</p>
-                          <p className="text-sm font-medium">
+                        <div className="min-w-0 col-span-2 md:col-span-1">
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Auction Starts</p>
+                          <p className="text-xs sm:text-sm font-medium break-words">
                             {parseDate(request.auctionStartTime)
-                              ? format(parseDate(request.auctionStartTime)!, "MMM d, yyyy 'at' h:mm a")
+                              ? format(parseDate(request.auctionStartTime)!, "MMM d, h:mm a")
                               : "—"}
                           </p>
                         </div>
                       )}
                       {request.status === "LIVE" && request.auctionEndTime && (
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Auction Ends</p>
-                          <p className="text-sm font-medium">
+                        <div className="min-w-0 col-span-2 md:col-span-1">
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Auction Ends</p>
+                          <p className="text-xs sm:text-sm font-medium break-words">
                             {parseDate(request.auctionEndTime)
-                              ? format(parseDate(request.auctionEndTime)!, "MMM d, yyyy 'at' h:mm a")
+                              ? format(parseDate(request.auctionEndTime)!, "MMM d, h:mm a")
                               : "—"}
                           </p>
                         </div>
@@ -343,10 +350,10 @@ const MyRequests = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex justify-center pt-4"
+              className="flex justify-center pt-4 px-1"
             >
               <Pagination>
-                <PaginationContent>
+                <PaginationContent className="flex-wrap justify-center gap-1">
                   <PaginationItem>
                     <PaginationPrevious
                       href="#"
@@ -368,6 +375,7 @@ const MyRequests = () => {
                           setPage(p);
                         }}
                         isActive={p === pagination.page}
+                        className="min-w-9"
                       >
                         {p}
                       </PaginationLink>
