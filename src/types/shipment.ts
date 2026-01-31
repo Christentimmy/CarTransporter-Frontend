@@ -86,3 +86,58 @@ export function toShipmentLocationPayload(loc: CreateShipmentLocation): Record<s
   if (loc.zipCode != null && loc.zipCode !== "") out.zipCode = loc.zipCode;
   return out;
 }
+
+/** Location shape returned by get-my-shipments API */
+export interface MyShipmentLocation {
+  type: "Point";
+  coordinates: [number, number];
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zipCode?: string;
+}
+
+/** Vehicle details returned by get-my-shipments API */
+export interface MyShipmentVehicleDetails {
+  make: string;
+  model: string;
+  year: number;
+  isRunning: boolean;
+}
+
+/** Single shipment from get-my-shipments API */
+export interface MyShipment {
+  _id: string;
+  shipper: string;
+  pickupLocation: MyShipmentLocation;
+  deliveryLocation: MyShipmentLocation;
+  vehicleDetails: MyShipmentVehicleDetails;
+  pickupWindow: { start: string; end: string };
+  deliveryDeadline: string;
+  distance?: number;
+  estimatedTime?: number;
+  photos: string[];
+  auctionDuration?: number;
+  auctionStartTime?: string;
+  auctionEndTime?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Pagination meta from get-my-shipments API */
+export interface MyShipmentsPagination {
+  total: number;
+  page: number;
+  pages: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+/** Response shape for GET /user/get-my-shipments */
+export interface GetMyShipmentsResponse {
+  data: MyShipment[];
+  pagination: MyShipmentsPagination;
+}

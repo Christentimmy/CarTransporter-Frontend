@@ -2,12 +2,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
 import {
   Truck,
   MapPin,
   Calendar,
   Gavel,
-  Eye,
   Filter,
   Search,
   Plus,
@@ -15,11 +15,12 @@ import {
   CheckCircle2,
   XCircle,
   Package,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -27,146 +28,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { getMyShipments } from "@/services/shipmentService";
+import type { MyShipment } from "@/types/shipment";
 
-// Mock data - replace with API call
-const mockRequests = [
-  {
-    _id: "1",
-    vehicleDetails: {
-      make: "Toyota",
-      model: "Camry",
-      year: 2024,
-    },
-    pickupLocation: {
-      address: "123 Main St",
-      city: "New York",
-      state: "NY",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "456 Oak Ave",
-      city: "Los Angeles",
-      state: "CA",
-      country: "USA",
-    },
-    pickupWindow: {
-      start: new Date("2024-02-15"),
-      end: new Date("2024-02-17"),
-    },
-    deliveryDeadline: new Date("2024-02-25"),
-    status: "LIVE",
-    currentBid: {
-      amount: 850,
-      placedAt: new Date("2024-02-10"),
-    },
-    bidCount: 5,
-    auctionEndTime: new Date("2024-02-14"),
-    photos: [],
-  },
-  {
-    _id: "2",
-    vehicleDetails: {
-      make: "Honda",
-      model: "Accord",
-      year: 2023,
-    },
-    pickupLocation: {
-      address: "789 Pine Rd",
-      city: "Chicago",
-      state: "IL",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "321 Elm St",
-      city: "Miami",
-      state: "FL",
-      country: "USA",
-    },
-    pickupWindow: {
-      start: new Date("2024-02-20"),
-      end: new Date("2024-02-22"),
-    },
-    deliveryDeadline: new Date("2024-03-01"),
-    status: "ASSIGNED",
-    currentBid: {
-      amount: 1200,
-      placedAt: new Date("2024-02-08"),
-    },
-    bidCount: 8,
-    assignedTo: "Transporter Co.",
-    photos: [],
-  },
-  {
-    _id: "3",
-    vehicleDetails: {
-      make: "Ford",
-      model: "F-150",
-      year: 2022,
-    },
-    pickupLocation: {
-      address: "555 Maple Dr",
-      city: "Houston",
-      state: "TX",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "777 Cedar Ln",
-      city: "Phoenix",
-      state: "AZ",
-      country: "USA",
-    },
-    pickupWindow: {
-      start: new Date("2024-02-18"),
-      end: new Date("2024-02-20"),
-    },
-    deliveryDeadline: new Date("2024-02-28"),
-    status: "IN_TRANSIT",
-    currentBid: {
-      amount: 950,
-      placedAt: new Date("2024-02-09"),
-    },
-    bidCount: 3,
-    assignedTo: "Fast Transport LLC",
-    startedAt: new Date("2024-02-15"),
-    photos: [],
-  },
-  {
-    _id: "4",
-    vehicleDetails: {
-      make: "Tesla",
-      model: "Model 3",
-      year: 2023,
-    },
-    pickupLocation: {
-      address: "999 Birch Way",
-      city: "Seattle",
-      state: "WA",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "111 Spruce Ave",
-      city: "Portland",
-      state: "OR",
-      country: "USA",
-    },
-    pickupWindow: {
-      start: new Date("2024-01-10"),
-      end: new Date("2024-01-12"),
-    },
-    deliveryDeadline: new Date("2024-01-20"),
-    status: "DELIVERED",
-    currentBid: {
-      amount: 1100,
-      placedAt: new Date("2024-01-05"),
-    },
-    bidCount: 6,
-    assignedTo: "Eco Transport",
-    completedAt: new Date("2024-01-18"),
-    photos: [],
-  },
-];
-
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
+const statusConfig: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock }
+> = {
   DRAFT: { label: "Draft", variant: "outline", icon: Clock },
   LIVE: { label: "Live", variant: "default", icon: Clock },
   ENDED: { label: "Ended", variant: "secondary", icon: XCircle },
@@ -178,21 +54,35 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
   CANCELLED: { label: "Cancelled", variant: "destructive", icon: XCircle },
 };
 
+function formatLocation(loc: MyShipment["pickupLocation"]) {
+  if (loc.address) return loc.address;
+  const parts = [loc.city, loc.state, loc.country].filter(Boolean);
+  return parts.length ? parts.join(", ") : loc.country || "—";
+}
+
 const MyRequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const filteredRequests = mockRequests.filter((request) => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["my-shipments", page, limit],
+    queryFn: () => getMyShipments({ page, limit }),
+  });
+
+  const shipments = data?.data ?? [];
+  const pagination = data?.pagination;
+
+  const filteredShipments = shipments.filter((request) => {
     const matchesSearch =
       searchQuery === "" ||
       `${request.vehicleDetails.make} ${request.vehicleDetails.model}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      request.pickupLocation.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      request.deliveryLocation.city.toLowerCase().includes(searchQuery.toLowerCase());
-
+      formatLocation(request.pickupLocation).toLowerCase().includes(searchQuery.toLowerCase()) ||
+      formatLocation(request.deliveryLocation).toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || request.status === statusFilter;
-
     return matchesSearch && matchesStatus;
   });
 
@@ -206,6 +96,43 @@ const MyRequests = () => {
       </Badge>
     );
   };
+
+  const parseDate = (dateStr: string) => {
+    try {
+      return new Date(dateStr);
+    } catch {
+      return null;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Loading your requests...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <XCircle className="h-12 w-12 text-destructive mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Failed to load requests</h3>
+          <p className="text-muted-foreground text-center mb-4">
+            {error instanceof Error ? error.message : "Something went wrong"}
+          </p>
+          <Button
+            variant="outline"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -267,7 +194,7 @@ const MyRequests = () => {
       </motion.div>
 
       {/* Requests List */}
-      {filteredRequests.length === 0 ? (
+      {filteredShipments.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Truck className="h-12 w-12 text-muted-foreground mb-4" />
@@ -277,7 +204,7 @@ const MyRequests = () => {
                 ? "Try adjusting your filters"
                 : "Get started by creating your first vehicle transport request"}
             </p>
-            {(!searchQuery && statusFilter === "all") && (
+            {!searchQuery && statusFilter === "all" && (
               <Link to="/user/post-request">
                 <Button variant="hero">
                   <Plus className="mr-2 h-4 w-4" />
@@ -288,113 +215,181 @@ const MyRequests = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4">
-          {filteredRequests.map((request, index) => (
-            <motion.div
-              key={request._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardHeader className="p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-                        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
-                          <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <CardTitle className="text-lg sm:text-xl truncate">
-                              {request.vehicleDetails.year} {request.vehicleDetails.make}{" "}
-                              {request.vehicleDetails.model}
-                            </CardTitle>
-                            <div className="flex-shrink-0">
-                              {getStatusBadge(request.status)}
+        <>
+          <div className="grid gap-4">
+            {filteredShipments.map((request, index) => (
+              <motion.div
+                key={request._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+              >
+                <Card className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                          {request.photos?.[0] ? (
+                            <img
+                              src={request.photos[0]}
+                              alt={`${request.vehicleDetails.make} ${request.vehicleDetails.model}`}
+                              className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
+                              <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                             </div>
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-muted-foreground">
-                            <div className="flex items-center gap-2">
-                              <MapPin className="h-4 w-4" />
-                              <span>
-                                {request.pickupLocation.city}, {request.pickupLocation.state} →{" "}
-                                {request.deliveryLocation.city}, {request.deliveryLocation.state}
-                              </span>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                              <CardTitle className="text-lg sm:text-xl truncate">
+                                {request.vehicleDetails.year} {request.vehicleDetails.make}{" "}
+                                {request.vehicleDetails.model}
+                              </CardTitle>
+                              <div className="flex-shrink-0">
+                                {getStatusBadge(request.status)}
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Calendar className="h-4 w-4" />
-                              <span>
-                                Pickup: {format(request.pickupWindow.start, "MMM d")} -{" "}
-                                {format(request.pickupWindow.end, "MMM d, yyyy")}
-                              </span>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-muted-foreground">
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 flex-shrink-0" />
+                                <span>
+                                  {formatLocation(request.pickupLocation)} →{" "}
+                                  {formatLocation(request.deliveryLocation)}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4 flex-shrink-0" />
+                                <span>
+                                  Pickup:{" "}
+                                  {parseDate(request.pickupWindow.start)
+                                    ? format(parseDate(request.pickupWindow.start)!, "MMM d")
+                                    : "—"}{" "}
+                                  –{" "}
+                                  {parseDate(request.pickupWindow.end)
+                                    ? format(parseDate(request.pickupWindow.end)!, "MMM d, yyyy")
+                                    : "—"}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      {request.status === "LIVE" ? (
+                      {request.status === "LIVE" && (
                         <Link to={`/user/auction/${request._id}`}>
                           <Button variant="hero" size="sm">
                             <Gavel className="mr-2 h-4 w-4" />
                             View Live Auction
                           </Button>
                         </Link>
-                      ) : (
-                        <Link to={`/user/bids?requestId=${request._id}`}>
-                          <Button variant="outline" size="sm">
-                            <Gavel className="mr-2 h-4 w-4" />
-                            View Bids ({request.bidCount})
-                          </Button>
-                        </Link>
-                      )}
-                      <Button variant="outline" size="sm">
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 pt-3 sm:pt-4 border-t">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Current Bid</p>
-                      <p className="text-lg font-semibold">
-                        ${request.currentBid?.amount.toLocaleString() || "No bids yet"}
-                      </p>
-                      {request.currentBid && (
-                        <p className="text-xs text-muted-foreground">
-                          {format(request.currentBid.placedAt, "MMM d, yyyy")}
-                        </p>
                       )}
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Delivery Deadline</p>
-                      <p className="text-sm font-medium">
-                        {format(request.deliveryDeadline, "MMM d, yyyy")}
-                      </p>
-                    </div>
-                    {request.status === "LIVE" && request.auctionEndTime && (
+                  </CardHeader>
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 pt-3 sm:pt-4 border-t">
                       <div>
-                        <p className="text-sm text-muted-foreground mb-1">Auction Ends</p>
+                        <p className="text-sm text-muted-foreground mb-1">Delivery Deadline</p>
                         <p className="text-sm font-medium">
-                          {format(request.auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
+                          {parseDate(request.deliveryDeadline)
+                            ? format(parseDate(request.deliveryDeadline)!, "MMM d, yyyy")
+                            : "—"}
                         </p>
                       </div>
-                    )}
-                    {request.assignedTo && (
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Assigned To</p>
-                        <p className="text-sm font-medium">{request.assignedTo}</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                      {request.distance != null && (
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Distance</p>
+                          <p className="text-sm font-medium">
+                            {(request.distance / 1000).toFixed(1)} km
+                          </p>
+                        </div>
+                      )}
+                      {request.estimatedTime != null && (
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Est. Time</p>
+                          <p className="text-sm font-medium">
+                            ~{Math.round(request.estimatedTime / 60)} hrs
+                          </p>
+                        </div>
+                      )}
+                      {request.status === "DRAFT" && request.auctionStartTime && (
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Auction Starts</p>
+                          <p className="text-sm font-medium">
+                            {parseDate(request.auctionStartTime)
+                              ? format(parseDate(request.auctionStartTime)!, "MMM d, yyyy 'at' h:mm a")
+                              : "—"}
+                          </p>
+                        </div>
+                      )}
+                      {request.status === "LIVE" && request.auctionEndTime && (
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Auction Ends</p>
+                          <p className="text-sm font-medium">
+                            {parseDate(request.auctionEndTime)
+                              ? format(parseDate(request.auctionEndTime)!, "MMM d, yyyy 'at' h:mm a")
+                              : "—"}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {pagination && pagination.pages > 1 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-center pt-4"
+            >
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (pagination.hasPrevPage) setPage((p) => p - 1);
+                      }}
+                      className={
+                        !pagination.hasPrevPage ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((p) => (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPage(p);
+                        }}
+                        isActive={p === pagination.page}
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (pagination.hasNextPage) setPage((p) => p + 1);
+                      }}
+                      className={
+                        !pagination.hasNextPage ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </motion.div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   );
