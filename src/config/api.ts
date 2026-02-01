@@ -12,8 +12,11 @@ export const API_ENDPOINTS = {
     DASHBOARD: `${API_BASE_URL}/user/get-user-dashboard`,
     CREATE_SHIPMENT: `${API_BASE_URL}/user/create-shipment`,
     GET_MY_SHIPMENTS: `${API_BASE_URL}/user/get-my-shipments`,
+    LIST_SHIPMENTS: `${API_BASE_URL}/user/list-shipments`,
   },
-  // Add other API endpoints here
+  TRANSPORTER: {
+    DASHBOARD: `${API_BASE_URL}/transporter/get-transporter-dashboard`,
+  },
 };
 
 export const getAuthHeader = (): { Authorization: string } | {} => {
@@ -31,4 +34,21 @@ export const removeAuthToken = (): void => {
 
 export const getAuthToken = (): string | null => {
   return localStorage.getItem("authToken");
+};
+
+const AUTH_ROLE_KEY = "authRole";
+
+export type AuthRole = "user" | "transporter";
+
+export const getAuthRole = (): AuthRole | null => {
+  const role = localStorage.getItem(AUTH_ROLE_KEY);
+  return role === "user" || role === "transporter" ? role : null;
+};
+
+export const storeAuthRole = (role: AuthRole): void => {
+  localStorage.setItem(AUTH_ROLE_KEY, role);
+};
+
+export const removeAuthRole = (): void => {
+  localStorage.removeItem(AUTH_ROLE_KEY);
 };

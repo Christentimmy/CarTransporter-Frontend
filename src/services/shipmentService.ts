@@ -1,10 +1,43 @@
 import { getAuthHeader, API_ENDPOINTS } from "@/config/api";
-import type { GetMyShipmentsResponse } from "@/types/shipment";
+import type { GetMyShipmentsResponse, ListShipmentsResponse } from "@/types/shipment";
 
 export interface GetMyShipmentsParams {
   page?: number;
   limit?: number;
 }
+
+/** Params for list-shipments (LIVE/DRAFT shipments for transporters) */
+export interface ListShipmentsParams {
+  page?: number;
+  limit?: number;
+}
+
+export const getListShipments = async (
+  params?: ListShipmentsParams
+): Promise<ListShipmentsResponse> => {
+  const searchParams = new URLSearchParams();
+  if (params?.page != null) searchParams.set("page", String(params.page));
+  if (params?.limit != null) searchParams.set("limit", String(params.limit));
+  const query = searchParams.toString();
+  const url = query
+    ? `${API_ENDPOINTS.USER.LIST_SHIPMENTS}?${query}`
+    : API_ENDPOINTS.USER.LIST_SHIPMENTS;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to fetch list of shipments");
+  }
+
+  return response.json();
+};
 
 export const getMyShipments = async (
   params?: GetMyShipmentsParams

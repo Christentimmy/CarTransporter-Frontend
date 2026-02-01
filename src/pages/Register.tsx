@@ -159,13 +159,11 @@ const Register = () => {
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
                 <Select
-                  {...register("role", { required: "Please select a role" })}
-                  onValueChange={(value) => register("role").onChange({ target: { value } })}
                   value={role}
+                  onValueChange={(value) => {
+                    register("role").onChange({ target: { value, name: "role" } });
+                  }}
                 >
-                  {errors.role && (
-                    <p className="text-sm text-red-500">{errors.role.message}</p>
-                  )}
                   <SelectTrigger id="role" className="w-full">
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
@@ -174,6 +172,9 @@ const Register = () => {
                     <SelectItem value="transporter">Transporter</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.role && (
+                  <p className="text-sm text-red-500">{errors.role.message}</p>
+                )}
               </div>
 
               {/* Conditional Fields for Transporter */}
@@ -241,11 +242,11 @@ const Register = () => {
                     <div className="space-y-2">
                       <Label htmlFor="region">Region</Label>
                       <Select
-                        {...register("region", {
-                          required: isTransporter ? "Region is required" : false,
-                        })}
-                        onValueChange={(value) => register("region").onChange({ target: { value } })}
-                        value={watch("region")}
+                        value={watch("region") || ""}
+                        onValueChange={(value) => {
+                          register("region").onChange({ target: { value, name: "region" } });
+                        }}
+                        required={isTransporter}
                       >
                         <SelectTrigger id="region" className="w-full">
                           <SelectValue placeholder="Select your region" />

@@ -1,19 +1,33 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Truck, ArrowLeft } from "lucide-react";
+import { Truck, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { authService } from "@/services/auth_services";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Add actual authentication logic here
-    // For now, just redirect to dashboard
-    navigate("/user/dashboard");
+    setError("");
+    setIsLoading(true);
+    try {
+      const data = await authService.login({ identifier: email, password });
+      const role = data.role ?? "user";
+      navigate(role === "transporter" ? "/transporter/dashboard" : "/user/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
@@ -56,6 +70,11 @@ const Login = () => {
 
             {/* Login Form */}
             <form className="space-y-6" onSubmit={handleSubmit}>
+              {error && (
+                <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
+                  {error}
+                </p>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -63,6 +82,11 @@ const Login = () => {
                   type="email"
                   placeholder="Enter your email"
                   className="w-full"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -81,11 +105,23 @@ const Login = () => {
                   type="password"
                   placeholder="Enter your password"
                   className="w-full"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  disabled={isLoading}
                 />
               </div>
 
-              <Button variant="hero" className="w-full" size="lg">
-                Sign In
+              <Button variant="hero" className="w-full" size="lg" type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
             </form>
 

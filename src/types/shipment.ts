@@ -141,3 +141,51 @@ export interface GetMyShipmentsResponse {
   data: MyShipment[];
   pagination: MyShipmentsPagination;
 }
+
+/** Shipper object in list-shipments response */
+export interface ListShipmentShipper {
+  _id: string;
+  email?: string;
+  phone_number?: string;
+  region?: string;
+  status?: string;
+  is_email_verified?: boolean;
+  is_phone_verified?: boolean;
+  role?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/** Current bid in list-shipments item (when present) */
+export interface ListShipmentCurrentBid {
+  amount: number;
+  bidder: string;
+  placedAt: string;
+}
+
+/** Single shipment from GET /user/list-shipments (LIVE/DRAFT, for transporters to bid) */
+export interface ListShipmentItem {
+  _id: string;
+  shipper: ListShipmentShipper;
+  pickupLocation: MyShipmentLocation;
+  deliveryLocation: MyShipmentLocation;
+  vehicleDetails: MyShipmentVehicleDetails;
+  pickupWindow: { start: string; end: string };
+  deliveryDeadline: string;
+  distance?: number;
+  estimatedTime?: number;
+  photos: string[];
+  auctionDuration?: number;
+  auctionStartTime?: string;
+  auctionEndTime?: string;
+  currentBid?: ListShipmentCurrentBid;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Response shape for GET /user/list-shipments */
+export interface ListShipmentsResponse {
+  data: ListShipmentItem[];
+  pagination: MyShipmentsPagination;
+}

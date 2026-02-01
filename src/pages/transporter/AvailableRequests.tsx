@@ -2,176 +2,123 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
 import {
   Truck,
   MapPin,
   Calendar,
   Gavel,
-  DollarSign,
-  Clock,
   Search,
-  ArrowRight,
+  Clock,
+  Loader2,
+  XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { getListShipments } from "@/services/shipmentService";
+import type { ListShipmentItem } from "@/types/shipment";
 
-// Mock data - replace with API call
-const mockLiveRequests = [
-  {
-    _id: "1",
-    vehicleDetails: {
-      make: "Toyota",
-      model: "Camry",
-      year: 2024,
-      isRunning: true,
-    },
-    pickupLocation: {
-      address: "123 Main St",
-      city: "New York",
-      state: "NY",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "456 Oak Ave",
-      city: "Los Angeles",
-      state: "CA",
-      country: "USA",
-    },
-    distance: 2789, // km
-    pickupWindow: {
-      start: new Date("2024-02-15"),
-      end: new Date("2024-02-17"),
-    },
-    deliveryDeadline: new Date("2024-02-25"),
-    status: "LIVE",
-    currentBid: {
-      amount: 850,
-      placedAt: new Date("2024-02-10"),
-    },
-    auctionEndTime: new Date("2024-02-14T18:00:00"),
-    instantAcceptPrice: 1200,
-    photos: [],
-  },
-  {
-    _id: "2",
-    vehicleDetails: {
-      make: "Honda",
-      model: "Accord",
-      year: 2023,
-      isRunning: true,
-    },
-    pickupLocation: {
-      address: "789 Pine Rd",
-      city: "Chicago",
-      state: "IL",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "321 Elm St",
-      city: "Miami",
-      state: "FL",
-      country: "USA",
-    },
-    distance: 1389,
-    pickupWindow: {
-      start: new Date("2024-02-20"),
-      end: new Date("2024-02-22"),
-    },
-    deliveryDeadline: new Date("2024-03-01"),
-    status: "LIVE",
-    currentBid: {
-      amount: 1200,
-      placedAt: new Date("2024-02-08"),
-    },
-    auctionEndTime: new Date("2024-02-13T12:00:00"),
-    instantAcceptPrice: null,
-    photos: [],
-  },
-  {
-    _id: "3",
-    vehicleDetails: {
-      make: "Ford",
-      model: "F-150",
-      year: 2022,
-      isRunning: false,
-    },
-    pickupLocation: {
-      address: "555 Maple Dr",
-      city: "Houston",
-      state: "TX",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "777 Cedar Ln",
-      city: "Phoenix",
-      state: "AZ",
-      country: "USA",
-    },
-    distance: 1180,
-    pickupWindow: {
-      start: new Date("2024-02-18"),
-      end: new Date("2024-02-20"),
-    },
-    deliveryDeadline: new Date("2024-02-28"),
-    status: "LIVE",
-    currentBid: {
-      amount: 950,
-      placedAt: new Date("2024-02-09"),
-    },
-    auctionEndTime: new Date("2024-02-15T20:00:00"),
-    instantAcceptPrice: 1500,
-    photos: [],
-  },
-];
+function formatLocation(loc: ListShipmentItem["pickupLocation"]) {
+  if (loc.address) return loc.address;
+  const parts = [loc.city, loc.state, loc.country].filter(Boolean);
+  return parts.length ? parts.join(", ") : loc.country || "—";
+}
+
+function parseDate(dateStr: string) {
+  try {
+    return new Date(dateStr);
+  } catch {
+    return null;
+  }
+}
+
+function getTimeRemaining(endTimeStr: string) {
+  const endTime = parseDate(endTimeStr);
+  if (!endTime) return "—";
+  const now = new Date();
+  const diff = endTime.getTime() - now.getTime();
+  if (diff <= 0) return "Ended";
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  if (hours > 24) {
+    const days = Math.floor(hours / 24);
+    return `${days} day${days > 1 ? "s" : ""} left`;
+  }
+  return `${hours}h ${minutes}m left`;
+}
 
 const AvailableRequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const filteredRequests = mockLiveRequests.filter((request) => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["list-shipments", page, limit],
+    queryFn: () => getListShipments({ page, limit }),
+  });
+
+  const shipments = data?.data ?? [];
+  const pagination = data?.pagination;
+
+  const filteredShipments = shipments.filter((request) => {
     const matchesSearch =
       searchQuery === "" ||
       `${request.vehicleDetails.make} ${request.vehicleDetails.model}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      request.pickupLocation.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      request.deliveryLocation.city.toLowerCase().includes(searchQuery.toLowerCase());
-
+      formatLocation(request.pickupLocation).toLowerCase().includes(searchQuery.toLowerCase()) ||
+      formatLocation(request.deliveryLocation).toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
 
-  const getTimeRemaining = (endTime: Date) => {
-    const now = new Date();
-    const diff = endTime.getTime() - now.getTime();
-    if (diff <= 0) return "Ended";
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Loading available requests...</p>
+      </div>
+    );
+  }
 
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (hours > 24) {
-      const days = Math.floor(hours / 24);
-      return `${days} day${days > 1 ? "s" : ""} left`;
-    }
-    return `${hours}h ${minutes}m left`;
-  };
-
+  if (isError) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <XCircle className="h-12 w-12 text-destructive mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Failed to load requests</h3>
+          <p className="text-muted-foreground text-center mb-4">
+            {error instanceof Error ? error.message : "Something went wrong"}
+          </p>
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 min-w-0">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Available Requests</h1>
-          <p className="text-muted-foreground">
-            Browse live vehicle transport requests and place your bids
-          </p>
-        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Available Requests</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Browse live vehicle transport requests and place your bids
+        </p>
       </motion.div>
 
       {/* Search */}
@@ -181,8 +128,8 @@ const AvailableRequests = () => {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="flex gap-4"
       >
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground shrink-0" />
           <Input
             placeholder="Search by vehicle, city..."
             value={searchQuery}
@@ -193,111 +140,209 @@ const AvailableRequests = () => {
       </motion.div>
 
       {/* Requests List */}
-      {filteredRequests.length === 0 ? (
+      {filteredShipments.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Truck className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">No requests found</h3>
             <p className="text-muted-foreground text-center">
-              {searchQuery ? "Try adjusting your search" : "No live requests available at the moment"}
+              {searchQuery
+                ? "Try adjusting your search"
+                : "No live or draft requests available at the moment"}
             </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4">
-          {filteredRequests.map((request, index) => (
-            <motion.div
-              key={request._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                          <Truck className="h-6 w-6 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <CardTitle className="text-xl">
-                              {request.vehicleDetails.year} {request.vehicleDetails.make}{" "}
-                              {request.vehicleDetails.model}
-                            </CardTitle>
-                            <Badge variant="default" className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {getTimeRemaining(request.auctionEndTime)}
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-2">
-                              <MapPin className="h-4 w-4" />
-                              <span>
-                                {request.pickupLocation.city}, {request.pickupLocation.state} →{" "}
-                                {request.deliveryLocation.city}, {request.deliveryLocation.state}
-                              </span>
+        <>
+          <div className="grid gap-4">
+            {filteredShipments.map((request, index) => (
+              <motion.div
+                key={request._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                className="min-w-0"
+              >
+                <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <CardHeader className="p-3 sm:p-6">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex gap-3 sm:gap-4">
+                          {request.photos?.[0] ? (
+                            <img
+                              src={request.photos[0]}
+                              alt={`${request.vehicleDetails.make} ${request.vehicleDetails.model}`}
+                              className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
+                              <Truck className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">Distance:</span>
-                              <span>{request.distance.toLocaleString()} km</span>
+                          )}
+                          <div className="flex-1 min-w-0 overflow-hidden">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2">
+                              <CardTitle className="text-base sm:text-xl truncate">
+                                {request.vehicleDetails.year} {request.vehicleDetails.make}{" "}
+                                {request.vehicleDetails.model}
+                              </CardTitle>
+                              {request.auctionEndTime && request.status === "LIVE" && (
+                                <Badge variant="default" className="flex items-center gap-1 shrink-0">
+                                  <Clock className="h-3 w-3" />
+                                  {getTimeRemaining(request.auctionEndTime)}
+                                </Badge>
+                              )}
+                              {request.status === "DRAFT" && (
+                                <Badge variant="secondary" className="shrink-0">
+                                  Draft
+                                </Badge>
+                              )}
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Calendar className="h-4 w-4" />
-                              <span>
-                                Pickup: {format(request.pickupWindow.start, "MMM d")} -{" "}
-                                {format(request.pickupWindow.end, "MMM d, yyyy")}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">Vehicle Status:</span>
-                              <Badge variant={request.vehicleDetails.isRunning ? "default" : "secondary"}>
-                                {request.vehicleDetails.isRunning ? "Running" : "Not Running"}
-                              </Badge>
+                            <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
+                              <div className="flex gap-2 min-w-0">
+                                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
+                                <span className="break-words line-clamp-2 min-w-0">
+                                  <span className="text-muted-foreground/80">From </span>
+                                  {formatLocation(request.pickupLocation)}
+                                </span>
+                              </div>
+                              <div className="flex gap-2 min-w-0">
+                                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 opacity-60" />
+                                <span className="break-words line-clamp-2 min-w-0">
+                                  <span className="text-muted-foreground/80">To </span>
+                                  {formatLocation(request.deliveryLocation)}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 pt-0.5 min-w-0">
+                                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                <span>
+                                  Pickup:{" "}
+                                  {parseDate(request.pickupWindow.start)
+                                    ? format(parseDate(request.pickupWindow.start)!, "MMM d")
+                                    : "—"}{" "}
+                                  –{" "}
+                                  {parseDate(request.pickupWindow.end)
+                                    ? format(parseDate(request.pickupWindow.end)!, "MMM d, yyyy")
+                                    : "—"}
+                                </span>
+                              </div>
+                              {request.distance != null && (
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-foreground/80">Distance:</span>
+                                  <span>{(request.distance / 1000).toFixed(1)} km</span>
+                                </div>
+                              )}
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-foreground/80">Vehicle:</span>
+                                <Badge
+                                  variant={request.vehicleDetails.isRunning ? "default" : "secondary"}
+                                >
+                                  {request.vehicleDetails.isRunning ? "Running" : "Not Running"}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
+                      <div className="flex flex-col gap-2 shrink-0">
+                        <Link to={`/transporter/auction/${request._id}`}>
+                          <Button variant="hero" size="sm" className="w-full sm:w-auto">
+                            <Gavel className="mr-2 h-4 w-4 shrink-0" />
+                            View Auction
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <Link to={`/transporter/auction/${request._id}`}>
-                        <Button variant="hero" className="w-full sm:w-auto">
-                          <Gavel className="mr-2 h-4 w-4" />
-                          View Auction
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Current Lowest Bid</p>
-                      <p className="text-lg font-semibold">
-                        ${request.currentBid?.amount.toLocaleString() || "No bids yet"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Delivery Deadline</p>
-                      <p className="text-sm font-medium">
-                        {format(request.deliveryDeadline, "MMM d, yyyy")}
-                      </p>
-                    </div>
-                    {request.instantAcceptPrice && (
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Instant Accept</p>
-                        <p className="text-sm font-medium text-primary">
-                          ${request.instantAcceptPrice.toLocaleString()}
+                  </CardHeader>
+                  <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-3 gap-y-2 sm:gap-4 pt-3 sm:pt-4 border-t">
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
+                          Current Lowest Bid
+                        </p>
+                        <p className="text-sm sm:text-lg font-semibold">
+                          ${request.currentBid?.amount.toLocaleString() ?? "No bids yet"}
                         </p>
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
+                          Delivery Deadline
+                        </p>
+                        <p className="text-xs sm:text-sm font-medium">
+                          {parseDate(request.deliveryDeadline)
+                            ? format(parseDate(request.deliveryDeadline)!, "MMM d, yyyy")
+                            : "—"}
+                        </p>
+                      </div>
+                      {request.estimatedTime != null && (
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
+                            Est. Time
+                          </p>
+                          <p className="text-xs sm:text-sm font-medium">
+                            ~{Math.round(request.estimatedTime / 60)} hrs
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {pagination && pagination.pages > 1 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-center pt-4 px-1"
+            >
+              <Pagination>
+                <PaginationContent className="flex-wrap justify-center gap-1">
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (pagination.hasPrevPage) setPage((p) => p - 1);
+                      }}
+                      className={
+                        !pagination.hasPrevPage ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((p) => (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPage(p);
+                        }}
+                        isActive={p === pagination.page}
+                        className="min-w-9"
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (pagination.hasNextPage) setPage((p) => p + 1);
+                      }}
+                      className={
+                        !pagination.hasNextPage ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </motion.div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -1,8 +1,11 @@
 import {
   API_ENDPOINTS,
   storeAuthToken,
+  storeAuthRole,
   removeAuthToken,
+  removeAuthRole,
   getAuthHeader,
+  type AuthRole,
 } from "@/config/api";
 
 export interface RegisterPayload {
@@ -17,13 +20,14 @@ export interface RegisterPayload {
 }
 
 export interface LoginPayload {
-  email: string;
+  identifier: string;
   password: string;
 }
 
 export interface AuthResponse {
   token: string;
   message: string;
+  role?: AuthRole;
 }
 
 export interface VerifyOtpPayload {
@@ -64,9 +68,12 @@ class AuthService {
 
       const data: AuthResponse = await response.json();
 
-      // Store the token
+      // Store the token and role
       if (data.token) {
         storeAuthToken(data.token);
+      }
+      if (data.role) {
+        storeAuthRole(data.role);
       }
 
       return data;
@@ -107,7 +114,7 @@ class AuthService {
 
   public logout(): void {
     removeAuthToken();
-    // You might want to redirect to login page or handle other cleanup here
+    removeAuthRole();
   }
 
   public isAuthenticated(): boolean {
@@ -135,6 +142,9 @@ class AuthService {
       const result = await response.json();
       if (result.token) {
         storeAuthToken(result.token);
+      }
+      if (result.role) {
+        storeAuthRole(result.role);
       }
       return result;
     } catch (error) {
