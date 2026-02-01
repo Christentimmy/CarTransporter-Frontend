@@ -85,15 +85,15 @@ export const createShipment = async (data: FormData) => {
   return response.json();
 };
 
-export const getGoogleMapsPlaceDetails = async (placeId: string) => {
-  try {
-    const response = await fetch(`/api/maps/place-details?placeId=${placeId}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch place details");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching place details:", error);
-    throw error;
-  }
-};
+// export const getGoogleMapsPlaceDetails = async (placeId: string) => {
+//   try {
+//     const response = await fetch(`/api/maps/place-details?placeId=${placeId}`);
+//     if (!response.ok) {
+//       throw new Error("Failed to fetch place details");
+//     }
+//     return await response.json();
+//   } catch (error) {
+//     console.error("Error fetching place details:", error);
+//     throw error;
+//   }
+// };

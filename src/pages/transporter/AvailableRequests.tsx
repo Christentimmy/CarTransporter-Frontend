@@ -66,7 +66,8 @@ const AvailableRequests = () => {
 
   const navigate = useNavigate();
 
-  const handleViewAuction = (shipmentId: string) => {
+  const handleViewAuction = (shipment: ListShipmentItem) => {
+    const shipmentId = shipment._id;
     const s = getAuctionSocket();
     if (!s) {
       toast.error("Failed to connect to auction server");
@@ -93,7 +94,9 @@ const AvailableRequests = () => {
     s.on("new-bid", handleNewBid);
     s.on("bid-error", handleBidError);
 
-    navigate(`/transporter/auction/${shipmentId}`);
+    navigate(`/transporter/auction/${shipmentId}`, {
+      state: { shipment },
+    });
   };
 
   const { data, isLoading, isError, error } = useQuery({
@@ -282,7 +285,7 @@ const AvailableRequests = () => {
                           variant="hero" 
                           size="sm" 
                           className="w-full sm:w-auto"
-                          onClick={() => handleViewAuction(request._id)}
+                          onClick={() => handleViewAuction(request)}
                         >
                           <Gavel className="mr-2 h-4 w-4 shrink-0" />
                           View Auction

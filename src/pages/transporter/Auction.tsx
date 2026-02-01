@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -29,6 +29,7 @@ import {
   type NewBidPayload,
   type BidErrorPayload,
 } from "@/services/auctionSocket";
+import type { ListShipmentItem } from "@/types/shipment";
 
 // Mock data - replace with API call
 const mockAuctionData = {
@@ -144,11 +145,37 @@ function normalizeBid(payload: NewBidPayload) {
 const Auction = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [bidAmount, setBidAmount] = useState("");
   const [bids, setBids] = useState(mockBids);
   const [timeRemaining, setTimeRemaining] = useState("");
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const socketJoinedRef = useRef(false);
+
+  const shipmentFromState = (location.state as { shipment?: ListShipmentItem } | null)?.shipment;
+  const auctionData = shipmentFromState ?? mockAuctionData;
+
+  const auctionEndTime =
+    auctionData.auctionEndTime != null
+      ? new Date(auctionData.auctionEndTime)
+      : mockAuctionData.auctionEndTime;
+
+  const auctionStartTime =
+    auctionData.auctionStartTime != null
+      ? new Date(auctionData.auctionStartTime)
+      : mockAuctionData.auctionStartTime;
+
+  const instantAcceptPrice =
+    typeof (auctionData as { instantAcceptPrice?: unknown }).instantAcceptPrice === "number"
+      ? ((auctionData as { instantAcceptPrice: number }).instantAcceptPrice as number)
+      : undefined;
+
+  const currentBid = (auctionData as { currentBid?: { amount: number; bidder: string; placedAt: string } })
+    .currentBid;
+
+  const pickupStart = new Date(auctionData.pickupWindow.start);
+  const pickupEnd = new Date(auctionData.pickupWindow.end);
+  const deliveryDeadline = new Date(auctionData.deliveryDeadline);
 
   // Socket: connect, join auction, listen to new-bid and bid-error
   useEffect(() => {
@@ -200,7 +227,7 @@ const Auction = () => {
   useEffect(() => {
     const updateTimer = () => {
       const now = new Date();
-      const end = mockAuctionData.auctionEndTime;
+      const end = auctionEndTime;
       const diff = end.getTime() - now.getTime();
 
       if (diff <= 0) {
@@ -224,7 +251,7 @@ const Auction = () => {
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [auctionEndTime]);
 
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -253,7 +280,7 @@ const Auction = () => {
 
   const getTimeRemaining = () => {
     const now = new Date();
-    const end = mockAuctionData.auctionEndTime;
+    const end = auctionEndTime;
     const diff = end.getTime() - now.getTime();
     return diff > 0;
   };
@@ -286,12 +313,12 @@ const Auction = () => {
                 </div>
                 <div className="flex-1">
                   <CardTitle className="text-2xl">
-                    {mockAuctionData.vehicleDetails.year} {mockAuctionData.vehicleDetails.make}{" "}
-                    {mockAuctionData.vehicleDetails.model}
+                    {auctionData.vehicleDetails.year} {auctionData.vehicleDetails.make}{" "}
+                    {auctionData.vehicleDetails.model}
                   </CardTitle>
                   <CardDescription>
-                    <Badge variant={mockAuctionData.vehicleDetails.isRunning ? "default" : "secondary"} className="mt-2">
-                      {mockAuctionData.vehicleDetails.isRunning ? "Running" : "Not Running"}
+                    <Badge variant={auctionData.vehicleDetails.isRunning ? "default" : "secondary"} className="mt-2">
+                      {auctionData.vehicleDetails.isRunning ? "Running" : "Not Running"}
                     </Badge>
                   </CardDescription>
                 </div>
@@ -302,21 +329,21 @@ const Auction = () => {
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Pickup Location</p>
                   <p className="text-sm font-medium">
-                    {mockAuctionData.pickupLocation.address}
+                    {auctionData.pickupLocation.address}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {mockAuctionData.pickupLocation.city}, {mockAuctionData.pickupLocation.state}{" "}
-                    {mockAuctionData.pickupLocation.zipCode}
+                    {auctionData.pickupLocation.city}, {auctionData.pickupLocation.state}{" "}
+                    {auctionData.pickupLocation.zipCode}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Delivery Location</p>
                   <p className="text-sm font-medium">
-                    {mockAuctionData.deliveryLocation.address}
+                    {auctionData.deliveryLocation.address}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {mockAuctionData.deliveryLocation.city}, {mockAuctionData.deliveryLocation.state}{" "}
-                    {mockAuctionData.deliveryLocation.zipCode}
+                    {auctionData.deliveryLocation.city}, {auctionData.deliveryLocation.state}{" "}
+                    {auctionData.deliveryLocation.zipCode}
                   </p>
                 </div>
               </div>
@@ -324,19 +351,18 @@ const Auction = () => {
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-muted-foreground mb-1">Distance</p>
-                  <p className="font-medium">{mockAuctionData.distance.toLocaleString()} km</p>
+                  <p className="font-medium">{auctionData.distance.toLocaleString()} km</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground mb-1">Pickup Window</p>
                   <p className="font-medium">
-                    {format(mockAuctionData.pickupWindow.start, "MMM d")} -{" "}
-                    {format(mockAuctionData.pickupWindow.end, "MMM d")}
+                    {format(pickupStart, "MMM d")} - {format(pickupEnd, "MMM d")}
                   </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground mb-1">Delivery Deadline</p>
                   <p className="font-medium">
-                    {format(mockAuctionData.deliveryDeadline, "MMM d, yyyy")}
+                    {format(deliveryDeadline, "MMM d, yyyy")}
                   </p>
                 </div>
               </div>
@@ -428,44 +454,36 @@ const Auction = () => {
               <div className="text-center">
                 <p className="text-3xl font-bold mb-2">{timeRemaining}</p>
                 <p className="text-sm text-muted-foreground">
-                  Auction ends: {format(mockAuctionData.auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
+                  Auction ends: {format(auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
                 </p>
               </div>
             </CardContent>
           </Card>
 
           {/* Current Lowest Bid */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                Current Lowest Bid
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {lowestBid > 0 ? (
+          {currentBid && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <DollarSign className="h-5 w-5" />
+                  Current Lowest Bid
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div>
                   <p className="text-3xl font-bold mb-2">
-                    ${lowestBid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    by {lowestBidData?.bidder.company_name}
+                    ${currentBid.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {lowestBidData && formatDistanceToNow(lowestBidData.placedAt, { addSuffix: true })}
+                    {formatDistanceToNow(new Date(currentBid.placedAt), { addSuffix: true })}
                   </p>
                 </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-lg font-medium text-muted-foreground">No bids yet</p>
-                  <p className="text-sm text-muted-foreground mt-1">Be the first to bid!</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Instant Accept */}
-          {mockAuctionData.instantAcceptPrice && (
+          {instantAcceptPrice != null && (
             <Card className="border-primary/30 bg-primary/5">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -475,7 +493,7 @@ const Auction = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold mb-2">
-                  ${mockAuctionData.instantAcceptPrice.toLocaleString()}
+                  ${instantAcceptPrice.toLocaleString()}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Bid this amount to instantly win the request
@@ -553,7 +571,7 @@ const Auction = () => {
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Started</span>
                 <span className="text-sm font-medium">
-                  {format(mockAuctionData.auctionStartTime, "MMM d, yyyy")}
+                  {format(auctionStartTime, "MMM d, yyyy")}
                 </span>
               </div>
             </CardContent>
