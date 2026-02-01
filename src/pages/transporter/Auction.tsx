@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import { format, formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 import {
   Truck,
   MapPin,
@@ -21,6 +22,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  getAuctionSocket,
+  joinAuction,
+  disconnectAuctionSocket,
+  type NewBidPayload,
+  type BidErrorPayload,
+} from "@/services/auctionSocket";
 
 // Mock data - replace with API call
 const mockAuctionData = {
@@ -119,12 +127,70 @@ const mockBids = [
   },
 ];
 
+/** Normalize bid from socket or API to UI shape */
+function normalizeBid(payload: NewBidPayload) {
+  return {
+    _id: payload._id ?? `bid-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    amount: payload.amount,
+    bidder: {
+      _id: payload.bidder?._id ?? "unknown",
+      company_name: payload.bidder?.company_name ?? "Bidder",
+    },
+    placedAt: payload.placedAt ? new Date(payload.placedAt) : new Date(),
+    status: "PENDING" as const,
+  };
+}
+
 const Auction = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [bidAmount, setBidAmount] = useState("");
   const [bids, setBids] = useState(mockBids);
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const socketJoinedRef = useRef(false);
+
+  // Socket: connect, join auction, listen to new-bid and bid-error
+  useEffect(() => {
+    if (!id) return;
+
+    const socket = getAuctionSocket();
+    if (!socket) return;
+
+    const onConnect = () => setIsSocketConnected(true);
+    const onDisconnect = () => setIsSocketConnected(false);
+
+    const onNewBid = (payload: NewBidPayload) => {
+      setBids((prev) => [...prev, normalizeBid(payload)].sort((a, b) => a.amount - b.amount));
+    };
+
+    const onBidError = (payload: BidErrorPayload) => {
+      toast.error(payload.message ?? "Bid failed", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("new-bid", onNewBid);
+    socket.on("bid-error", onBidError);
+
+    if (!socketJoinedRef.current) {
+      joinAuction(id);
+      socketJoinedRef.current = true;
+    }
+
+    if (socket.connected) setIsSocketConnected(true);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("new-bid", onNewBid);
+      socket.off("bid-error", onBidError);
+      socketJoinedRef.current = false;
+      disconnectAuctionSocket();
+    };
+  }, [id]);
 
   // Get lowest bid (winner in reverse auction)
   const lowestBid = bids.length > 0 ? Math.min(...bids.map((b) => b.amount)) : 0;
@@ -203,6 +269,9 @@ const Auction = () => {
           <h1 className="text-3xl font-bold tracking-tight">Live Auction</h1>
           <p className="text-muted-foreground">Bid on this vehicle transport request</p>
         </div>
+        <Badge variant={isSocketConnected ? "default" : "secondary"} className="shrink-0">
+          {isSocketConnected ? "Live" : "Connecting…"}
+        </Badge>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

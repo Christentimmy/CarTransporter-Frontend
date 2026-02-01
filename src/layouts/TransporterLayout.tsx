@@ -1,4 +1,5 @@
 import { Outlet, useLocation, Link } from "react-router-dom";
+import { useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +14,7 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -24,7 +26,6 @@ import {
   LogOut,
   Home,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const menuItems = [
   {
@@ -55,10 +56,23 @@ const menuItems = [
 ];
 
 export const TransporterLayout = () => {
-  const location = useLocation();
-
   return (
     <SidebarProvider>
+      <TransporterLayoutContent />
+    </SidebarProvider>
+  );
+};
+
+const TransporterLayoutContent = () => {
+  const location = useLocation();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  useEffect(() => {
+    if (isMobile) setOpenMobile(false);
+  }, [isMobile, location.pathname, setOpenMobile]);
+
+  return (
+    <>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <SidebarMenu>
@@ -87,11 +101,7 @@ export const TransporterLayout = () => {
                   const isActive = location.pathname === item.url;
                   return (
                     <SidebarMenuItem key={item.url}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                        tooltip={item.title}
-                      >
+                      <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
                         <Link to={item.url}>
                           <Icon />
                           <span>{item.title}</span>
@@ -135,6 +145,6 @@ export const TransporterLayout = () => {
           <Outlet />
         </div>
       </main>
-    </SidebarProvider>
+    </>
   );
 };

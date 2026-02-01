@@ -17,7 +17,7 @@ export interface TransporterDashboardStats {
   activeBids?: number;
   wonBids?: number;
   activeShipments?: number;
-  totalEarnings?: number;
+  totalRevenue?: number;
   recentBids?: { vehicleName?: string; amount?: number; status?: string; date?: string }[];
 }
 

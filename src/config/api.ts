@@ -15,7 +15,7 @@ export const API_ENDPOINTS = {
     LIST_SHIPMENTS: `${API_BASE_URL}/user/list-shipments`,
   },
   TRANSPORTER: {
-    DASHBOARD: `${API_BASE_URL}/transporter/get-transporter-dashboard`,
+    DASHBOARD: `${API_BASE_URL}/user/get-transporter-dashboard`,
   },
 };
 

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   Truck,
   MapPin,
@@ -13,6 +14,7 @@ import {
   Loader2,
   XCircle,
 } from "lucide-react";
+import { getAuctionSocket } from "@/services/auctionSocket";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -61,6 +63,38 @@ const AvailableRequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const limit = 10;
+
+  const navigate = useNavigate();
+
+  const handleViewAuction = (shipmentId: string) => {
+    const s = getAuctionSocket();
+    if (!s) {
+      toast.error("Failed to connect to auction server");
+      return;
+    }
+
+    s.emit("join-auction", { shipmentId });
+
+    const handleNewBid = (data: unknown) => {
+      console.log("New bid:", data);
+    };
+
+    const handleBidError = (error: unknown) => {
+      console.error("Bid error:", error);
+      if (error && typeof error === "object" && "message" in error) {
+        toast.error(String((error as { message?: unknown }).message ?? "Bid error"));
+      } else {
+        toast.error("Bid error");
+      }
+    };
+
+    s.off("new-bid");
+    s.off("bid-error");
+    s.on("new-bid", handleNewBid);
+    s.on("bid-error", handleBidError);
+
+    navigate(`/transporter/auction/${shipmentId}`);
+  };
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["list-shipments", page, limit],
@@ -244,12 +278,15 @@ const AvailableRequests = () => {
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 shrink-0">
-                        <Link to={`/transporter/auction/${request._id}`}>
-                          <Button variant="hero" size="sm" className="w-full sm:w-auto">
-                            <Gavel className="mr-2 h-4 w-4 shrink-0" />
-                            View Auction
-                          </Button>
-                        </Link>
+                        <Button 
+                          variant="hero" 
+                          size="sm" 
+                          className="w-full sm:w-auto"
+                          onClick={() => handleViewAuction(request._id)}
+                        >
+                          <Gavel className="mr-2 h-4 w-4 shrink-0" />
+                          View Auction
+                        </Button>
                       </div>
                     </div>
                   </CardHeader>

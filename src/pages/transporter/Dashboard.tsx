@@ -53,7 +53,7 @@ const Dashboard = () => {
     },
     {
       title: "Total Earnings",
-      value: dashboardData?.totalEarnings != null ? `$${dashboardData.totalEarnings.toLocaleString()}` : "$0",
+      value: dashboardData?.totalRevenue != null ? `$${dashboardData.totalRevenue.toLocaleString()}` : "$0",
       description: "This month",
       icon: DollarSign,
       color: "text-purple-500",
