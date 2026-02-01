@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     CREATE_SHIPMENT: `${API_BASE_URL}/user/create-shipment`,
     GET_MY_SHIPMENTS: `${API_BASE_URL}/user/get-my-shipments`,
     LIST_SHIPMENTS: `${API_BASE_URL}/user/list-shipments`,
+    GET_SHIPMENT_BIDS: `${API_BASE_URL}/user/get-shipment-bids`,
   },
   TRANSPORTER: {
     DASHBOARD: `${API_BASE_URL}/user/get-transporter-dashboard`,

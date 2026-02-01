@@ -22,11 +22,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getShipmentBids, type ShipmentBidDto } from "@/services/shipmentService";
 import {
   getAuctionSocket,
   joinAuction,
   disconnectAuctionSocket,
-  type NewBidPayload,
   type BidErrorPayload,
 } from "@/services/auctionSocket";
 import type { ListShipmentItem } from "@/types/shipment";
@@ -129,16 +129,34 @@ const mockBids = [
 ];
 
 /** Normalize bid from socket or API to UI shape */
-function normalizeBid(payload: NewBidPayload) {
+function normalizeBid(payload: unknown) {
+  const p = payload as {
+    _id?: string;
+    amount?: number;
+    bidder?: { _id?: string; company_name?: string } | string;
+    company_name?: string;
+    placedAt?: string;
+    createdAt?: string;
+    status?: string;
+  };
+
+  const bidderId = typeof p.bidder === "string" ? p.bidder : p.bidder?._id;
+  const bidderName =
+    typeof p.bidder === "string" ? p.company_name : p.bidder?.company_name;
+
   return {
-    _id: payload._id ?? `bid-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-    amount: payload.amount,
+    _id: p._id ?? `bid-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    amount: p.amount ?? 0,
     bidder: {
-      _id: payload.bidder?._id ?? "unknown",
-      company_name: payload.bidder?.company_name ?? "Bidder",
+      _id: bidderId ?? "unknown",
+      company_name: bidderName ?? "Bidder",
     },
-    placedAt: payload.placedAt ? new Date(payload.placedAt) : new Date(),
-    status: "PENDING" as const,
+    placedAt: p.placedAt
+      ? new Date(p.placedAt)
+      : p.createdAt
+        ? new Date(p.createdAt)
+        : new Date(),
+    status: (p.status ?? "PENDING"),
   };
 }
 
@@ -177,6 +195,38 @@ const Auction = () => {
   const pickupEnd = new Date(auctionData.pickupWindow.end);
   const deliveryDeadline = new Date(auctionData.deliveryDeadline);
 
+  useEffect(() => {
+    if (!id) return;
+
+    let cancelled = false;
+
+    getShipmentBids(id)
+      .then((res) => {
+        if (cancelled) return;
+        const normalized = (res.data ?? [])
+          .map((b: ShipmentBidDto) =>
+            normalizeBid({
+              _id: b._id,
+              amount: b.amount,
+              bidder: b.bidder,
+              company_name: b.company_name,
+              createdAt: b.createdAt,
+              status: b.status,
+            }),
+          )
+          .sort((a, b) => a.amount - b.amount);
+
+        setBids(normalized);
+      })
+      .catch(() => {
+        // Keep current UI; socket updates may still arrive
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
   // Socket: connect, join auction, listen to new-bid and bid-error
   useEffect(() => {
     if (!id) return;
@@ -187,8 +237,12 @@ const Auction = () => {
     const onConnect = () => setIsSocketConnected(true);
     const onDisconnect = () => setIsSocketConnected(false);
 
-    const onNewBid = (payload: NewBidPayload) => {
-      setBids((prev) => [...prev, normalizeBid(payload)].sort((a, b) => a.amount - b.amount));
+    const onNewBid = (payload: unknown) => {
+      const nextBid = normalizeBid(payload);
+      setBids((prev) => {
+        if (prev.some((b) => b._id === nextBid._id)) return prev;
+        return [...prev, nextBid].sort((a, b) => a.amount - b.amount);
+      });
     };
 
     const onBidError = (payload: BidErrorPayload) => {
@@ -255,27 +309,30 @@ const Auction = () => {
 
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!id) {
+      toast.error("Missing shipment id");
+      return;
+    }
     if (!bidAmount) return;
 
-    const newBid = {
-      _id: `bid${Date.now()}`,
-      amount: parseFloat(bidAmount),
-      bidder: {
-        _id: "current_user",
-        company_name: "Your Company",
-      },
-      placedAt: new Date(),
-      status: "PENDING",
-    };
+    const amount = Number(bidAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast.error("Enter a valid bid amount");
+      return;
+    }
 
-    // TODO: Make API call to submit bid
-    console.log("Submitting bid:", newBid);
+    const socket = getAuctionSocket();
+    if (!socket) {
+      toast.error("Failed to connect to auction server");
+      return;
+    }
 
-    // Add bid to list (sorted by amount ascending - lowest first)
-    setBids((prev) => [...prev, newBid].sort((a, b) => a.amount - b.amount));
+    socket.emit("submit-bid", {
+      shipmentId: id,
+      amount,
+    });
+
     setBidAmount("");
-
-    // Show success toast
   };
 
   const getTimeRemaining = () => {

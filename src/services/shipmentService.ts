@@ -1,5 +1,8 @@
 import { getAuthHeader, API_ENDPOINTS } from "@/config/api";
-import type { GetMyShipmentsResponse, ListShipmentsResponse } from "@/types/shipment";
+import type {
+  GetMyShipmentsResponse,
+  ListShipmentsResponse,
+} from "@/types/shipment";
 
 export interface GetMyShipmentsParams {
   page?: number;
@@ -13,7 +16,7 @@ export interface ListShipmentsParams {
 }
 
 export const getListShipments = async (
-  params?: ListShipmentsParams
+  params?: ListShipmentsParams,
 ): Promise<ListShipmentsResponse> => {
   const searchParams = new URLSearchParams();
   if (params?.page != null) searchParams.set("page", String(params.page));
@@ -39,8 +42,45 @@ export const getListShipments = async (
   return response.json();
 };
 
+export interface ShipmentBidDto {
+  _id: string;
+  shipment: string;
+  bidder: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  company_name?: string;
+}
+
+export interface GetShipmentBidsResponse {
+  data: ShipmentBidDto[];
+}
+
+export const getShipmentBids = async (
+  shipmentId: string,
+): Promise<GetShipmentBidsResponse> => {
+  const response = await fetch(
+    `${API_ENDPOINTS.USER.GET_SHIPMENT_BIDS}/${shipmentId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to fetch shipment bids");
+  }
+
+  return response.json();
+};
+
 export const getMyShipments = async (
-  params?: GetMyShipmentsParams
+  params?: GetMyShipmentsParams,
 ): Promise<GetMyShipmentsResponse> => {
   const searchParams = new URLSearchParams();
   if (params?.page != null) searchParams.set("page", String(params.page));
