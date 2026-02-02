@@ -74,7 +74,9 @@ export interface CreateShipmentLocation {
 }
 
 /** Build payload for backend: only type + coordinates (required) and present address fields */
-export function toShipmentLocationPayload(loc: CreateShipmentLocation): Record<string, unknown> {
+export function toShipmentLocationPayload(
+  loc: CreateShipmentLocation,
+): Record<string, unknown> {
   const out: Record<string, unknown> = {
     type: "Point",
     coordinates: loc.coordinates,
@@ -139,6 +141,42 @@ export interface MyShipmentsPagination {
 /** Response shape for GET /user/get-my-shipments */
 export interface GetMyShipmentsResponse {
   data: MyShipment[];
+  pagination: MyShipmentsPagination;
+}
+
+/** Current bid/winning bid as returned in assigned shipments */
+export interface AssignedShipmentCurrentBid {
+  amount: number;
+  bidder: string;
+  placedAt: string;
+}
+
+/** Single shipment from GET /user/get-my-assigned-shipments */
+export interface AssignedShipment {
+  _id: string;
+  shipper: string;
+  pickupLocation: MyShipmentLocation;
+  deliveryLocation: MyShipmentLocation;
+  vehicleDetails: MyShipmentVehicleDetails;
+  pickupWindow: { start: string; end: string };
+  deliveryDeadline: string;
+  distance?: number;
+  estimatedTime?: number;
+  photos: string[];
+  auctionDuration?: number;
+  auctionStartTime?: string;
+  auctionEndTime?: string;
+  instantAcceptPrice?: number;
+  currentBid?: AssignedShipmentCurrentBid;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  assignedTo?: string;
+}
+
+/** Response shape for GET /user/get-my-assigned-shipments */
+export interface GetMyAssignedShipmentsResponse {
+  data: AssignedShipment[];
   pagination: MyShipmentsPagination;
 }
 

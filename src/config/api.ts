@@ -12,8 +12,11 @@ export const API_ENDPOINTS = {
     DASHBOARD: `${API_BASE_URL}/user/get-user-dashboard`,
     CREATE_SHIPMENT: `${API_BASE_URL}/user/create-shipment`,
     GET_MY_SHIPMENTS: `${API_BASE_URL}/user/get-my-shipments`,
+    GET_MY_ASSIGNED_SHIPMENTS: `${API_BASE_URL}/user/get-my-assigned-shipments`,
     LIST_SHIPMENTS: `${API_BASE_URL}/user/list-shipments`,
     GET_SHIPMENT_BIDS: `${API_BASE_URL}/user/get-shipment-bids`,
+    ACCEPT_BID: `${API_BASE_URL}/user/accept-bid`,
+    UPDATE_SHIPMENT_STATUS: `${API_BASE_URL}/user/update-shipment-status`,
   },
   TRANSPORTER: {
     DASHBOARD: `${API_BASE_URL}/user/get-transporter-dashboard`,

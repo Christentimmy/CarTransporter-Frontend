@@ -11,8 +11,6 @@ import {
   Clock,
   ArrowLeft,
   TrendingDown,
-  Users,
-  DollarSign,
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -168,6 +166,7 @@ const Auction = () => {
   const [bids, setBids] = useState(mockBids);
   const [timeRemaining, setTimeRemaining] = useState("");
   const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [isAuctionEnded, setIsAuctionEnded] = useState(false);
   const socketJoinedRef = useRef(false);
 
   const shipmentFromState = (location.state as { shipment?: ListShipmentItem } | null)?.shipment;
@@ -187,9 +186,6 @@ const Auction = () => {
     typeof (auctionData as { instantAcceptPrice?: unknown }).instantAcceptPrice === "number"
       ? ((auctionData as { instantAcceptPrice: number }).instantAcceptPrice as number)
       : undefined;
-
-  const currentBid = (auctionData as { currentBid?: { amount: number; bidder: string; placedAt: string } })
-    .currentBid;
 
   const pickupStart = new Date(auctionData.pickupWindow.start);
   const pickupEnd = new Date(auctionData.pickupWindow.end);
@@ -251,10 +247,19 @@ const Auction = () => {
       });
     };
 
+    const onAuctionEnded = () => {
+      setIsAuctionEnded(true);
+      setTimeRemaining("Auction Ended");
+      toast("Auction ended", {
+        description: "Bidding is now closed.",
+      });
+    };
+
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("new-bid", onNewBid);
     socket.on("bid-error", onBidError);
+    socket.on("auction-ended", onAuctionEnded);
 
     if (!socketJoinedRef.current) {
       joinAuction(id);
@@ -268,6 +273,7 @@ const Auction = () => {
       socket.off("disconnect", onDisconnect);
       socket.off("new-bid", onNewBid);
       socket.off("bid-error", onBidError);
+      socket.off("auction-ended", onAuctionEnded);
       socketJoinedRef.current = false;
       disconnectAuctionSocket();
     };
@@ -279,6 +285,10 @@ const Auction = () => {
 
   // Calculate time remaining
   useEffect(() => {
+    if (isAuctionEnded) {
+      setTimeRemaining("Auction Ended");
+      return;
+    }
     const updateTimer = () => {
       const now = new Date();
       const end = auctionEndTime;
@@ -305,7 +315,7 @@ const Auction = () => {
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, [auctionEndTime]);
+  }, [auctionEndTime, isAuctionEnded]);
 
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -336,6 +346,7 @@ const Auction = () => {
   };
 
   const getTimeRemaining = () => {
+    if (isAuctionEnded) return false;
     const now = new Date();
     const end = auctionEndTime;
     const diff = end.getTime() - now.getTime();
@@ -517,28 +528,6 @@ const Auction = () => {
             </CardContent>
           </Card>
 
-          {/* Current Lowest Bid */}
-          {currentBid && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Current Lowest Bid
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div>
-                  <p className="text-3xl font-bold mb-2">
-                    ${currentBid.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {formatDistanceToNow(new Date(currentBid.placedAt), { addSuffix: true })}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Instant Accept */}
           {instantAcceptPrice != null && (
             <Card className="border-primary/30 bg-primary/5">
@@ -603,34 +592,6 @@ const Auction = () => {
                   </p>
                 )}
               </form>
-            </CardContent>
-          </Card>
-
-          {/* Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Auction Stats
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Total Bids</span>
-                <span className="text-sm font-medium">{bids.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Bidders</span>
-                <span className="text-sm font-medium">
-                  {new Set(bids.map((b) => b.bidder._id)).size}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Started</span>
-                <span className="text-sm font-medium">
-                  {format(auctionStartTime, "MMM d, yyyy")}
-                </span>
-              </div>
             </CardContent>
           </Card>
         </div>

@@ -1,10 +1,16 @@
 import { getAuthHeader, API_ENDPOINTS } from "@/config/api";
 import type {
+  GetMyAssignedShipmentsResponse,
   GetMyShipmentsResponse,
   ListShipmentsResponse,
 } from "@/types/shipment";
 
 export interface GetMyShipmentsParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface GetMyAssignedShipmentsParams {
   page?: number;
   limit?: number;
 }
@@ -40,6 +46,94 @@ export const getListShipments = async (
   }
 
   return response.json();
+};
+
+export interface UpdateShipmentStatusRequest {
+  shipmentId: string;
+  status: string;
+}
+
+export interface UpdateShipmentStatusResponse {
+  message?: string;
+  data?: unknown;
+}
+
+export const updateShipmentStatus = async (
+  shipmentId: string,
+  status: string,
+): Promise<UpdateShipmentStatusResponse> => {
+  const response = await fetch(API_ENDPOINTS.USER.UPDATE_SHIPMENT_STATUS, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify({
+      shipmentId,
+      status,
+    } satisfies UpdateShipmentStatusRequest),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to update shipment status");
+  }
+
+  return response.json().catch(() => ({}));
+};
+
+export const getMyAssignedShipments = async (
+  params?: GetMyAssignedShipmentsParams,
+): Promise<GetMyAssignedShipmentsResponse> => {
+  const searchParams = new URLSearchParams();
+  if (params?.page != null) searchParams.set("page", String(params.page));
+  if (params?.limit != null) searchParams.set("limit", String(params.limit));
+  const query = searchParams.toString();
+  const url = query
+    ? `${API_ENDPOINTS.USER.GET_MY_ASSIGNED_SHIPMENTS}?${query}`
+    : API_ENDPOINTS.USER.GET_MY_ASSIGNED_SHIPMENTS;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to fetch assigned shipments");
+  }
+
+  return response.json();
+};
+
+export interface AcceptBidRequest {
+  bidId: string;
+}
+
+export interface AcceptBidResponse {
+  message?: string;
+  data?: unknown;
+}
+
+export const acceptBid = async (bidId: string): Promise<AcceptBidResponse> => {
+  const response = await fetch(API_ENDPOINTS.USER.ACCEPT_BID, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify({ bidId } satisfies AcceptBidRequest),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to accept bid");
+  }
+
+  return response.json().catch(() => ({}));
 };
 
 export interface ShipmentBidDto {

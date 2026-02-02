@@ -283,7 +283,11 @@ const MyRequests = () => {
                         </div>
                       </div>
                       {request.status === "LIVE" && (
-                        <Link to={`/user/auction/${request._id}`} className="w-full sm:w-auto shrink-0">
+                        <Link
+                          to={`/user/auction/${request._id}`}
+                          state={{ shipment: request }}
+                          className="w-full sm:w-auto shrink-0"
+                        >
                           <Button variant="hero" size="sm" className="w-full sm:w-auto">
                             <Gavel className="mr-2 h-4 w-4 shrink-0" />
                             View Live Auction

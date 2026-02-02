@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   Truck,
   MapPin,
   Calendar,
   Package,
   CheckCircle2,
-  Clock,
   XCircle,
+  Loader2,
   Search,
   Filter,
-  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,112 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-
-// Mock data - replace with API call
-const mockShipments = [
-  {
-    _id: "1",
-    vehicleDetails: {
-      make: "Toyota",
-      model: "Camry",
-      year: 2024,
-    },
-    pickupLocation: {
-      address: "123 Main St",
-      city: "New York",
-      state: "NY",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "456 Oak Ave",
-      city: "Los Angeles",
-      state: "CA",
-      country: "USA",
-    },
-    distance: 2789,
-    pickupWindow: {
-      start: new Date("2024-02-15"),
-      end: new Date("2024-02-17"),
-    },
-    deliveryDeadline: new Date("2024-02-25"),
-    status: "ASSIGNED",
-    winningBid: {
-      amount: 850,
-      placedAt: new Date("2024-02-10"),
-    },
-    assignedAt: new Date("2024-02-11"),
-    startedAt: null,
-    completedAt: null,
-  },
-  {
-    _id: "2",
-    vehicleDetails: {
-      make: "Honda",
-      model: "Accord",
-      year: 2023,
-    },
-    pickupLocation: {
-      address: "789 Pine Rd",
-      city: "Chicago",
-      state: "IL",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "321 Elm St",
-      city: "Miami",
-      state: "FL",
-      country: "USA",
-    },
-    distance: 1389,
-    pickupWindow: {
-      start: new Date("2024-02-20"),
-      end: new Date("2024-02-22"),
-    },
-    deliveryDeadline: new Date("2024-03-01"),
-    status: "IN_TRANSIT",
-    winningBid: {
-      amount: 1200,
-      placedAt: new Date("2024-02-08"),
-    },
-    assignedAt: new Date("2024-02-09"),
-    startedAt: new Date("2024-02-15"),
-    completedAt: null,
-  },
-  {
-    _id: "3",
-    vehicleDetails: {
-      make: "Ford",
-      model: "F-150",
-      year: 2022,
-    },
-    pickupLocation: {
-      address: "555 Maple Dr",
-      city: "Houston",
-      state: "TX",
-      country: "USA",
-    },
-    deliveryLocation: {
-      address: "777 Cedar Ln",
-      city: "Phoenix",
-      state: "AZ",
-      country: "USA",
-    },
-    distance: 1180,
-    pickupWindow: {
-      start: new Date("2024-01-10"),
-      end: new Date("2024-01-12"),
-    },
-    deliveryDeadline: new Date("2024-01-20"),
-    status: "DELIVERED",
-    winningBid: {
-      amount: 950,
-      placedAt: new Date("2024-01-05"),
-    },
-    assignedAt: new Date("2024-01-06"),
-    startedAt: new Date("2024-01-10"),
-    completedAt: new Date("2024-01-18"),
-  },
-];
+import { getMyAssignedShipments, updateShipmentStatus } from "@/services/shipmentService";
 
 const statusConfig: Record<
   string,
@@ -182,11 +78,48 @@ const statusConfig: Record<
 const MyShipments = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [page] = useState(1);
+  const limit = 40;
   const [selectedShipment, setSelectedShipment] = useState<string | null>(null);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const [newStatus, setNewStatus] = useState<string>("");
 
-  const filteredShipments = mockShipments.filter((shipment) => {
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["my-assigned-shipments", page, limit],
+    queryFn: () => getMyAssignedShipments({ page, limit }),
+  });
+
+  const { mutateAsync: mutateShipmentStatus, isPending: isUpdatingStatus } = useMutation({
+    mutationFn: ({ shipmentId, status }: { shipmentId: string; status: string }) =>
+      updateShipmentStatus(shipmentId, status),
+    onSuccess: async (res) => {
+      toast.success(res.message ?? "Shipment status updated", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["my-assigned-shipments"] });
+    },
+    onError: (e) => {
+      toast.error(e instanceof Error ? e.message : "Failed to update shipment status", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    },
+  });
+
+  const shipments = data?.data ?? [];
+
+  const parseDate = (dateStr?: string) => {
+    if (!dateStr) return null;
+    try {
+      const d = new Date(dateStr);
+      return Number.isNaN(d.getTime()) ? null : d;
+    } catch {
+      return null;
+    }
+  };
+
+  const filteredShipments = shipments.filter((shipment) => {
     const matchesSearch =
       searchQuery === "" ||
       `${shipment.vehicleDetails.make} ${shipment.vehicleDetails.model}`
@@ -210,16 +143,11 @@ const MyShipments = () => {
   const handleStatusSubmit = async () => {
     if (!selectedShipment || !newStatus) return;
 
-    // TODO: Make API call to update status
-    console.log("Updating shipment status:", {
-      shipmentId: selectedShipment,
-      newStatus,
-    });
+    await mutateShipmentStatus({ shipmentId: selectedShipment, status: newStatus });
 
     setIsStatusDialogOpen(false);
     setSelectedShipment(null);
     setNewStatus("");
-    // Show success toast
   };
 
   const getStatusBadge = (status: string) => {
@@ -233,7 +161,27 @@ const MyShipments = () => {
     );
   };
 
-  const selectedShipmentData = mockShipments.find((s) => s._id === selectedShipment);
+  const selectedShipmentData = shipments.find((s) => s._id === selectedShipment);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Loading your shipments...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <p className="text-destructive font-medium">Failed to load shipments</p>
+        <p className="text-muted-foreground text-sm mt-2">
+          {error instanceof Error ? error.message : "Unknown error"}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -294,7 +242,7 @@ const MyShipments = () => {
             <p className="text-muted-foreground text-center">
               {searchQuery || statusFilter !== "all"
                 ? "Try adjusting your filters"
-                : "You haven't won any auctions yet"}
+                : "You haven't been assigned any shipments yet"}
             </p>
           </CardContent>
         </Card>
@@ -303,6 +251,12 @@ const MyShipments = () => {
           {filteredShipments.map((shipment, index) => {
             // Allow status update for all shipments except COMPLETED and CANCELLED
             const canUpdateStatus = shipment.status !== "COMPLETED" && shipment.status !== "CANCELLED";
+
+            const pickupStart = parseDate(shipment.pickupWindow?.start);
+            const pickupEnd = parseDate(shipment.pickupWindow?.end);
+            const deliveryDeadline = parseDate(shipment.deliveryDeadline);
+            const assignedAt = parseDate(shipment.updatedAt);
+            const winningAmount = shipment.currentBid?.amount;
 
             return (
               <motion.div
@@ -337,19 +291,24 @@ const MyShipments = () => {
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">Distance:</span>
-                                <span>{shipment.distance.toLocaleString()} km</span>
+                                <span>
+                                  {shipment.distance != null
+                                    ? `${shipment.distance.toLocaleString()} km`
+                                    : "—"}
+                                </span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4" />
                                 <span>
-                                  Pickup: {format(shipment.pickupWindow.start, "MMM d")} -{" "}
-                                  {format(shipment.pickupWindow.end, "MMM d, yyyy")}
+                                  Pickup:{" "}
+                                  {pickupStart ? format(pickupStart, "MMM d") : "—"} -{" "}
+                                  {pickupEnd ? format(pickupEnd, "MMM d, yyyy") : "—"}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">Winning Bid:</span>
                                 <span className="font-semibold text-primary">
-                                  ${shipment.winningBid.amount.toLocaleString()}
+                                  {winningAmount != null ? `$${winningAmount.toLocaleString()}` : "—"}
                                 </span>
                               </div>
                             </div>
@@ -437,8 +396,13 @@ const MyShipments = () => {
                                 >
                                   Cancel
                                 </Button>
-                                <Button type="button" variant="hero" onClick={handleStatusSubmit}>
-                                  Update Status
+                                <Button
+                                  type="button"
+                                  variant="hero"
+                                  onClick={handleStatusSubmit}
+                                  disabled={isUpdatingStatus}
+                                >
+                                  {isUpdatingStatus ? "Updating..." : "Update Status"}
                                 </Button>
                               </DialogFooter>
                             </DialogContent>
@@ -452,29 +416,13 @@ const MyShipments = () => {
                       <div>
                         <p className="text-sm text-muted-foreground mb-1">Assigned Date</p>
                         <p className="text-sm font-medium">
-                          {format(shipment.assignedAt, "MMM d, yyyy")}
+                          {assignedAt ? format(assignedAt, "MMM d, yyyy") : "—"}
                         </p>
                       </div>
-                      {shipment.startedAt && (
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Started Date</p>
-                          <p className="text-sm font-medium">
-                            {format(shipment.startedAt, "MMM d, yyyy")}
-                          </p>
-                        </div>
-                      )}
-                      {shipment.completedAt && (
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Completed Date</p>
-                          <p className="text-sm font-medium">
-                            {format(shipment.completedAt, "MMM d, yyyy")}
-                          </p>
-                        </div>
-                      )}
                       <div>
                         <p className="text-sm text-muted-foreground mb-1">Delivery Deadline</p>
                         <p className="text-sm font-medium">
-                          {format(shipment.deliveryDeadline, "MMM d, yyyy")}
+                          {deliveryDeadline ? format(deliveryDeadline, "MMM d, yyyy") : "—"}
                         </p>
                       </div>
                     </div>

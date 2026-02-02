@@ -1,17 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { format, formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 import {
   Truck,
-  MapPin,
-  Calendar,
   Gavel,
   Clock,
   ArrowLeft,
   TrendingDown,
-  Users,
-  DollarSign,
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +16,14 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { acceptBid, getShipmentBids, type ShipmentBidDto } from "@/services/shipmentService";
+import {
+  getAuctionSocket,
+  joinAuction,
+  disconnectAuctionSocket,
+  type BidErrorPayload,
+} from "@/services/auctionSocket";
+import type { ListShipmentItem } from "@/types/shipment";
 
 // Mock data - replace with API call
 const mockAuctionData = {
@@ -117,21 +122,76 @@ const mockBids = [
   },
 ];
 
+/** Normalize bid from socket or API to UI shape */
+function normalizeBid(payload: unknown) {
+  const p = payload as {
+    _id?: string;
+    amount?: number;
+    bidder?: { _id?: string; company_name?: string } | string;
+    company_name?: string;
+    placedAt?: string;
+    createdAt?: string;
+    status?: string;
+  };
+
+  const bidderId = typeof p.bidder === "string" ? p.bidder : p.bidder?._id;
+  const bidderName =
+    typeof p.bidder === "string" ? p.company_name : p.bidder?.company_name;
+
+  return {
+    _id: p._id ?? `bid-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    amount: p.amount ?? 0,
+    bidder: {
+      _id: bidderId ?? "unknown",
+      company_name: bidderName ?? "Bidder",
+    },
+    placedAt: p.placedAt
+      ? new Date(p.placedAt)
+      : p.createdAt
+        ? new Date(p.createdAt)
+        : new Date(),
+    status: (p.status ?? "PENDING"),
+  };
+}
+
 const Auction = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [bids, setBids] = useState(mockBids);
+  const location = useLocation();
+  const [bids, setBids] = useState<typeof mockBids>([]);
+  const [isBidsLoading, setIsBidsLoading] = useState(Boolean(id));
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [acceptingBidId, setAcceptingBidId] = useState<string | null>(null);
+  const [isAuctionEnded, setIsAuctionEnded] = useState(false);
+  const socketJoinedRef = useRef(false);
 
-  // Get lowest bid (winner in reverse auction)
-  const lowestBid = bids.length > 0 ? Math.min(...bids.map((b) => b.amount)) : 0;
-  const lowestBidData = bids.find((b) => b.amount === lowestBid);
+  const shipmentFromState = (location.state as { shipment?: ListShipmentItem } | null)?.shipment;
+  const auctionData = shipmentFromState ?? mockAuctionData;
+
+  const auctionEndTime =
+    auctionData.auctionEndTime != null
+      ? new Date(auctionData.auctionEndTime)
+      : mockAuctionData.auctionEndTime;
+
+  const instantAcceptPrice =
+    typeof (auctionData as { instantAcceptPrice?: unknown }).instantAcceptPrice === "number"
+      ? ((auctionData as { instantAcceptPrice: number }).instantAcceptPrice as number)
+      : undefined;
+
+  const pickupStart = new Date(auctionData.pickupWindow.start);
+  const pickupEnd = new Date(auctionData.pickupWindow.end);
+  const deliveryDeadline = new Date(auctionData.deliveryDeadline);
 
   // Calculate time remaining
   useEffect(() => {
+    if (isAuctionEnded) {
+      setTimeRemaining("Auction Ended");
+      return;
+    }
     const updateTimer = () => {
       const now = new Date();
-      const end = mockAuctionData.auctionEndTime;
+      const end = auctionEndTime;
       const diff = end.getTime() - now.getTime();
 
       if (diff <= 0) {
@@ -155,13 +215,126 @@ const Auction = () => {
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [auctionEndTime, isAuctionEnded]);
 
   const getTimeRemaining = () => {
+    if (isAuctionEnded) return false;
     const now = new Date();
-    const end = mockAuctionData.auctionEndTime;
+    const end = auctionEndTime;
     const diff = end.getTime() - now.getTime();
     return diff > 0;
+  };
+
+  useEffect(() => {
+    if (!id) return;
+
+    let cancelled = false;
+    setIsBidsLoading(true);
+
+    getShipmentBids(id)
+      .then((res) => {
+        if (cancelled) return;
+        const normalized = (res.data ?? [])
+          .map((b: ShipmentBidDto) =>
+            normalizeBid({
+              _id: b._id,
+              amount: b.amount,
+              bidder: b.bidder,
+              company_name: b.company_name,
+              createdAt: b.createdAt,
+              status: b.status,
+            }),
+          )
+          .sort((a, b) => a.amount - b.amount);
+
+        setBids(normalized);
+      })
+      .catch(() => {
+        // Keep current UI; socket updates may still arrive
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setIsBidsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const socket = getAuctionSocket();
+    if (!socket) return;
+
+    const onConnect = () => setIsSocketConnected(true);
+    const onDisconnect = () => setIsSocketConnected(false);
+
+    const onNewBid = (payload: unknown) => {
+      const nextBid = normalizeBid(payload);
+      setBids((prev) => {
+        if (prev.some((b) => b._id === nextBid._id)) return prev;
+        return [...prev, nextBid].sort((a, b) => a.amount - b.amount);
+      });
+    };
+
+    const onBidError = (payload: BidErrorPayload) => {
+      toast.error(payload.message ?? "Bid failed", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    };
+
+    const onAuctionEnded = () => {
+      setIsAuctionEnded(true);
+      setTimeRemaining("Auction Ended");
+      toast("Auction ended", {
+        description: "This auction is now closed.",
+      });
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.off("new-bid");
+    socket.off("bid-error");
+    socket.off("auction-ended");
+    socket.on("new-bid", onNewBid);
+    socket.on("bid-error", onBidError);
+    socket.on("auction-ended", onAuctionEnded);
+
+    if (!socketJoinedRef.current) {
+      joinAuction(id);
+      socketJoinedRef.current = true;
+    }
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("new-bid", onNewBid);
+      socket.off("bid-error", onBidError);
+      socket.off("auction-ended", onAuctionEnded);
+      disconnectAuctionSocket();
+      socketJoinedRef.current = false;
+    };
+  }, [id]);
+
+  const handleSelectWinner = async (bidId: string) => {
+    if (isAuctionEnded) return;
+    if (acceptingBidId) return;
+    try {
+      setAcceptingBidId(bidId);
+      const res = await acceptBid(bidId);
+      toast.success(res.message ?? "Bid accepted", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+      navigate("/user/my-requests", { replace: true });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to accept bid", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    } finally {
+      setAcceptingBidId(null);
+    }
   };
 
   return (
@@ -175,6 +348,9 @@ const Auction = () => {
           <h1 className="text-3xl font-bold tracking-tight">Live Auction</h1>
           <p className="text-muted-foreground">View bids on your vehicle transport request</p>
         </div>
+        <Badge variant={isSocketConnected ? "default" : "secondary"}>
+          {isSocketConnected ? "Live" : "Offline"}
+        </Badge>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -189,12 +365,12 @@ const Auction = () => {
                 </div>
                 <div className="flex-1">
                   <CardTitle className="text-2xl">
-                    {mockAuctionData.vehicleDetails.year} {mockAuctionData.vehicleDetails.make}{" "}
-                    {mockAuctionData.vehicleDetails.model}
+                    {auctionData.vehicleDetails.year} {auctionData.vehicleDetails.make}{" "}
+                    {auctionData.vehicleDetails.model}
                   </CardTitle>
                   <CardDescription>
-                    <Badge variant={mockAuctionData.vehicleDetails.isRunning ? "default" : "secondary"} className="mt-2">
-                      {mockAuctionData.vehicleDetails.isRunning ? "Running" : "Not Running"}
+                    <Badge variant={auctionData.vehicleDetails.isRunning ? "default" : "secondary"} className="mt-2">
+                      {auctionData.vehicleDetails.isRunning ? "Running" : "Not Running"}
                     </Badge>
                   </CardDescription>
                 </div>
@@ -205,21 +381,21 @@ const Auction = () => {
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Pickup Location</p>
                   <p className="text-sm font-medium">
-                    {mockAuctionData.pickupLocation.address}
+                    {auctionData.pickupLocation.address}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {mockAuctionData.pickupLocation.city}, {mockAuctionData.pickupLocation.state}{" "}
-                    {mockAuctionData.pickupLocation.zipCode}
+                    {auctionData.pickupLocation.city}, {auctionData.pickupLocation.state}{" "}
+                    {auctionData.pickupLocation.zipCode}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Delivery Location</p>
                   <p className="text-sm font-medium">
-                    {mockAuctionData.deliveryLocation.address}
+                    {auctionData.deliveryLocation.address}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {mockAuctionData.deliveryLocation.city}, {mockAuctionData.deliveryLocation.state}{" "}
-                    {mockAuctionData.deliveryLocation.zipCode}
+                    {auctionData.deliveryLocation.city}, {auctionData.deliveryLocation.state}{" "}
+                    {auctionData.deliveryLocation.zipCode}
                   </p>
                 </div>
               </div>
@@ -227,19 +403,18 @@ const Auction = () => {
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-muted-foreground mb-1">Distance</p>
-                  <p className="font-medium">{mockAuctionData.distance.toLocaleString()} km</p>
+                  <p className="font-medium">{auctionData.distance.toLocaleString()} km</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground mb-1">Pickup Window</p>
                   <p className="font-medium">
-                    {format(mockAuctionData.pickupWindow.start, "MMM d")} -{" "}
-                    {format(mockAuctionData.pickupWindow.end, "MMM d")}
+                    {format(pickupStart, "MMM d")} - {format(pickupEnd, "MMM d")}
                   </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground mb-1">Delivery Deadline</p>
                   <p className="font-medium">
-                    {format(mockAuctionData.deliveryDeadline, "MMM d, yyyy")}
+                    {format(deliveryDeadline, "MMM d, yyyy")}
                   </p>
                 </div>
               </div>
@@ -260,7 +435,12 @@ const Auction = () => {
             <CardContent>
               <ScrollArea className="h-[400px]">
                 <div className="space-y-3">
-                  {bids.length === 0 ? (
+                  {isBidsLoading ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Gavel className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>Loading bids...</p>
+                    </div>
+                  ) : bids.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <Gavel className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>No bids yet. Waiting for transporters to place bids...</p>
@@ -302,6 +482,18 @@ const Auction = () => {
                             </p>
                           </div>
                         </div>
+                        {getTimeRemaining() && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleSelectWinner(bid._id)}
+                            className="ml-4"
+                            disabled={acceptingBidId != null || isAuctionEnded}
+                          >
+                            {acceptingBidId === bid._id ? "Selecting..." : "Select winner"}
+                          </Button>
+                        )}
                         {index === 0 && (
                           <Badge variant="default" className="flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3" />
@@ -331,44 +523,14 @@ const Auction = () => {
               <div className="text-center">
                 <p className="text-3xl font-bold mb-2">{timeRemaining}</p>
                 <p className="text-sm text-muted-foreground">
-                  Auction ends: {format(mockAuctionData.auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
+                  Auction ends: {format(auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Current Lowest Bid */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                Current Lowest Bid
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {lowestBid > 0 ? (
-                <div>
-                  <p className="text-3xl font-bold mb-2">
-                    ${lowestBid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    by {lowestBidData?.bidder.company_name}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {lowestBidData && formatDistanceToNow(lowestBidData.placedAt, { addSuffix: true })}
-                  </p>
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-lg font-medium text-muted-foreground">No bids yet</p>
-                  <p className="text-sm text-muted-foreground mt-1">Waiting for transporters to bid</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Instant Accept */}
-          {mockAuctionData.instantAcceptPrice && (
+          {instantAcceptPrice != null && (
             <Card className="border-primary/30 bg-primary/5">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -378,7 +540,7 @@ const Auction = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold mb-2">
-                  ${mockAuctionData.instantAcceptPrice.toLocaleString()}
+                  ${instantAcceptPrice.toLocaleString()}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   If a transporter bids this amount, the auction will end immediately
@@ -386,34 +548,6 @@ const Auction = () => {
               </CardContent>
             </Card>
           )}
-
-          {/* Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Auction Stats
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Total Bids</span>
-                <span className="text-sm font-medium">{bids.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Bidders</span>
-                <span className="text-sm font-medium">
-                  {new Set(bids.map((b) => b.bidder._id)).size}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Started</span>
-                <span className="text-sm font-medium">
-                  {format(mockAuctionData.auctionStartTime, "MMM d, yyyy")}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
