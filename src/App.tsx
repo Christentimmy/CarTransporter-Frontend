@@ -18,6 +18,7 @@ import TransporterDashboard from "./pages/transporter/Dashboard";
 import AvailableRequests from "./pages/transporter/AvailableRequests";
 import Auction from "./pages/transporter/Auction";
 import MyShipments from "./pages/transporter/MyShipments";
+import Withdrawals from "./pages/transporter/Withdrawals";
 import VerifyOtp from "./pages/VerifyOtp";
 import NotFound from "./pages/NotFound";
 
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="available-requests" element={<AvailableRequests />} />
             <Route path="auction/:id" element={<Auction />} />
             <Route path="my-shipments" element={<MyShipments />} />
+            <Route path="withdrawals" element={<Withdrawals />} />
             {/* Add more transporter routes here */}
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

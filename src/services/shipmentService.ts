@@ -201,33 +201,49 @@ export const getMyShipments = async (
 };
 
 export const createShipment = async (data: FormData) => {
-  const headers = getAuthHeader();
   const response = await fetch(API_ENDPOINTS.USER.CREATE_SHIPMENT, {
     method: "POST",
     headers: {
-      ...headers,
-      // Do not set Content-Type; browser sets multipart/form-data with boundary
+      ...getAuthHeader(),
     },
     body: data,
   });
 
   if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.message || "Failed to create shipment");
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to create shipment");
   }
 
   return response.json();
 };
 
-// export const getGoogleMapsPlaceDetails = async (placeId: string) => {
-//   try {
-//     const response = await fetch(`/api/maps/place-details?placeId=${placeId}`);
-//     if (!response.ok) {
-//       throw new Error("Failed to fetch place details");
-//     }
-//     return await response.json();
-//   } catch (error) {
-//     console.error("Error fetching place details:", error);
-//     throw error;
-//   }
-// };
+export interface ProcessPaymentRequest {
+  shipmentId: string;
+  sourceId: string;
+}
+
+export interface ProcessPaymentResponse {
+  success: boolean;
+  message?: string;
+  paymentId?: string;
+}
+
+export const processPayment = async (
+  data: ProcessPaymentRequest,
+): Promise<ProcessPaymentResponse> => {
+  const response = await fetch(API_ENDPOINTS.USER.PROCESS_PAYMENT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Payment processing failed");
+  }
+
+  return response.json();
+};

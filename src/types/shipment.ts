@@ -124,8 +124,10 @@ export interface MyShipment {
   auctionStartTime?: string;
   auctionEndTime?: string;
   status: string;
+  escrowStatus?: "NONE" | "PAID_IN_ESCROW" | "PAID_OUT" | "REFUNDED";
   createdAt: string;
   updatedAt: string;
+  currentBid?: ListShipmentCurrentBid;
 }
 
 /** Pagination meta from get-my-shipments API */
@@ -169,6 +171,7 @@ export interface AssignedShipment {
   instantAcceptPrice?: number;
   currentBid?: AssignedShipmentCurrentBid;
   status: string;
+  escrowStatus?: "NONE" | "PAID_IN_ESCROW" | "PAID_OUT" | "REFUNDED";
   createdAt: string;
   updatedAt: string;
   assignedTo?: string;

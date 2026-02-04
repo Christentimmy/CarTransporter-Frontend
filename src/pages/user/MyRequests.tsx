@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   Truck,
   MapPin,
@@ -22,6 +23,14 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -36,8 +45,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { getMyShipments } from "@/services/shipmentService";
+import { getMyShipments, processPayment } from "@/services/shipmentService";
 import type { MyShipment } from "@/types/shipment";
+
+declare global {
+  interface Window {
+    Square?: unknown;
+  }
+}
 
 const statusConfig: Record<
   string,
@@ -54,6 +69,21 @@ const statusConfig: Record<
   CANCELLED: { label: "Cancelled", variant: "destructive", icon: XCircle },
 };
 
+const getEscrowStatusLabel = (escrowStatus?: MyShipment["escrowStatus"]) => {
+  switch (escrowStatus) {
+    case "PAID_IN_ESCROW":
+      return "Paid in escrow";
+    case "PAID_OUT":
+      return "Paid out";
+    case "REFUNDED":
+      return "Refunded";
+    case "NONE":
+    case undefined:
+    default:
+      return "Awaiting payment";
+  }
+};
+
 function formatLocation(loc: MyShipment["pickupLocation"]) {
   if (loc.address) return loc.address;
   const parts = [loc.city, loc.state, loc.country].filter(Boolean);
@@ -64,7 +94,15 @@ const MyRequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
+  const [isPayDialogOpen, setIsPayDialogOpen] = useState(false);
+  const [selectedShipmentForPayment, setSelectedShipmentForPayment] = useState<MyShipment | null>(null);
+  const [isPaymentReady, setIsPaymentReady] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const queryClient = useQueryClient();
   const limit = 10;
+
+  const squareCardRef = useRef<unknown>(null);
+  const squarePaymentsRef = useRef<unknown>(null);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["my-shipments", page, limit],
@@ -102,6 +140,196 @@ const MyRequests = () => {
       return new Date(dateStr);
     } catch {
       return null;
+    }
+  };
+
+  useEffect(() => {
+    if (!isPayDialogOpen) {
+      squareCardRef.current = null;
+      squarePaymentsRef.current = null;
+      setIsPaymentReady(false);
+      return;
+    }
+
+    const sanitizeEnv = (v?: string) => {
+      if (!v) return "";
+      const trimmed = v.trim();
+      if (
+        (trimmed.startsWith("\"") && trimmed.endsWith("\"")) ||
+        (trimmed.startsWith("'") && trimmed.endsWith("'"))
+      ) {
+        return trimmed.slice(1, -1).trim();
+      }
+      return trimmed;
+    };
+
+    const appId = sanitizeEnv(import.meta.env.VITE_SQUARE_APP_ID as string | undefined);
+    const locationId = sanitizeEnv(import.meta.env.VITE_SQUARE_LOCATION_ID as string | undefined);
+
+    const isAppIdValid = /^(sandbox-sq0idb-|sq0idp-)/.test(appId);
+    const isLocationIdValid = /^L[A-Z0-9]+$/.test(locationId);
+
+    if (!appId || !locationId) {
+      toast.error("Square payment is not configured", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      setIsPayDialogOpen(false);
+      return;
+    }
+
+    if (!isAppIdValid) {
+      toast.error("Square applicationId is invalid", {
+        description: "Expected something like sandbox-sq0idb-... (sandbox) or sq0idp-... (production).",
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      setIsPayDialogOpen(false);
+      return;
+    }
+
+    if (!isLocationIdValid) {
+      toast.error("Square locationId is invalid", {
+        description: "Location IDs usually start with L (e.g. LHKVK9WN372RF).",
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      setIsPayDialogOpen(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadSquareScript = async () => {
+      const isSandbox = appId.startsWith("sandbox-");
+      const desiredSrc = isSandbox
+        ? "https://sandbox.web.squarecdn.com/v1/square.js"
+        : "https://web.squarecdn.com/v1/square.js";
+
+      await new Promise<void>((resolve, reject) => {
+        const existing = document.querySelector(
+          'script[data-square="web-payments"]',
+        ) as HTMLScriptElement | null;
+        if (existing) {
+          if (existing.src === desiredSrc) {
+            resolve();
+            return;
+          }
+
+          toast.error("Square SDK environment mismatch", {
+            description:
+              "Reloading the correct Square script. If you still see this, hard refresh the page.",
+            style: { background: "#ef4444", color: "#fff" },
+          });
+
+          try {
+            existing.remove();
+          } catch {
+            // ignore
+          }
+        }
+
+        const script = document.createElement("script");
+        script.src = desiredSrc;
+        script.async = true;
+        script.dataset.square = "web-payments";
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("Failed to load Square SDK"));
+        document.body.appendChild(script);
+      });
+    };
+
+    const setupCard = async () => {
+      try {
+        setIsPaymentReady(false);
+        await loadSquareScript();
+        if (cancelled) return;
+
+        const SquareAny = window.Square as any;
+        if (!SquareAny?.payments) throw new Error("Square payments SDK not available");
+
+        const payments = await SquareAny.payments(appId, locationId);
+        if (cancelled) return;
+
+        const card = await payments.card();
+        if (cancelled) return;
+
+        const container = document.getElementById("square-card-container");
+        if (!container) throw new Error("Card container not found");
+
+        container.innerHTML = "";
+        await card.attach("#square-card-container");
+
+        squarePaymentsRef.current = payments;
+        squareCardRef.current = card;
+        setIsPaymentReady(true);
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Failed to initialize payment", {
+          style: { background: "#ef4444", color: "#fff" },
+        });
+        setIsPayDialogOpen(false);
+      }
+    };
+
+    void setupCard();
+
+    return () => {
+      cancelled = true;
+      const card = squareCardRef.current as any;
+      if (card?.destroy) {
+        try {
+          card.destroy();
+        } catch {
+          // ignore
+        }
+      }
+      squareCardRef.current = null;
+      squarePaymentsRef.current = null;
+      setIsPaymentReady(false);
+    };
+  }, [isPayDialogOpen]);
+
+  const handlePayNow = async () => {
+    if (!selectedShipmentForPayment) return;
+    if (isProcessingPayment) return;
+
+    const card = squareCardRef.current as any;
+    if (!card?.tokenize) {
+      toast.error("Payment form not ready", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      return;
+    }
+
+    try {
+      setIsProcessingPayment(true);
+      const result = await card.tokenize();
+      if (result?.status !== "OK" || !result?.token) {
+        throw new Error(result?.errors?.[0]?.message ?? "Failed to tokenize card");
+      }
+
+      const sourceId = result.token as string;
+      
+      // Process the payment with the shipmentId and sourceId
+      await processPayment({
+        shipmentId: selectedShipmentForPayment._id,
+        sourceId: sourceId,
+      });
+
+      toast.success("Payment processed successfully!", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+
+      // Close the dialog and reset state
+      setIsPayDialogOpen(false);
+      setSelectedShipmentForPayment(null);
+
+      // Refresh the shipments list to show updated status
+      await queryClient.invalidateQueries({ queryKey: ["myShipments"] });
+    } catch (e) {
+      console.error("Payment error:", e);
+      toast.error(e instanceof Error ? e.message : "Payment processing failed", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -249,6 +477,11 @@ const MyRequests = () => {
                               </CardTitle>
                               {getStatusBadge(request.status)}
                             </div>
+                            {request.status === "ASSIGNED" && (
+                              <p className="text-xs text-muted-foreground mb-1">
+                                Payment status: {getEscrowStatusLabel(request.escrowStatus)}
+                              </p>
+                            )}
                             {/* Mobile: stack pickup → delivery on two lines */}
                             <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
                               <div className="flex gap-2 min-w-0">
@@ -293,6 +526,21 @@ const MyRequests = () => {
                             View Live Auction
                           </Button>
                         </Link>
+                      )}
+
+                      {request.status === "ASSIGNED" && request.escrowStatus !== "PAID_IN_ESCROW" && (
+                        <Button
+                          type="button"
+                          variant="hero"
+                          size="sm"
+                          className="w-full sm:w-auto shrink-0"
+                          onClick={() => {
+                            setSelectedShipmentForPayment(request);
+                            setIsPayDialogOpen(true);
+                          }}
+                        >
+                          Pay now
+                        </Button>
                       )}
                     </div>
                   </CardHeader>
@@ -403,6 +651,73 @@ const MyRequests = () => {
           )}
         </>
       )}
+
+      <Dialog
+        open={isPayDialogOpen}
+        onOpenChange={(open) => {
+          setIsPayDialogOpen(open);
+          if (!open) setSelectedShipmentForPayment(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pay for shipment</DialogTitle>
+            <DialogDescription>
+              Enter your card details to pay for this assigned shipment.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            {selectedShipmentForPayment && (
+              <div className="rounded-md border p-3 text-sm">
+                <p className="font-medium mb-1">Payment summary</p>
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span>Shipment amount</span>
+                  <span>
+                    {selectedShipmentForPayment.currentBid?.amount != null
+                      ? `$${selectedShipmentForPayment.currentBid.amount.toLocaleString()}`
+                      : "—"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-muted-foreground mt-1">
+                  <span>Platform fee (10%)</span>
+                  <span>
+                    {selectedShipmentForPayment.currentBid?.amount != null
+                      ? `$${(selectedShipmentForPayment.currentBid.amount * 0.1).toFixed(2)}`
+                      : "—"}
+                  </span>
+                </div>
+                <div className="mt-2 border-t pt-2 flex items-center justify-between">
+                  <span className="font-semibold">Total to pay</span>
+                  <span className="font-semibold">
+                    {selectedShipmentForPayment.currentBid?.amount != null
+                      ? `$${(selectedShipmentForPayment.currentBid.amount * 1.1).toFixed(2)}`
+                      : "—"}
+                  </span>
+                </div>
+              </div>
+            )}
+            <div className="rounded-md border p-3">
+              <div id="square-card-container" />
+            </div>
+
+            {!isPaymentReady && (
+              <p className="text-sm text-muted-foreground">Loading payment form...</p>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="hero"
+              onClick={handlePayNow}
+              disabled={!isPaymentReady || isProcessingPayment}
+            >
+              {isProcessingPayment ? "Processing..." : "Pay now"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

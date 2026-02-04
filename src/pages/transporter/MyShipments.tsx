@@ -36,6 +36,13 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { getMyAssignedShipments, updateShipmentStatus } from "@/services/shipmentService";
+import type { AssignedShipment } from "@/types/shipment";
+
+function formatLocation(loc: AssignedShipment["pickupLocation"]) {
+  if (loc.address) return loc.address;
+  const parts = [loc.city, loc.state, loc.country].filter(Boolean);
+  return parts.length ? parts.join(", ") : loc.country || "—";
+}
 
 const statusConfig: Record<
   string,
@@ -107,7 +114,7 @@ const MyShipments = () => {
     },
   });
 
-  const shipments = data?.data ?? [];
+  const shipments = (data?.data ?? []) as AssignedShipment[];
 
   const parseDate = (dateStr?: string) => {
     if (!dateStr) return null;
@@ -125,8 +132,8 @@ const MyShipments = () => {
       `${shipment.vehicleDetails.make} ${shipment.vehicleDetails.model}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      shipment.pickupLocation.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      shipment.deliveryLocation.city.toLowerCase().includes(searchQuery.toLowerCase());
+      formatLocation(shipment.pickupLocation).toLowerCase().includes(searchQuery.toLowerCase()) ||
+      formatLocation(shipment.deliveryLocation).toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesStatus = statusFilter === "all" || shipment.status === statusFilter;
 
@@ -249,8 +256,13 @@ const MyShipments = () => {
       ) : (
         <div className="grid gap-4">
           {filteredShipments.map((shipment, index) => {
-            // Allow status update for all shipments except COMPLETED and CANCELLED
-            const canUpdateStatus = shipment.status !== "COMPLETED" && shipment.status !== "CANCELLED";
+            // Allow status update only when escrow has been paid into and status is not terminal
+            const isEscrowPaidIn = shipment.escrowStatus === "PAID_IN_ESCROW";
+            const canUpdateStatus =
+              isEscrowPaidIn &&
+              shipment.status !== "COMPLETED" &&
+              shipment.status !== "CANCELLED" &&
+              shipment.status !== "DELIVERED";
 
             const pickupStart = parseDate(shipment.pickupWindow?.start);
             const pickupEnd = parseDate(shipment.pickupWindow?.end);
@@ -285,24 +297,31 @@ const MyShipments = () => {
                               <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4" />
                                 <span>
-                                  {shipment.pickupLocation.city}, {shipment.pickupLocation.state} →{" "}
-                                  {shipment.deliveryLocation.city}, {shipment.deliveryLocation.state}
+                                  <span className="text-muted-foreground/80">From </span>
+                                  {formatLocation(shipment.pickupLocation)}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 opacity-60" />
+                                <span>
+                                  <span className="text-muted-foreground/80">To </span>
+                                  {formatLocation(shipment.deliveryLocation)}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4" />
+                                <span>
+                                  Pickup: {" "}
+                                  {pickupStart ? format(pickupStart, "MMM d") : "—"} -{" "}
+                                  {pickupEnd ? format(pickupEnd, "MMM d, yyyy") : "—"}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">Distance:</span>
                                 <span>
                                   {shipment.distance != null
-                                    ? `${shipment.distance.toLocaleString()} km`
+                                    ? `${(shipment.distance / 1000).toFixed(1)} km`
                                     : "—"}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4" />
-                                <span>
-                                  Pickup:{" "}
-                                  {pickupStart ? format(pickupStart, "MMM d") : "—"} -{" "}
-                                  {pickupEnd ? format(pickupEnd, "MMM d, yyyy") : "—"}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
@@ -315,7 +334,7 @@ const MyShipments = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2 items-start sm:items-end">
                         {canUpdateStatus && (
                           <Dialog open={isStatusDialogOpen && selectedShipment === shipment._id} onOpenChange={setIsStatusDialogOpen}>
                             <DialogTrigger asChild>
@@ -407,6 +426,11 @@ const MyShipments = () => {
                               </DialogFooter>
                             </DialogContent>
                           </Dialog>
+                        )}
+                        {!canUpdateStatus && shipment.status === "ASSIGNED" && (
+                          <p className="text-xs sm:text-sm text-muted-foreground max-w-xs text-left sm:text-right">
+                            Waiting for client payment before you can update this shipments status.
+                          </p>
                         )}
                       </div>
                     </div>

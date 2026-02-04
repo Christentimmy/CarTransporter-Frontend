@@ -25,6 +25,7 @@ import {
   Bell,
   LogOut,
   Home,
+  Wallet,
 } from "lucide-react";
 
 const menuItems = [
@@ -42,6 +43,11 @@ const menuItems = [
     title: "My Shipments",
     icon: Package,
     url: "/transporter/my-shipments",
+  },
+  {
+    title: "Withdrawals",
+    icon: Wallet,
+    url: "/transporter/withdrawals",
   },
   {
     title: "Notifications",
