@@ -1,0 +1,79 @@
+import { API_ENDPOINTS, getAuthHeader } from "@/config/api";
+
+export type UserRole = "user" | "transporter" | "admin" | "super_admin";
+
+export type UserStatus = "approved" | "rejected" | "pending" | "banned" | null;
+
+export interface UserProfile {
+  _id: string;
+  email: string;
+  phone_number: string;
+  region: string;
+  status: UserStatus;
+  is_email_verified: boolean;
+  is_phone_verified: boolean;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+  company_name?: string;
+  business_address?: string;
+  tax_number?: string;
+  // balance, squareCustomerId, paymentMethod exist on the backend but are intentionally
+  // omitted from the UI mapping for now.
+}
+
+export interface GetProfileResponse {
+  message: string;
+  data: UserProfile;
+}
+
+export const getProfile = async (): Promise<GetProfileResponse> => {
+  const response = await fetch(API_ENDPOINTS.USER.GET_PROFILE, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to fetch profile");
+  }
+
+  return response.json();
+};
+
+export type UpdateProfilePayload = {
+  email?: string;
+  phone_number?: string;
+  company_name?: string;
+  business_address?: string;
+  tax_number?: string;
+  region?: string;
+};
+
+export interface UpdateProfileResponse {
+  message: string;
+  data: UserProfile;
+}
+
+export const updateProfile = async (
+  payload: UpdateProfilePayload,
+): Promise<UpdateProfileResponse> => {
+  const response = await fetch(API_ENDPOINTS.USER.UPDATE_PROFILE, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to update profile");
+  }
+
+  return response.json();
+};

@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
     LOGIN: `${API_BASE_URL}/auth/login`,
     VERIFY_OTP: `${API_BASE_URL}/auth/verify-otp`,
     SEND_OTP: `${API_BASE_URL}/auth/send-otp`,
+    CHANGE_PASSWORD: `${API_BASE_URL}/auth/change-password`,
   },
   USER: {
     DASHBOARD: `${API_BASE_URL}/user/get-user-dashboard`,
@@ -22,6 +23,8 @@ export const API_ENDPOINTS = {
     ADD_PAYMENT_METHOD: `${API_BASE_URL}/user/add-payment-method`,
     GET_WITHDRAWAL_REQUESTS: `${API_BASE_URL}/user/get-withdrawal-requests`,
     CREATE_WITHDRAWAL_REQUEST: `${API_BASE_URL}/user/create-withdrawal-request`,
+    GET_PROFILE: `${API_BASE_URL}/user/get-profile`,
+    UPDATE_PROFILE: `${API_BASE_URL}/user/update-profile`,
   },
   TRANSPORTER: {
     DASHBOARD: `${API_BASE_URL}/user/get-transporter-dashboard`,

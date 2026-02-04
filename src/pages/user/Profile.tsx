@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
@@ -29,34 +29,96 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-// Mock user data - replace with API call
-const mockUser = {
-  email: "user@example.com",
-  phone_number: 1234567890,
-  role: "user" as "user" | "transporter" | "admin" | "super_admin",
-  status: "approved" as "approved" | "rejected" | "pending" | "banned" | null,
-  is_email_verified: true,
-  is_phone_verified: false,
-  company_name: "",
-  business_address: "",
-  tax_number: "",
-  region: "",
-};
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getProfile, type GetProfileResponse, updateProfile, type UpdateProfilePayload } from "@/services/profileService";
+import { changePassword, type ChangePasswordPayload } from "@/services/securityService";
+import { authService } from "@/services/auth_services";
+import { toast } from "sonner";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    email: mockUser.email,
-    phone_number: mockUser.phone_number?.toString() || "",
-    company_name: mockUser.company_name || "",
-    business_address: mockUser.business_address || "",
-    tax_number: mockUser.tax_number || "",
-    region: mockUser.region || "",
+    email: "",
+    phone_number: "",
+    company_name: "",
+    business_address: "",
+    tax_number: "",
+    region: "",
   });
 
-  const isTransporter = mockUser.role === "transporter";
+  const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
+  const [otpValue, setOtpValue] = useState("");
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+  const {
+    data: profileData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<GetProfileResponse>({
+    queryKey: ["user-profile"],
+    queryFn: getProfile,
+  });
+
+  const user = profileData?.data;
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        email: user.email || "",
+        phone_number: user.phone_number?.toString() || "",
+        company_name: user.company_name || "",
+        business_address: user.business_address || "",
+        tax_number: user.tax_number || "",
+        region: user.region || "",
+      }));
+    }
+  }, [user]);
+
+  const isTransporter = user?.role === "transporter";
+
+  const updateProfileMutation = useMutation({
+    mutationFn: (payload: UpdateProfilePayload) => updateProfile(payload),
+    onSuccess: async () => {
+      toast.success("Profile updated", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+      setIsEditing(false);
+      await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Failed to update profile", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    },
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: (payload: ChangePasswordPayload) => changePassword(payload),
+    onSuccess: () => {
+      toast.success("Password changed successfully", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+      setIsChangePasswordOpen(false);
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Failed to change password", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    },
+  });
 
   const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
     approved: { label: "Approved", variant: "default", icon: CheckCircle2 },
@@ -74,27 +136,149 @@ const Profile = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Make API call to update profile
-    console.log("Updating profile:", formData);
-    setIsEditing(false);
-    // Show success toast
+    if (!user) return;
+
+    const payload: UpdateProfilePayload = {};
+    if (formData.phone_number !== user.phone_number) {
+      payload.phone_number = formData.phone_number;
+    }
+    if (formData.company_name !== (user.company_name || "")) {
+      payload.company_name = formData.company_name || undefined;
+    }
+    if (formData.business_address !== (user.business_address || "")) {
+      payload.business_address = formData.business_address || undefined;
+    }
+    if (formData.tax_number !== (user.tax_number || "")) {
+      payload.tax_number = formData.tax_number || undefined;
+    }
+    if (formData.region !== (user.region || "")) {
+      payload.region = formData.region || undefined;
+    }
+
+    const emailChanged = formData.email !== user.email;
+
+    if (emailChanged) {
+      setPendingEmail(formData.email);
+      setIsOtpDialogOpen(true);
+      return;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      setIsEditing(false);
+      return;
+    }
+
+    updateProfileMutation.mutate(payload);
+  };
+
+  const handleVerifyEmailOtp = async () => {
+    if (!otpValue) {
+      toast.error("Enter the OTP sent to your registered email", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      return;
+    }
+
+    try {
+      if (!user) return;
+
+      // Verify OTP against the existing email on the account
+      await authService.verifyOtp({ email: user.email, otp: otpValue });
+
+      const payload: UpdateProfilePayload = {};
+
+      // Apply the new email after successful OTP verification
+      if (pendingEmail && pendingEmail !== user.email) {
+        payload.email = pendingEmail;
+      }
+
+      if (formData.phone_number !== user?.phone_number) {
+        payload.phone_number = formData.phone_number;
+      }
+      if (formData.company_name !== (user?.company_name || "")) {
+        payload.company_name = formData.company_name || undefined;
+      }
+      if (formData.business_address !== (user?.business_address || "")) {
+        payload.business_address = formData.business_address || undefined;
+      }
+      if (formData.tax_number !== (user?.tax_number || "")) {
+        payload.tax_number = formData.tax_number || undefined;
+      }
+      if (formData.region !== (user?.region || "")) {
+        payload.region = formData.region || undefined;
+      }
+
+      setIsOtpDialogOpen(false);
+      setOtpValue("");
+      setPendingEmail(null);
+
+      updateProfileMutation.mutate(payload);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "OTP verification failed", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!user?.email) return;
+    try {
+      // Resend OTP to the existing email address
+      await authService.resendOtp({ email: user.email });
+      toast.success("OTP resent to your registered email", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to resend OTP", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    }
   };
 
   const handleCancel = () => {
     setFormData({
-      email: mockUser.email,
-      phone_number: mockUser.phone_number?.toString() || "",
-      company_name: mockUser.company_name || "",
-      business_address: mockUser.business_address || "",
-      tax_number: mockUser.tax_number || "",
-      region: mockUser.region || "",
+      email: user?.email || "",
+      phone_number: user?.phone_number?.toString() || "",
+      company_name: user?.company_name || "",
+      business_address: user?.business_address || "",
+      tax_number: user?.tax_number || "",
+      region: user?.region || "",
     });
     setIsEditing(false);
   };
 
+  const handleOpenChangePassword = () => {
+    setIsChangePasswordOpen(true);
+  };
+
+  const handleSubmitChangePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!oldPassword || !newPassword) {
+      toast.error("Please enter both old and new passwords", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      toast.error("New passwords do not match", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      return;
+    }
+
+    const payload: ChangePasswordPayload = {
+      old_password: oldPassword,
+      new_password: newPassword,
+    };
+
+    changePasswordMutation.mutate(payload);
+  };
+
   const getStatusBadge = () => {
-    if (!mockUser.status) return null;
-    const config = statusConfig[mockUser.status];
+    if (!user?.status) return null;
+    const config = statusConfig[user.status];
     const Icon = config.icon;
     return (
       <Badge variant={config.variant} className="flex items-center gap-1">
@@ -104,7 +288,27 @@ const Profile = () => {
     );
   };
 
-  const RoleIcon = roleConfig[mockUser.role]?.icon || User;
+  const RoleIcon = roleConfig[user?.role || "user"]?.icon || User;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-10 text-muted-foreground">
+        Loading profile...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center py-10 text-destructive text-sm">
+        {(error instanceof Error && error.message) || "Failed to load profile"}
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -155,10 +359,10 @@ const Profile = () => {
                 <span className="text-sm font-medium">Role:</span>
                 <Badge variant="outline" className="flex items-center gap-1">
                   <RoleIcon className="h-3 w-3" />
-                  {roleConfig[mockUser.role]?.label || "User"}
+                  {roleConfig[user.role]?.label || "User"}
                 </Badge>
               </div>
-              {mockUser.status && (
+              {user.status && (
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">Status:</span>
                   {getStatusBadge()}
@@ -172,7 +376,7 @@ const Profile = () => {
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-medium">Email Verification</span>
                 </div>
-                {mockUser.is_email_verified ? (
+                {user.is_email_verified ? (
                   <Badge variant="default" className="flex items-center gap-1">
                     <CheckCircle2 className="h-3 w-3" />
                     Verified
@@ -189,7 +393,7 @@ const Profile = () => {
                   <Phone className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-medium">Phone Verification</span>
                 </div>
-                {mockUser.is_phone_verified ? (
+                {user.is_phone_verified ? (
                   <Badge variant="default" className="flex items-center gap-1">
                     <CheckCircle2 className="h-3 w-3" />
                     Verified
@@ -225,7 +429,7 @@ const Profile = () => {
                 disabled={!isEditing}
                 required
               />
-              {!mockUser.is_email_verified && (
+              {!user.is_email_verified && (
                 <p className="text-xs text-muted-foreground">
                   Your email is not verified. Please verify it to access all features.
                 </p>
@@ -242,7 +446,7 @@ const Profile = () => {
                 disabled={!isEditing}
                 placeholder="Enter your phone number"
               />
-              {!mockUser.is_phone_verified && (
+              {!user.is_phone_verified && (
                 <p className="text-xs text-muted-foreground">
                   Your phone number is not verified.
                 </p>
@@ -330,16 +534,100 @@ const Profile = () => {
             <CardDescription className="text-sm">Manage your password and security settings</CardDescription>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate("/user/change-password")}
-            >
+            <Button type="button" variant="outline" onClick={handleOpenChangePassword}>
               Change Password
             </Button>
           </CardContent>
         </Card>
       </form>
+
+      <Dialog open={isOtpDialogOpen} onOpenChange={setIsOtpDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Verify new email</DialogTitle>
+            <DialogDescription>
+              Enter the one-time password (OTP) sent to your current email address to confirm this
+              change.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <Label htmlFor="otp">OTP</Label>
+            <Input
+              id="otp"
+              value={otpValue}
+              onChange={(e) => setOtpValue(e.target.value)}
+              placeholder="Enter OTP"
+            />
+          </div>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={handleResendOtp}>
+              Resend OTP
+            </Button>
+            <Button type="button" variant="hero" onClick={handleVerifyEmailOtp}>
+              Verify &amp; Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+            <DialogDescription>Update your account password.</DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitChangePassword} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="old_password">Current Password</Label>
+              <Input
+                id="old_password"
+                type="password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                placeholder="Enter current password"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="new_password">New Password</Label>
+              <Input
+                id="new_password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirm_new_password">Confirm New Password</Label>
+              <Input
+                id="confirm_new_password"
+                type="password"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                placeholder="Re-enter new password"
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsChangePasswordOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="hero" disabled={changePasswordMutation.isPending}>
+                {changePasswordMutation.isPending ? "Changing..." : "Change Password"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
