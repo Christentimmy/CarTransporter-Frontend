@@ -178,15 +178,11 @@ const TransporterProfile = () => {
       currentRegion.postalCode !== newRegion.postalCode;
 
     if (regionChanged) {
-      if (newRegion.country || newRegion.state || newRegion.postalCode) {
-        payload.region = {
-          country: newRegion.country,
-          state: newRegion.state,
-          postalCode: newRegion.postalCode,
-        };
-      } else {
-        payload.region = undefined;
-      }
+      payload.region = {
+        country: newRegion.country,
+        state: newRegion.state,
+        postalCode: newRegion.postalCode,
+      };
     }
 
     const emailChanged = formData.email !== user.email;
