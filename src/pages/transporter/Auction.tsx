@@ -170,7 +170,7 @@ const Auction = () => {
   const socketJoinedRef = useRef(false);
 
   const shipmentFromState = (location.state as { shipment?: ListShipmentItem } | null)?.shipment;
-  const auctionData = shipmentFromState ?? mockAuctionData;
+  const auctionData = shipmentFromState;
 
   const auctionEndTime =
     auctionData.auctionEndTime != null
@@ -385,8 +385,11 @@ const Auction = () => {
                     {auctionData.vehicleDetails.model}
                   </CardTitle>
                   <CardDescription>
-                    <Badge variant={auctionData.vehicleDetails.isRunning ? "default" : "secondary"} className="mt-2">
-                      {auctionData.vehicleDetails.isRunning ? "Running" : "Not Running"}
+                    <Badge
+                      variant={(auctionData.vehicleDetails.isRunning ?? true) ? "default" : "secondary"}
+                      className="mt-2"
+                    >
+                      {(auctionData.vehicleDetails.isRunning ?? true) ? "Running" : "Not Running"}
                     </Badge>
                   </CardDescription>
                 </div>
@@ -415,6 +418,49 @@ const Auction = () => {
                   </p>
                 </div>
               </div>
+
+              {(auctionData.vehicleDetails.color ||
+                auctionData.vehicleDetails.drivetrain ||
+                auctionData.vehicleDetails.weight != null ||
+                auctionData.vehicleDetails.size?.length != null ||
+                auctionData.vehicleDetails.size?.width != null ||
+                auctionData.vehicleDetails.size?.height != null ||
+                auctionData.vehicleDetails.isAccidented != null ||
+                auctionData.vehicleDetails.keysAvailable != null) && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {auctionData.vehicleDetails.isAccidented === true && (
+                    <Badge variant="secondary">Accidented</Badge>
+                  )}
+                  {auctionData.vehicleDetails.keysAvailable != null && (
+                    <Badge
+                      variant={auctionData.vehicleDetails.keysAvailable ? "default" : "secondary"}
+                    >
+                      {auctionData.vehicleDetails.keysAvailable ? "Keys" : "No Keys"}
+                    </Badge>
+                  )}
+                  {auctionData.vehicleDetails.color && (
+                    <Badge variant="outline">{auctionData.vehicleDetails.color}</Badge>
+                  )}
+                  {auctionData.vehicleDetails.drivetrain && (
+                    <Badge variant="outline">{auctionData.vehicleDetails.drivetrain}</Badge>
+                  )}
+                  {auctionData.vehicleDetails.weight != null && (
+                    <Badge variant="outline">{auctionData.vehicleDetails.weight} kg</Badge>
+                  )}
+                  {(auctionData.vehicleDetails.size?.length != null ||
+                    auctionData.vehicleDetails.size?.width != null ||
+                    auctionData.vehicleDetails.size?.height != null) && (
+                    <Badge variant="outline">
+                      {(auctionData.vehicleDetails.size?.length ?? "—")}
+                      x
+                      {(auctionData.vehicleDetails.size?.width ?? "—")}
+                      x
+                      {(auctionData.vehicleDetails.size?.height ?? "—")} m
+                    </Badge>
+                  )}
+                </div>
+              )}
+
               <Separator />
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>

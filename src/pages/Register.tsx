@@ -29,7 +29,17 @@ const Register = () => {
   } = useForm<RegisterPayload>({
     defaultValues: {
       role: "user",
-      region: "",
+      full_name: "",
+      region: {
+        country: "",
+        state: "",
+        postalCode: "",
+      },
+      insurance: {
+        name: "",
+        policyNumber: "",
+        expiryDate: "",
+      },
     },
   });
 
@@ -39,6 +49,10 @@ const Register = () => {
   const onSubmit = async (data: RegisterPayload) => {
     try {
       setIsLoading(true);
+      // Only send insurance details for transporters
+      if (data.role !== "transporter") {
+        data.insurance = undefined;
+      }
       const response = await authService.register(data);
       
       toast.success("Registration successful! Please check your email for the verification code.", {
@@ -107,6 +121,21 @@ const Register = () => {
 
             {/* Register Form */}
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+              {/* Full Name */}
+              <div className="space-y-2">
+                <Label htmlFor="full_name">Full Name</Label>
+                <Input
+                  id="full_name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  className="w-full"
+                  {...register("full_name", { required: "Full name is required" })}
+                />
+                {errors.full_name && (
+                  <p className="text-sm text-red-500">{errors.full_name.message}</p>
+                )}
+              </div>
+
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -239,29 +268,117 @@ const Register = () => {
                     </div>
 
                     {/* Region */}
-                    <div className="space-y-2">
-                      <Label htmlFor="region">Region</Label>
-                      <Select
-                        value={watch("region") || ""}
-                        onValueChange={(value) => {
-                          register("region").onChange({ target: { value, name: "region" } });
-                        }}
-                        required={isTransporter}
-                      >
-                        <SelectTrigger id="region" className="w-full">
-                          <SelectValue placeholder="Select your region" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="north">North</SelectItem>
-                          <SelectItem value="south">South</SelectItem>
-                          <SelectItem value="east">East</SelectItem>
-                          <SelectItem value="west">West</SelectItem>
-                          <SelectItem value="central">Central</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {errors.region && (
-                        <p className="text-sm text-red-500">{errors.region.message}</p>
-                      )}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="region_country">Country</Label>
+                        <Select
+                          value={watch("region.country") || ""}
+                          onValueChange={(value) => {
+                            register("region.country", {
+                              required: isTransporter ? "Country is required" : false,
+                            }).onChange({ target: { value, name: "region.country" } });
+                          }}
+                        >
+                          <SelectTrigger id="region_country" className="w-full">
+                            <SelectValue placeholder="Select country" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USA">USA</SelectItem>
+                            <SelectItem value="Canada">Canada</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {errors.region?.country && (
+                          <p className="text-sm text-red-500">{errors.region.country.message}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="region_state">State / Province</Label>
+                        <Input
+                          id="region_state"
+                          type="text"
+                          placeholder="Enter state or province"
+                          className="w-full"
+                          {...register("region.state", {
+                            required: isTransporter ? "State/Province is required" : false,
+                          })}
+                        />
+                        {errors.region?.state && (
+                          <p className="text-sm text-red-500">{errors.region.state.message}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="region_postalCode">Postal Code</Label>
+                        <Input
+                          id="region_postalCode"
+                          type="text"
+                          placeholder="Enter postal code"
+                          className="w-full"
+                          {...register("region.postalCode", {
+                            required: isTransporter ? "Postal code is required" : false,
+                          })}
+                        />
+                        {errors.region?.postalCode && (
+                          <p className="text-sm text-red-500">{errors.region.postalCode.message}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Insurance */}
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="insurance_name">Insurance Provider</Label>
+                        <Input
+                          id="insurance_name"
+                          type="text"
+                          placeholder="Enter insurance provider name"
+                          className="w-full"
+                          {...register("insurance.name", {
+                            required: isTransporter ? "Insurance provider is required" : false,
+                          })}
+                        />
+                        {errors.insurance?.name && (
+                          <p className="text-sm text-red-500">{errors.insurance.name.message}</p>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="insurance_policyNumber">Policy Number</Label>
+                          <Input
+                            id="insurance_policyNumber"
+                            type="text"
+                            placeholder="Enter policy number"
+                            className="w-full"
+                            {...register("insurance.policyNumber", {
+                              required: isTransporter ? "Policy number is required" : false,
+                            })}
+                          />
+                          {errors.insurance?.policyNumber && (
+                            <p className="text-sm text-red-500">
+                              {errors.insurance.policyNumber.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="insurance_expiryDate">Policy Expiry Date</Label>
+                          <Input
+                            id="insurance_expiryDate"
+                            type="date"
+                            className="w-full"
+                            {...register("insurance.expiryDate", {
+                              required: isTransporter ? "Expiry date is required" : false,
+                            })}
+                          />
+                          {errors.insurance?.expiryDate && (
+                            <p className="text-sm text-red-500">
+                              {errors.insurance.expiryDate.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 )}

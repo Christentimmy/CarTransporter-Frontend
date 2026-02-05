@@ -311,7 +311,7 @@ const MyShipments = () => {
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4" />
                                 <span>
-                                  Pickup: {" "}
+                                  Pickup:{" "}
                                   {pickupStart ? format(pickupStart, "MMM d") : "—"} -{" "}
                                   {pickupEnd ? format(pickupEnd, "MMM d, yyyy") : "—"}
                                 </span>
@@ -324,19 +324,70 @@ const MyShipments = () => {
                                     : "—"}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 md:col-span-2">
                                 <span className="font-medium">Winning Bid:</span>
                                 <span className="font-semibold text-primary">
                                   {winningAmount != null ? `$${winningAmount.toLocaleString()}` : "—"}
                                 </span>
                               </div>
+
+                              {(shipment.vehicleDetails.color ||
+                                shipment.vehicleDetails.drivetrain ||
+                                shipment.vehicleDetails.weight != null ||
+                                shipment.vehicleDetails.size?.length != null ||
+                                shipment.vehicleDetails.size?.width != null ||
+                                shipment.vehicleDetails.size?.height != null ||
+                                shipment.vehicleDetails.isAccidented != null ||
+                                shipment.vehicleDetails.keysAvailable != null ||
+                                shipment.vehicleDetails.isRunning != null) && (
+                                <div className="flex flex-wrap items-center gap-1.5 pt-1 md:col-span-2">
+                                  <Badge
+                                    variant={(shipment.vehicleDetails.isRunning ?? true) ? "default" : "secondary"}
+                                  >
+                                    {(shipment.vehicleDetails.isRunning ?? true) ? "Running" : "Not Running"}
+                                  </Badge>
+                                  {shipment.vehicleDetails.isAccidented === true && (
+                                    <Badge variant="secondary">Accidented</Badge>
+                                  )}
+                                  {shipment.vehicleDetails.keysAvailable != null && (
+                                    <Badge
+                                      variant={shipment.vehicleDetails.keysAvailable ? "default" : "secondary"}
+                                    >
+                                      {shipment.vehicleDetails.keysAvailable ? "Keys" : "No Keys"}
+                                    </Badge>
+                                  )}
+                                  {shipment.vehicleDetails.color && (
+                                    <Badge variant="outline">{shipment.vehicleDetails.color}</Badge>
+                                  )}
+                                  {shipment.vehicleDetails.drivetrain && (
+                                    <Badge variant="outline">{shipment.vehicleDetails.drivetrain}</Badge>
+                                  )}
+                                  {shipment.vehicleDetails.weight != null && (
+                                    <Badge variant="outline">{shipment.vehicleDetails.weight} kg</Badge>
+                                  )}
+                                  {(shipment.vehicleDetails.size?.length != null ||
+                                    shipment.vehicleDetails.size?.width != null ||
+                                    shipment.vehicleDetails.size?.height != null) && (
+                                    <Badge variant="outline">
+                                      {(shipment.vehicleDetails.size?.length ?? "—")}
+                                      x
+                                      {(shipment.vehicleDetails.size?.width ?? "—")}
+                                      x
+                                      {(shipment.vehicleDetails.size?.height ?? "—")} m
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 items-start sm:items-end">
                         {canUpdateStatus && (
-                          <Dialog open={isStatusDialogOpen && selectedShipment === shipment._id} onOpenChange={setIsStatusDialogOpen}>
+                          <Dialog
+                            open={isStatusDialogOpen && selectedShipment === shipment._id}
+                            onOpenChange={setIsStatusDialogOpen}
+                          >
                             <DialogTrigger asChild>
                               <Button
                                 variant="outline"
@@ -429,7 +480,7 @@ const MyShipments = () => {
                         )}
                         {!canUpdateStatus && shipment.status === "ASSIGNED" && (
                           <p className="text-xs sm:text-sm text-muted-foreground max-w-xs text-left sm:text-right">
-                            Waiting for client payment before you can update this shipments status.
+                            Waiting for client payment before you can update this shipment's status.
                           </p>
                         )}
                       </div>

@@ -67,6 +67,10 @@ const AvailableRequests = () => {
   const navigate = useNavigate();
 
   const handleViewAuction = (shipment: ListShipmentItem) => {
+    if (shipment.status !== "LIVE") {
+      toast.error("Auction is not live for this shipment");
+      return;
+    }
     const shipmentId = shipment._id;
     const s = getAuctionSocket();
     if (!s) {
@@ -268,28 +272,60 @@ const AvailableRequests = () => {
                                   <span>{(request.distance / 1000).toFixed(1)} km</span>
                                 </div>
                               )}
-                              <div className="flex items-center gap-2">
+                              <div className="flex flex-wrap items-center gap-2">
                                 <span className="font-medium text-foreground/80">Vehicle:</span>
                                 <Badge
-                                  variant={request.vehicleDetails.isRunning ? "default" : "secondary"}
+                                  variant={(request.vehicleDetails.isRunning ?? true) ? "default" : "secondary"}
                                 >
-                                  {request.vehicleDetails.isRunning ? "Running" : "Not Running"}
+                                  {(request.vehicleDetails.isRunning ?? true) ? "Running" : "Not Running"}
                                 </Badge>
+                                {request.vehicleDetails.isAccidented === true && (
+                                  <Badge variant="secondary">Accidented</Badge>
+                                )}
+                                {request.vehicleDetails.keysAvailable != null && (
+                                  <Badge
+                                    variant={request.vehicleDetails.keysAvailable ? "default" : "secondary"}
+                                  >
+                                    {request.vehicleDetails.keysAvailable ? "Keys" : "No Keys"}
+                                  </Badge>
+                                )}
+                                {request.vehicleDetails.color && (
+                                  <Badge variant="outline">{request.vehicleDetails.color}</Badge>
+                                )}
+                                {request.vehicleDetails.drivetrain && (
+                                  <Badge variant="outline">{request.vehicleDetails.drivetrain}</Badge>
+                                )}
+                                {request.vehicleDetails.weight != null && (
+                                  <Badge variant="outline">{request.vehicleDetails.weight} kg</Badge>
+                                )}
+                                {(request.vehicleDetails.size?.length != null ||
+                                  request.vehicleDetails.size?.width != null ||
+                                  request.vehicleDetails.size?.height != null) && (
+                                  <Badge variant="outline">
+                                    {(request.vehicleDetails.size?.length ?? "—")}
+                                    x
+                                    {(request.vehicleDetails.size?.width ?? "—")}
+                                    x
+                                    {(request.vehicleDetails.size?.height ?? "—")} m
+                                  </Badge>
+                                )}
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 shrink-0">
-                        <Button 
-                          variant="hero" 
-                          size="sm" 
-                          className="w-full sm:w-auto"
-                          onClick={() => handleViewAuction(request)}
-                        >
-                          <Gavel className="mr-2 h-4 w-4 shrink-0" />
-                          View Auction
-                        </Button>
+                        {request.status === "LIVE" && (
+                          <Button
+                            variant="hero"
+                            size="sm"
+                            className="w-full sm:w-auto"
+                            onClick={() => handleViewAuction(request)}
+                          >
+                            <Gavel className="mr-2 h-4 w-4 shrink-0" />
+                            View Auction
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardHeader>

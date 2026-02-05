@@ -46,7 +46,11 @@ const Profile = () => {
     company_name: "",
     business_address: "",
     tax_number: "",
-    region: "",
+    region: {
+      country: "",
+      state: "",
+      postalCode: "",
+    },
   });
 
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
@@ -79,7 +83,11 @@ const Profile = () => {
         company_name: user.company_name || "",
         business_address: user.business_address || "",
         tax_number: user.tax_number || "",
-        region: user.region || "",
+        region: {
+          country: user.region?.country || "",
+          state: user.region?.state || "",
+          postalCode: user.region?.postalCode || "",
+        },
       }));
     }
   }, [user]);
@@ -151,8 +159,29 @@ const Profile = () => {
     if (formData.tax_number !== (user.tax_number || "")) {
       payload.tax_number = formData.tax_number || undefined;
     }
-    if (formData.region !== (user.region || "")) {
-      payload.region = formData.region || undefined;
+
+    const currentRegion = {
+      country: user.region?.country || "",
+      state: user.region?.state || "",
+      postalCode: user.region?.postalCode || "",
+    };
+    const newRegion = formData.region;
+
+    const regionChanged =
+      currentRegion.country !== newRegion.country ||
+      currentRegion.state !== newRegion.state ||
+      currentRegion.postalCode !== newRegion.postalCode;
+
+    if (regionChanged) {
+      if (newRegion.country || newRegion.state || newRegion.postalCode) {
+        payload.region = {
+          country: newRegion.country,
+          state: newRegion.state,
+          postalCode: newRegion.postalCode,
+        };
+      } else {
+        payload.region = undefined;
+      }
     }
 
     const emailChanged = formData.email !== user.email;
@@ -204,8 +233,29 @@ const Profile = () => {
       if (formData.tax_number !== (user?.tax_number || "")) {
         payload.tax_number = formData.tax_number || undefined;
       }
-      if (formData.region !== (user?.region || "")) {
-        payload.region = formData.region || undefined;
+
+      const currentRegion = {
+        country: user.region?.country || "",
+        state: user.region?.state || "",
+        postalCode: user.region?.postalCode || "",
+      };
+      const newRegion = formData.region;
+
+      const regionChanged =
+        currentRegion.country !== newRegion.country ||
+        currentRegion.state !== newRegion.state ||
+        currentRegion.postalCode !== newRegion.postalCode;
+
+      if (regionChanged) {
+        if (newRegion.country || newRegion.state || newRegion.postalCode) {
+          payload.region = {
+            country: newRegion.country,
+            state: newRegion.state,
+            postalCode: newRegion.postalCode,
+          };
+        } else {
+          payload.region = undefined;
+        }
       }
 
       setIsOtpDialogOpen(false);
@@ -242,7 +292,11 @@ const Profile = () => {
       company_name: user?.company_name || "",
       business_address: user?.business_address || "",
       tax_number: user?.tax_number || "",
-      region: user?.region || "",
+      region: {
+        country: user?.region?.country || "",
+        state: user?.region?.state || "",
+        postalCode: user?.region?.postalCode || "",
+      },
     });
     setIsEditing(false);
   };
@@ -501,23 +555,68 @@ const Profile = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="region">Region</Label>
-                  <Select
-                    value={formData.region}
-                    onValueChange={(value) => setFormData({ ...formData, region: value })}
-                    disabled={!isEditing}
-                  >
-                    <SelectTrigger id="region">
-                      <SelectValue placeholder="Select your region" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="north">North</SelectItem>
-                      <SelectItem value="south">South</SelectItem>
-                      <SelectItem value="east">East</SelectItem>
-                      <SelectItem value="west">West</SelectItem>
-                      <SelectItem value="central">Central</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="region_country">Region</Label>
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="region_country" className="text-xs text-muted-foreground">
+                        Country
+                      </Label>
+                      <Select
+                        value={formData.region.country}
+                        onValueChange={(value) =>
+                          setFormData({
+                            ...formData,
+                            region: { ...formData.region, country: value },
+                          })
+                        }
+                        disabled={!isEditing}
+                      >
+                        <SelectTrigger id="region_country">
+                          <SelectValue placeholder="Select country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="USA">USA</SelectItem>
+                          <SelectItem value="Canada">Canada</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="region_state" className="text-xs text-muted-foreground">
+                        State / Province
+                      </Label>
+                      <Input
+                        id="region_state"
+                        value={formData.region.state}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            region: { ...formData.region, state: e.target.value },
+                          })
+                        }
+                        disabled={!isEditing}
+                        placeholder="Enter state or province"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="region_postalCode" className="text-xs text-muted-foreground">
+                        Postal Code
+                      </Label>
+                      <Input
+                        id="region_postalCode"
+                        value={formData.region.postalCode}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            region: { ...formData.region, postalCode: e.target.value },
+                          })
+                        }
+                        disabled={!isEditing}
+                        placeholder="Enter postal code"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>

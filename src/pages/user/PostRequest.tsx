@@ -27,15 +27,21 @@ const PostRequest = () => {
   // Pickup: address string for input + full location from Places (with coordinates)
   const [pickupAddress, setPickupAddress] = useState("");
   const [pickupLocation, setPickupLocation] = useState<CreateShipmentLocation | null>(null);
+  const [pickupNote, setPickupNote] = useState("");
 
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryLocation, setDeliveryLocation] = useState<CreateShipmentLocation | null>(null);
+  const [deliveryNote, setDeliveryNote] = useState("");
 
   // Vehicle details
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
+  const [color, setColor] = useState("");
+  const [drivetrain, setDrivetrain] = useState("");
   const [isRunning, setIsRunning] = useState(true);
+  const [isAccidented, setIsAccidented] = useState(false);
+  const [keysAvailable, setKeysAvailable] = useState(true);
   const [weight, setWeight] = useState("");
   const [length, setLength] = useState("");
   const [width, setWidth] = useState("");
@@ -108,15 +114,35 @@ const PostRequest = () => {
 
     const form = new FormData();
 
-    form.append("pickupLocation", JSON.stringify(toShipmentLocationPayload(pickupLocation)));
-    form.append("deliveryLocation", JSON.stringify(toShipmentLocationPayload(deliveryLocation)));
+    form.append(
+      "pickupLocation",
+      JSON.stringify(
+        toShipmentLocationPayload({
+          ...pickupLocation,
+          note: pickupNote || undefined,
+        })
+      )
+    );
+    form.append(
+      "deliveryLocation",
+      JSON.stringify(
+        toShipmentLocationPayload({
+          ...deliveryLocation,
+          note: deliveryNote || undefined,
+        })
+      )
+    );
     form.append(
       "vehicleDetails",
       JSON.stringify({
         make,
         model,
         year: parseInt(year, 10),
+        color: color || undefined,
+        drivetrain: drivetrain || undefined,
         isRunning,
+        isAccidented,
+        keysAvailable,
         weight: weight ? parseFloat(weight) : undefined,
         size: {
           length: length ? parseFloat(length) : undefined,
@@ -194,6 +220,16 @@ const PostRequest = () => {
                 </p>
               )}
             </div>
+
+            <div className="space-y-2 mt-4">
+              <Label htmlFor="pickup-note">Note (Optional)</Label>
+              <Input
+                id="pickup-note"
+                value={pickupNote}
+                onChange={(e) => setPickupNote(e.target.value)}
+                placeholder="e.g., Call on arrival, gate code, loading instructions"
+              />
+            </div>
           </CardContent>
         </Card>
 
@@ -224,6 +260,16 @@ const PostRequest = () => {
                   {[deliveryLocation.city, deliveryLocation.state, deliveryLocation.country, deliveryLocation.zipCode].filter(Boolean).join(", ")}
                 </p>
               )}
+            </div>
+
+            <div className="space-y-2 mt-4">
+              <Label htmlFor="delivery-note">Note (Optional)</Label>
+              <Input
+                id="delivery-note"
+                value={deliveryNote}
+                onChange={(e) => setDeliveryNote(e.target.value)}
+                placeholder="e.g., Receiver contact, delivery instructions"
+              />
             </div>
           </CardContent>
         </Card>
@@ -274,6 +320,27 @@ const PostRequest = () => {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="color">Color</Label>
+                <Input
+                  id="color"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  placeholder="Optional"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="drivetrain">Drivetrain</Label>
+                <Input
+                  id="drivetrain"
+                  value={drivetrain}
+                  onChange={(e) => setDrivetrain(e.target.value)}
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="is-running"
@@ -283,6 +350,30 @@ const PostRequest = () => {
               <Label htmlFor="is-running" className="cursor-pointer">
                 Vehicle is running
               </Label>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is-accidented"
+                  checked={isAccidented}
+                  onCheckedChange={(checked) => setIsAccidented(checked as boolean)}
+                />
+                <Label htmlFor="is-accidented" className="cursor-pointer">
+                  Accidented
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="keys-available"
+                  checked={keysAvailable}
+                  onCheckedChange={(checked) => setKeysAvailable(checked as boolean)}
+                />
+                <Label htmlFor="keys-available" className="cursor-pointer">
+                  Keys available
+                </Label>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

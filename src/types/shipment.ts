@@ -7,13 +7,20 @@ export const vehicleDetailsSchema = z.object({
     .number()
     .min(1900)
     .max(new Date().getFullYear() + 1),
+  color: z.string().optional(),
+  drivetrain: z.string().optional(),
   isRunning: z.boolean().default(true),
-  weight: z.number().min(1, "Weight is required").positive(),
-  size: z.object({
-    length: z.number().positive("Length must be positive"),
-    width: z.number().positive("Width must be positive"),
-    height: z.number().positive("Height must be positive"),
-  }),
+  isAccidented: z.boolean().default(false),
+  runningNote: z.string().optional(),
+  keysAvailable: z.boolean().default(true),
+  weight: z.number().positive().optional(),
+  size: z
+    .object({
+      length: z.number().positive().optional(),
+      width: z.number().positive().optional(),
+      height: z.number().positive().optional(),
+    })
+    .optional(),
 });
 
 export const locationSchema = z.object({
@@ -66,6 +73,7 @@ export type VehicleDetails = z.infer<typeof vehicleDetailsSchema>;
 export interface CreateShipmentLocation {
   type: "Point";
   coordinates: [number, number]; // [longitude, latitude] – required, from autocomplete
+  note?: string;
   address?: string;
   city?: string;
   state?: string;
@@ -81,6 +89,7 @@ export function toShipmentLocationPayload(
     type: "Point",
     coordinates: loc.coordinates,
   };
+  if (loc.note != null && loc.note !== "") out.note = loc.note;
   if (loc.address != null && loc.address !== "") out.address = loc.address;
   if (loc.city != null && loc.city !== "") out.city = loc.city;
   if (loc.state != null && loc.state !== "") out.state = loc.state;
@@ -93,6 +102,7 @@ export function toShipmentLocationPayload(
 export interface MyShipmentLocation {
   type: "Point";
   coordinates: [number, number];
+  note?: string;
   address?: string;
   city?: string;
   state?: string;
@@ -105,7 +115,18 @@ export interface MyShipmentVehicleDetails {
   make: string;
   model: string;
   year: number;
-  isRunning: boolean;
+  color?: string;
+  drivetrain?: string;
+  isRunning?: boolean;
+  isAccidented?: boolean;
+  runningNote?: string;
+  keysAvailable?: boolean;
+  weight?: number;
+  size?: {
+    length?: number;
+    width?: number;
+    height?: number;
+  };
 }
 
 /** Single shipment from get-my-shipments API */
@@ -213,6 +234,7 @@ export interface ListShipmentItem {
   vehicleDetails: MyShipmentVehicleDetails;
   pickupWindow: { start: string; end: string };
   deliveryDeadline: string;
+  instantAcceptPrice: number;
   distance?: number;
   estimatedTime?: number;
   photos: string[];

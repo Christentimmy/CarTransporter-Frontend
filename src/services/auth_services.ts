@@ -7,8 +7,16 @@ import {
   getAuthHeader,
   type AuthRole,
 } from "@/config/api";
+import type { Region } from "@/services/profileService";
+
+export interface Insurance {
+  name: string;
+  policyNumber: string;
+  expiryDate: string;
+}
 
 export interface RegisterPayload {
+  full_name: string;
   email: string;
   phone_number: string;
   password: string;
@@ -16,7 +24,8 @@ export interface RegisterPayload {
   company_name?: string;
   business_address?: string;
   tax_number?: string;
-  region?: string;
+  region?: Region;
+  insurance?: Insurance;
 }
 
 export interface LoginPayload {

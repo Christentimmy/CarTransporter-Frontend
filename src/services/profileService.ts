@@ -4,11 +4,17 @@ export type UserRole = "user" | "transporter" | "admin" | "super_admin";
 
 export type UserStatus = "approved" | "rejected" | "pending" | "banned" | null;
 
+export interface Region {
+  country: string;
+  state: string;
+  postalCode: string;
+}
+
 export interface UserProfile {
   _id: string;
   email: string;
   phone_number: string;
-  region: string;
+  region?: Region | null;
   status: UserStatus;
   is_email_verified: boolean;
   is_phone_verified: boolean;
@@ -49,7 +55,7 @@ export type UpdateProfilePayload = {
   company_name?: string;
   business_address?: string;
   tax_number?: string;
-  region?: string;
+  region?: Region;
 };
 
 export interface UpdateProfileResponse {

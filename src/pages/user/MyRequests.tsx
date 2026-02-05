@@ -511,6 +511,54 @@ const MyRequests = () => {
                                     : "—"}
                                 </span>
                               </div>
+
+                              {(request.vehicleDetails.color ||
+                                request.vehicleDetails.drivetrain ||
+                                request.vehicleDetails.weight != null ||
+                                request.vehicleDetails.size?.length != null ||
+                                request.vehicleDetails.size?.width != null ||
+                                request.vehicleDetails.size?.height != null ||
+                                request.vehicleDetails.isAccidented != null ||
+                                request.vehicleDetails.keysAvailable != null) && (
+                                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                                  {request.vehicleDetails.color && (
+                                    <Badge variant="outline">{request.vehicleDetails.color}</Badge>
+                                  )}
+                                  {request.vehicleDetails.drivetrain && (
+                                    <Badge variant="outline">
+                                      {request.vehicleDetails.drivetrain}
+                                    </Badge>
+                                  )}
+                                  {request.vehicleDetails.weight != null && (
+                                    <Badge variant="outline">
+                                      {request.vehicleDetails.weight} kg
+                                    </Badge>
+                                  )}
+                                  {(request.vehicleDetails.size?.length != null ||
+                                    request.vehicleDetails.size?.width != null ||
+                                    request.vehicleDetails.size?.height != null) && (
+                                    <Badge variant="outline">
+                                      {(request.vehicleDetails.size?.length ?? "—")}
+                                      x
+                                      {(request.vehicleDetails.size?.width ?? "—")}
+                                      x
+                                      {(request.vehicleDetails.size?.height ?? "—")} m
+                                    </Badge>
+                                  )}
+                                  {request.vehicleDetails.isAccidented === true && (
+                                    <Badge variant="secondary">Accidented</Badge>
+                                  )}
+                                  {request.vehicleDetails.keysAvailable != null && (
+                                    <Badge
+                                      variant={request.vehicleDetails.keysAvailable ? "default" : "secondary"}
+                                    >
+                                      {request.vehicleDetails.keysAvailable
+                                        ? "Keys Available"
+                                        : "No Keys"}
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
