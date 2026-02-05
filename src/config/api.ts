@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
     VERIFY_OTP: `${API_BASE_URL}/auth/verify-otp`,
     SEND_OTP: `${API_BASE_URL}/auth/send-otp`,
     CHANGE_PASSWORD: `${API_BASE_URL}/auth/change-password`,
+    GENERATE_BEAMS_AUTH: `${API_BASE_URL}/auth/generate-beams-auth`,
   },
   USER: {
     DASHBOARD: `${API_BASE_URL}/user/get-user-dashboard`,

@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { dashboardService } from "@/services/dashboard_services";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getProfile, type GetProfileResponse } from "@/services/profileService";
+import { initBeams } from "@/lib/initBeams";
 
 interface DashboardData {
   pendingRequest: number;
@@ -41,6 +43,22 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, []);
+
+  // useEffect(() => {
+  //   const initializeNotifications = async () => {
+  //     try {
+  //       const profile: GetProfileResponse = await getProfile();
+  //       const userId = profile?.data?._id;
+  //       if (userId) {
+  //         await initBeams(userId);
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to initialize Beams notifications:", error);
+  //     }
+  //   };
+
+  //   initializeNotifications();
+  // }, []);
 
   const stats = [
     {

@@ -18,8 +18,7 @@ export interface UserProfile {
   company_name?: string;
   business_address?: string;
   tax_number?: string;
-  // balance, squareCustomerId, paymentMethod exist on the backend but are intentionally
-  // omitted from the UI mapping for now.
+  balance?: number;
 }
 
 export interface GetProfileResponse {

@@ -322,7 +322,7 @@ const MyRequests = () => {
       setSelectedShipmentForPayment(null);
 
       // Refresh the shipments list to show updated status
-      await queryClient.invalidateQueries({ queryKey: ["myShipments"] });
+      await queryClient.invalidateQueries({ queryKey: ["my-shipments"] });
     } catch (e) {
       console.error("Payment error:", e);
       toast.error(e instanceof Error ? e.message : "Payment processing failed", {

@@ -28,6 +28,7 @@ export interface AuthResponse {
   token: string;
   message: string;
   role?: AuthRole;
+  userId: string;
 }
 
 export interface VerifyOtpPayload {
@@ -97,12 +98,15 @@ class AuthService {
         const errorData = await response.json();
         throw new Error(errorData.message || "Login failed");
       }
+      const res = await response.json();
+      const data: AuthResponse = res;
 
-      const data: AuthResponse = await response.json();
-
-      // Store the token
+      // Store the token and role
       if (data.token) {
         storeAuthToken(data.token);
+      }
+      if (data.role) {
+        storeAuthRole(data.role);
       }
 
       return data;

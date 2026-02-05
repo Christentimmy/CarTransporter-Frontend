@@ -41,8 +41,8 @@ export const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            A reverse-bidding platform connecting car owners with trusted
-            transport companies. Post your vehicle, watch the bids compete, and
+            A reverse-bidding platform connecting car owners, insurance company, car auction and Auto-Club, with trusted transport companies.
+            Post your vehicle, watch the bids compete, and
             get the lowest price.
           </motion.p>
 

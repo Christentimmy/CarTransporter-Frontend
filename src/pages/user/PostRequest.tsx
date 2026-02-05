@@ -48,6 +48,11 @@ const PostRequest = () => {
   const [auctionStartTime, setAuctionStartTime] = useState<Date>();
   const [auctionEndTime, setAuctionEndTime] = useState<Date>();
 
+  // Date popover open states
+  const [isPickupStartOpen, setIsPickupStartOpen] = useState(false);
+  const [isPickupEndOpen, setIsPickupEndOpen] = useState(false);
+  const [isDeliveryDeadlineOpen, setIsDeliveryDeadlineOpen] = useState(false);
+
   // Auction settings
   const [instantAcceptPrice, setInstantAcceptPrice] = useState("");
 
@@ -352,7 +357,7 @@ const PostRequest = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label>Pickup Window Start</Label>
-                <Popover>
+                <Popover open={isPickupStartOpen} onOpenChange={setIsPickupStartOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -373,7 +378,12 @@ const PostRequest = () => {
                     <Calendar
                       mode="single"
                       selected={pickupWindowStart}
-                      onSelect={setPickupWindowStart}
+                      onSelect={(date) => {
+                        setPickupWindowStart(date);
+                        if (date) {
+                          setIsPickupStartOpen(false);
+                        }
+                      }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -381,7 +391,7 @@ const PostRequest = () => {
               </div>
               <div className="space-y-2">
                 <Label>Pickup Window End</Label>
-                <Popover>
+                <Popover open={isPickupEndOpen} onOpenChange={setIsPickupEndOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -402,7 +412,12 @@ const PostRequest = () => {
                     <Calendar
                       mode="single"
                       selected={pickupWindowEnd}
-                      onSelect={setPickupWindowEnd}
+                      onSelect={(date) => {
+                        setPickupWindowEnd(date);
+                        if (date) {
+                          setIsPickupEndOpen(false);
+                        }
+                      }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -424,7 +439,7 @@ const PostRequest = () => {
           <CardContent className="p-4 sm:p-6 pt-0">
             <div className="space-y-2">
               <Label>Delivery Deadline</Label>
-              <Popover>
+              <Popover open={isDeliveryDeadlineOpen} onOpenChange={setIsDeliveryDeadlineOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -445,7 +460,12 @@ const PostRequest = () => {
                   <Calendar
                     mode="single"
                     selected={deliveryDeadline}
-                    onSelect={setDeliveryDeadline}
+                    onSelect={(date) => {
+                      setDeliveryDeadline(date);
+                      if (date) {
+                        setIsDeliveryDeadlineOpen(false);
+                      }
+                    }}
                     initialFocus
                   />
                 </PopoverContent>

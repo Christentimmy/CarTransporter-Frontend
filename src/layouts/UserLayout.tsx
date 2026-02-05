@@ -42,11 +42,11 @@ const menuItems = [
     icon: FileText,
     url: "/user/my-requests",
   },
-  {
-    title: "Notifications",
-    icon: Bell,
-    url: "/user/notifications",
-  },
+  // {
+  //   title: "Notifications",
+  //   icon: Bell,
+  //   url: "/user/notifications",
+  // },
   {
     title: "Profile",
     icon: User,

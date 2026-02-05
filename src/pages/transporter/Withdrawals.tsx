@@ -35,6 +35,7 @@ import {
   type WithdrawalRequestDto,
   createWithdrawalRequest,
 } from "@/services/withdrawalService";
+import { getProfile, type GetProfileResponse } from "@/services/profileService";
 
 type WithdrawalStatus = "pending" | "approved" | "rejected" | "processed";
 
@@ -80,6 +81,20 @@ const Withdrawals = () => {
   const [newEmail, setNewEmail] = useState<string>("");
   const [newRoutingNumber, setNewRoutingNumber] = useState<string>("");
   const [newBankName, setNewBankName] = useState<string>("");
+
+  const { data: profileData } = useQuery<GetProfileResponse>({
+    queryKey: ["user-profile"],
+    queryFn: getProfile,
+  });
+
+  const balance = profileData?.data?.balance;
+  const formattedBalance =
+    typeof balance === "number"
+      ? `$${balance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`
+      : "—";
 
   const {
     data: paymentMethodsData,
@@ -228,6 +243,10 @@ const Withdrawals = () => {
               Request payouts from your transporter earnings and track their status.
             </p>
           </div>
+        </div>
+        <div className="mt-1 sm:mt-0 flex flex-col items-start sm:items-end text-xs sm:text-sm">
+          <span className="text-muted-foreground">Available balance</span>
+          <span className="text-base sm:text-lg font-semibold">{formattedBalance}</span>
         </div>
       </motion.div>
 

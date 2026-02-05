@@ -49,11 +49,11 @@ const menuItems = [
     icon: Wallet,
     url: "/transporter/withdrawals",
   },
-  {
-    title: "Notifications",
-    icon: Bell,
-    url: "/transporter/notifications",
-  },
+  // {
+  //   title: "Notifications",
+  //   icon: Bell,
+  //   url: "/transporter/notifications",
+  // },
   {
     title: "Profile",
     icon: User,
