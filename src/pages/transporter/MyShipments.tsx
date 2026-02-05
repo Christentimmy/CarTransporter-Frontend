@@ -301,6 +301,11 @@ const MyShipments = () => {
                                   {formatLocation(shipment.pickupLocation)}
                                 </span>
                               </div>
+                              {shipment.pickupLocation.note && (
+                                <p className="md:col-span-2 ml-6 text-xs text-muted-foreground/80 break-words">
+                                  Note: {shipment.pickupLocation.note}
+                                </p>
+                              )}
                               <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4 opacity-60" />
                                 <span>
@@ -308,6 +313,11 @@ const MyShipments = () => {
                                   {formatLocation(shipment.deliveryLocation)}
                                 </span>
                               </div>
+                              {shipment.deliveryLocation.note && (
+                                <p className="md:col-span-2 ml-6 text-xs text-muted-foreground/80 break-words">
+                                  Note: {shipment.deliveryLocation.note}
+                                </p>
+                              )}
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4" />
                                 <span>
@@ -320,7 +330,7 @@ const MyShipments = () => {
                                 <span className="font-medium">Distance:</span>
                                 <span>
                                   {shipment.distance != null
-                                    ? `${(shipment.distance / 1000).toFixed(1)} km`
+                                    ? `${shipment.distance.toLocaleString()} km`
                                     : "—"}
                                 </span>
                               </div>

@@ -246,6 +246,11 @@ const AvailableRequests = () => {
                                   {formatLocation(request.pickupLocation)}
                                 </span>
                               </div>
+                              {request.pickupLocation.note && (
+                                <p className="ml-5 text-xs text-muted-foreground/80 break-words">
+                                  Note: {request.pickupLocation.note}
+                                </p>
+                              )}
                               <div className="flex gap-2 min-w-0">
                                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 opacity-60" />
                                 <span className="break-words line-clamp-2 min-w-0">
@@ -253,6 +258,11 @@ const AvailableRequests = () => {
                                   {formatLocation(request.deliveryLocation)}
                                 </span>
                               </div>
+                              {request.deliveryLocation.note && (
+                                <p className="ml-5 text-xs text-muted-foreground/80 break-words">
+                                  Note: {request.deliveryLocation.note}
+                                </p>
+                              )}
                               <div className="flex items-center gap-2 pt-0.5 min-w-0">
                                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                                 <span>
@@ -269,7 +279,7 @@ const AvailableRequests = () => {
                               {request.distance != null && (
                                 <div className="flex items-center gap-2">
                                   <span className="font-medium text-foreground/80">Distance:</span>
-                                  <span>{(request.distance / 1000).toFixed(1)} km</span>
+                                  <span>{request.distance.toLocaleString()} km</span>
                                 </div>
                               )}
                               <div className="flex flex-wrap items-center gap-2">

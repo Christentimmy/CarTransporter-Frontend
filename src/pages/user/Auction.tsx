@@ -390,6 +390,9 @@ const Auction = () => {
                     {auctionData.pickupLocation.city}, {auctionData.pickupLocation.state}{" "}
                     {auctionData.pickupLocation.zipCode}
                   </p>
+                  {auctionData.pickupLocation.note && (
+                    <p className="text-sm text-muted-foreground">Note: {auctionData.pickupLocation.note}</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Delivery Location</p>
@@ -400,6 +403,9 @@ const Auction = () => {
                     {auctionData.deliveryLocation.city}, {auctionData.deliveryLocation.state}{" "}
                     {auctionData.deliveryLocation.zipCode}
                   </p>
+                  {auctionData.deliveryLocation.note && (
+                    <p className="text-sm text-muted-foreground">Note: {auctionData.deliveryLocation.note}</p>
+                  )}
                 </div>
               </div>
 

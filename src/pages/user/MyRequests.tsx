@@ -491,6 +491,11 @@ const MyRequests = () => {
                                   {formatLocation(request.pickupLocation)}
                                 </span>
                               </div>
+                              {request.pickupLocation.note && (
+                                <p className="ml-5 text-xs text-muted-foreground/80 break-words">
+                                  Note: {request.pickupLocation.note}
+                                </p>
+                              )}
                               <div className="flex gap-2 min-w-0">
                                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 opacity-60" />
                                 <span className="break-words line-clamp-2 min-w-0">
@@ -498,6 +503,11 @@ const MyRequests = () => {
                                   {formatLocation(request.deliveryLocation)}
                                 </span>
                               </div>
+                              {request.deliveryLocation.note && (
+                                <p className="ml-5 text-xs text-muted-foreground/80 break-words">
+                                  Note: {request.deliveryLocation.note}
+                                </p>
+                              )}
                               <div className="flex items-center gap-2 pt-0.5 min-w-0">
                                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                                 <span>
@@ -606,7 +616,7 @@ const MyRequests = () => {
                         <div className="min-w-0">
                           <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Distance</p>
                           <p className="text-xs sm:text-sm font-medium">
-                            {(request.distance / 1000).toFixed(1)} km
+                            {request.distance.toLocaleString()} km
                           </p>
                         </div>
                       )}
