@@ -29,20 +29,8 @@ export const CTASection = () => {
           </h2>
           <p className="text-lg text-muted-foreground mb-10">
             Join thousands of satisfied customers and transport companies on
-            the most innovative car transport marketplace.
+            most innovative car transport marketplace.
           </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="hero" size="xl" className="group" asChild>
-              <Link to="/login">
-                Start Shipping Now
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-            <Button variant="glass" size="xl" asChild>
-              <Link to="/register">Contact Sales</Link>
-            </Button>
-          </div>
         </motion.div>
       </div>
     </section>

@@ -58,11 +58,6 @@ export const UserCompanySection = () => {
                   </li>
                 ))}
               </ul>
-
-              <Button variant="hero" className="group/btn">
-                Post a Shipment
-                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-              </Button>
             </div>
           </motion.div>
 
@@ -100,13 +95,6 @@ export const UserCompanySection = () => {
                   </li>
                 ))}
               </ul>
-
-              <Button variant="neon" className="group/btn" asChild>
-                <Link to="/register">
-                  Register Your Company
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
             </div>
           </motion.div>
         </div>

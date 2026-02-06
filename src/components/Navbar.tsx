@@ -59,11 +59,6 @@ export const Navbar = () => {
                 Register
               </Button>
             </Link>
-            <Link to="/login">
-              <Button variant="hero" size="sm">
-                Get Started
-              </Button>
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -107,9 +102,6 @@ export const Navbar = () => {
                   <Button variant="outline" className="justify-start w-full">
                     Register
                   </Button>
-                </Link>
-                <Link to="/login" onClick={() => setIsOpen(false)}>
-                  <Button variant="hero" className="w-full">Get Started</Button>
                 </Link>
               </div>
             </div>
