@@ -54,6 +54,11 @@ const statusConfig: Record<
     icon: CheckCircle2,
     nextStatus: "IN_TRANSIT",
   },
+  ENDED: {
+    label: "Ended",
+    variant: "secondary",
+    icon: CheckCircle2,
+  },
   IN_TRANSIT: {
     label: "In Transit",
     variant: "default",
