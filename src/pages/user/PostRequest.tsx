@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { format } from "date-fns";
 import { CalendarIcon, MapPin, Truck, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,12 @@ import { cn } from "@/lib/utils";
 
 const PostRequest = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Determine if we're in transporter module based on current path
+  const isTransporterModule = location.pathname.startsWith('/transporter');
+  const redirectPath = isTransporterModule ? '/transporter/my-shipments' : '/user/my-requests';
 
   // Pickup: address string for input + full location from Places (with coordinates)
   const [pickupAddress, setPickupAddress] = useState("");
@@ -170,7 +175,7 @@ const PostRequest = () => {
     try {
       await createShipment(form);
       toast.success("Shipment request created.");
-      navigate("/user/my-requests");
+      navigate(redirectPath);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to create shipment.");
     } finally {

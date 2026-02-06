@@ -26,6 +26,7 @@ import {
   LogOut,
   Home,
   Wallet,
+  Plus,
 } from "lucide-react";
 
 const menuItems = [
@@ -33,6 +34,11 @@ const menuItems = [
     title: "Dashboard",
     icon: LayoutDashboard,
     url: "/transporter/dashboard",
+  },
+  {
+    title: "Post Request",
+    icon: Plus,
+    url: "/transporter/post-request",
   },
   {
     title: "Available Requests",

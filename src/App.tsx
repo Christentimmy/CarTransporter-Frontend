@@ -52,6 +52,7 @@ const App = () => (
           <Route path="/transporter" element={<TransporterLayout />}>
             <Route index element={<Navigate to="/transporter/dashboard" replace />} />
             <Route path="dashboard" element={<TransporterDashboard />} />
+            <Route path="post-request" element={<PostRequest />} />
             <Route path="available-requests" element={<AvailableRequests />} />
             <Route path="auction/:id" element={<Auction />} />
             <Route path="my-shipments" element={<MyShipments />} />
