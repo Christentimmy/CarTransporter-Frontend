@@ -4,8 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { dashboardService } from "@/services/dashboard_services";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { getProfile, type GetProfileResponse } from "@/services/profileService";
-import { initBeams } from "@/lib/initBeams";
 
 interface DashboardData {
   pendingRequest: number;
@@ -185,7 +183,7 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Activity */}
-          <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -200,35 +198,6 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   {renderRecentRequests()}
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-            >
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
-                  <CardDescription>
-                    Common actions for your account
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <button className="w-full text-left p-4 rounded-lg border hover:bg-accent transition-colors">
-                    <div className="font-medium">New Transport Request</div>
-                    <div className="text-xs text-muted-foreground">
-                      Create a new vehicle transport request
-                    </div>
-                  </button>
-                  <button className="w-full text-left p-4 rounded-lg border hover:bg-accent transition-colors">
-                    <div className="font-medium">View All Bids</div>
-                    <div className="text-xs text-muted-foreground">
-                      Check bids on your requests
-                    </div>
-                  </button>
                 </CardContent>
               </Card>
             </motion.div>
