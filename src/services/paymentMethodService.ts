@@ -1,6 +1,6 @@
 import { API_ENDPOINTS, getAuthHeader } from "@/config/api";
 
-export type PaymentMethodType = "bank" | "paypal" | "mobile_money" | "other";
+export type PaymentMethodType = "bank" | "card" | "mobile_money" | "other";
 
 export interface PaymentMethodDto {
   _id: string;
@@ -10,6 +10,10 @@ export interface PaymentMethodDto {
   email?: string;
   routingNumber?: string;
   bankName?: string;
+  cardNumber?: string;
+  cardHolderName?: string;
+  cvv?: string;
+  expiryDate?: string;
   lastUsed?: string;
 }
 
@@ -25,6 +29,10 @@ export interface AddPaymentMethodRequest {
   email?: string;
   routingNumber?: string;
   bankName?: string;
+  cardNumber?: string;
+  cardHolderName?: string;
+  cvv?: string;
+  expiryDate?: string;
 }
 
 export interface AddPaymentMethodResponse {

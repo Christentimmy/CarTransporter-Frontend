@@ -14,6 +14,10 @@ export interface WithdrawalPaymentMethodDto {
   email?: string;
   routingNumber?: string;
   bankName?: string;
+  cardNumber?: string;
+  cardHolderName?: string;
+  cvv?: string;
+  expiryDate?: string;
 }
 
 export interface WithdrawalRequestDto {
@@ -25,6 +29,7 @@ export interface WithdrawalRequestDto {
   rejectionReason?: string;
   createdAt: string;
   updatedAt: string;
+
 }
 
 export interface ListWithdrawalRequestsResponse {

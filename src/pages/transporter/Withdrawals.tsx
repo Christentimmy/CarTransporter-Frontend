@@ -46,6 +46,10 @@ interface WithdrawalPaymentMethod {
   email?: string;
   routingNumber?: string;
   bankName?: string;
+  cardNumber?: string;
+  cardHolderName?: string;
+  cvv?: string;
+  expiryDate?: string;
 }
 
 interface WithdrawalRequestItem {
@@ -75,12 +79,16 @@ const Withdrawals = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isAddMethodOpen, setIsAddMethodOpen] = useState(false);
-  const [newMethodType, setNewMethodType] = useState<PaymentMethodType>("paypal");
+  const [newMethodType, setNewMethodType] = useState<PaymentMethodType>("bank");
   const [newMethodName, setNewMethodName] = useState<string>("");
   const [newAccountNumber, setNewAccountNumber] = useState<string>("");
   const [newEmail, setNewEmail] = useState<string>("");
   const [newRoutingNumber, setNewRoutingNumber] = useState<string>("");
   const [newBankName, setNewBankName] = useState<string>("");
+  const [newCardNumber, setNewCardNumber] = useState<string>("");
+  const [newCardHolderName, setNewCardHolderName] = useState<string>("");
+  const [newCvv, setNewCvv] = useState<string>("");
+  const [newExpiryDate, setNewExpiryDate] = useState<string>("");
 
   const { data: profileData } = useQuery<GetProfileResponse>({
     queryKey: ["user-profile"],
@@ -149,6 +157,10 @@ const Withdrawals = () => {
         email: item.paymentMethod.email,
         routingNumber: item.paymentMethod.routingNumber,
         bankName: item.paymentMethod.bankName,
+        cardNumber: item.paymentMethod.cardNumber,
+        cardHolderName: item.paymentMethod.cardHolderName,
+        cvv: item.paymentMethod.cvv,
+        expiryDate: item.paymentMethod.expiryDate,
       },
       rejectionReason: item.rejectionReason,
       createdAt: item.createdAt,
@@ -168,6 +180,10 @@ const Withdrawals = () => {
       setNewEmail("");
       setNewRoutingNumber("");
       setNewBankName("");
+      setNewCardNumber("");
+      setNewCardHolderName("");
+      setNewCvv("");
+      setNewExpiryDate("");
       await queryClient.invalidateQueries({ queryKey: ["payment-methods"] });
     },
     onError: (error) => {
@@ -211,8 +227,12 @@ const Withdrawals = () => {
   };
 
   const renderMethodDetails = (m: WithdrawalPaymentMethod) => {
-    if (m.type === "paypal") {
-      return m.email || "PayPal";
+    if (m.type === "card") {
+      if (m.cardNumber && m.cardHolderName) {
+        const last4 = m.cardNumber.slice(-4);
+        return `${m.cardHolderName} •••• ${last4}`;
+      }
+      return m.cardHolderName || "Card";
     }
     if (m.type === "mobile_money") {
       return m.accountNumber || "Mobile money";
@@ -312,6 +332,10 @@ const Withdrawals = () => {
                               email: method.email,
                               routingNumber: method.routingNumber,
                               bankName: method.bankName,
+                              cardNumber: method.cardNumber,
+                              cardHolderName: method.cardHolderName,
+                              cvv: method.cvv,
+                              expiryDate: method.expiryDate,
                             })}
                           </p>
                         </div>
@@ -461,6 +485,10 @@ const Withdrawals = () => {
             setNewEmail("");
             setNewRoutingNumber("");
             setNewBankName("");
+            setNewCardNumber("");
+            setNewCardHolderName("");
+            setNewCvv("");
+            setNewExpiryDate("");
           }
         }}
       >
@@ -484,22 +512,24 @@ const Withdrawals = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="bank">Bank transfer</SelectItem>
-                  <SelectItem value="paypal">PayPal</SelectItem>
+                  <SelectItem value="card">Credit/Debit Card</SelectItem>
                   <SelectItem value="mobile_money">Mobile money</SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="newMethodName">Account name / label</Label>
-              <Input
-                id="newMethodName"
-                value={newMethodName}
-                onChange={(e) => setNewMethodName(e.target.value)}
-                placeholder="e.g. Main business account"
-              />
-            </div>
+            {newMethodType !== "card" && (
+              <div className="space-y-1.5">
+                <Label htmlFor="newMethodName">Account name / label</Label>
+                <Input
+                  id="newMethodName"
+                  value={newMethodName}
+                  onChange={(e) => setNewMethodName(e.target.value)}
+                  placeholder="e.g. Main business account"
+                />
+              </div>
+            )}
 
             {newMethodType === "bank" && (
               <div className="grid gap-3 sm:grid-cols-2">
@@ -533,16 +563,49 @@ const Withdrawals = () => {
               </div>
             )}
 
-            {newMethodType === "paypal" && (
-              <div className="space-y-1.5">
-                <Label htmlFor="newEmail">PayPal email</Label>
-                <Input
-                  id="newEmail"
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  placeholder="you@example.com"
-                />
+            {newMethodType === "card" && (
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="newCardNumber">Card Number</Label>
+                  <Input
+                    id="newCardNumber"
+                    value={newCardNumber}
+                    onChange={(e) => setNewCardNumber(e.target.value)}
+                    placeholder="1234 5678 9012 3456"
+                    maxLength={19}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="newCardHolderName">Cardholder Name</Label>
+                  <Input
+                    id="newCardHolderName"
+                    value={newCardHolderName}
+                    onChange={(e) => setNewCardHolderName(e.target.value)}
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="newExpiryDate">Expiry Date</Label>
+                    <Input
+                      id="newExpiryDate"
+                      value={newExpiryDate}
+                      onChange={(e) => setNewExpiryDate(e.target.value)}
+                      placeholder="MM/YY"
+                      maxLength={5}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="newCvv">CVV</Label>
+                    <Input
+                      id="newCvv"
+                      value={newCvv}
+                      onChange={(e) => setNewCvv(e.target.value)}
+                      placeholder="123"
+                      maxLength={4}
+                    />
+                  </div>
+                </div>
               </div>
             )}
 
@@ -565,8 +628,15 @@ const Withdrawals = () => {
               variant="hero"
               disabled={addMethodMutation.isPending}
               onClick={() => {
-                if (!newMethodName || !newMethodType) {
-                  toast.error("Name and type are required", {
+                if (!newMethodType) {
+                  toast.error("Payment method type is required", {
+                    style: { background: "#ef4444", color: "#fff" },
+                  });
+                  return;
+                }
+
+                if (newMethodType !== "card" && !newMethodName) {
+                  toast.error("Account name is required for this payment method", {
                     style: { background: "#ef4444", color: "#fff" },
                   });
                   return;
@@ -581,6 +651,15 @@ const Withdrawals = () => {
                   }
                 }
 
+                if (newMethodType === "card") {
+                  if (!newCardNumber || !newCardHolderName || !newCvv || !newExpiryDate) {
+                    toast.error("All card fields are required for card payments", {
+                      style: { background: "#ef4444", color: "#fff" },
+                    });
+                    return;
+                  }
+                }
+
                 const payload = {
                   name: newMethodName,
                   type: newMethodType,
@@ -588,6 +667,10 @@ const Withdrawals = () => {
                   email: newEmail || undefined,
                   routingNumber: newRoutingNumber || undefined,
                   bankName: newBankName || undefined,
+                  cardNumber: newCardNumber || undefined,
+                  cardHolderName: newCardHolderName || undefined,
+                  cvv: newCvv || undefined,
+                  expiryDate: newExpiryDate || undefined,
                 };
 
                 addMethodMutation.mutate(payload);
