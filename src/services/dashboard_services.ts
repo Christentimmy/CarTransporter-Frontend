@@ -14,11 +14,54 @@ interface DashboardResponse {
 }
 
 export interface TransporterDashboardStats {
-  activeBids?: number;
-  wonBids?: number;
-  activeShipments?: number;
-  totalRevenue?: number;
-  recentBids?: { vehicleName?: string; amount?: number; status?: string; date?: string }[];
+  pendingRequest: number;
+  completedRequest: number;
+  totalRequest: number;
+  totalBalance: number;
+  recentRequests: Array<{
+    _id: string;
+    status: string;
+    vehicleDetails: {
+      make: string;
+      model: string;
+      year: number;
+      serialNumber?: string;
+      color?: string;
+      drivetrain?: string;
+      isRunning?: boolean;
+      isAccidented?: boolean;
+      keysAvailable?: boolean;
+    };
+    pickupLocation: {
+      address: string;
+      state?: string;
+      country: string;
+      zipCode?: string;
+    };
+    deliveryLocation: {
+      address: string;
+      state?: string;
+      country: string;
+      zipCode?: string;
+    };
+    currentBid?: {
+      amount: number;
+      bidder: string;
+      placedAt: string;
+    };
+    pickupWindow: {
+      start: string;
+      end: string;
+    };
+    deliveryDeadline: string;
+    distance: number;
+    estimatedTime: number;
+    photos: string[];
+    auctionStartTime?: string;
+    auctionEndTime?: string;
+    createdAt: string;
+    updatedAt: string;
+  }>;
 }
 
 interface TransporterDashboardResponse {
@@ -73,7 +116,9 @@ class DashboardService {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to fetch transporter dashboard data");
+        throw new Error(
+          errorData.message || "Failed to fetch transporter dashboard data",
+        );
       }
 
       const data: TransporterDashboardResponse = await response.json();

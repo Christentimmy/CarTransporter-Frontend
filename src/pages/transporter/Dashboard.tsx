@@ -29,67 +29,93 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const stats = [
+    const stats = [
     {
-      title: "Active Bids",
-      value: dashboardData?.activeBids?.toString() ?? "0",
-      description: "Bids submitted",
+      title: "Pending Requests",
+      value: dashboardData?.pendingRequest?.toString() ?? "0",
+      description: "Awaiting your bid",
       icon: Gavel,
       color: "text-blue-500",
     },
     {
-      title: "Won Bids",
-      value: dashboardData?.wonBids?.toString() ?? "0",
-      description: "Accepted bids",
+      title: "Completed Requests",
+      value: dashboardData?.completedRequest?.toString() ?? "0",
+      description: "Successfully delivered",
       icon: CheckCircle2,
       color: "text-green-500",
     },
     {
-      title: "Active Shipments",
-      value: dashboardData?.activeShipments?.toString() ?? "0",
-      description: "In transit",
+      title: "Total Requests",
+      value: dashboardData?.totalRequest?.toString() ?? "0",
+      description: "All time",
       icon: Package,
       color: "text-orange-500",
     },
     {
-      title: "Total Earnings",
-      value: dashboardData?.totalRevenue != null ? `$${dashboardData.totalRevenue.toLocaleString()}` : "$0",
-      description: "This month",
+      title: "Total Balance",
+      value: dashboardData?.totalBalance != null ? `$${dashboardData.totalBalance.toLocaleString()}` : "$0",
+      description: "All time balance",
       icon: DollarSign,
       color: "text-purple-500",
     },
   ];
 
-  const renderRecentBids = () => {
-    if (isLoading) return null;
-
-    const bids = dashboardData?.recentBids ?? [];
-    if (bids.length === 0) {
+  const renderRecentRequests = () => {
+    if (isLoading) {
       return (
-        <div className="text-center py-6 text-muted-foreground">
-          No recent bids found
+        <div className="flex justify-center py-4">
+          <Loader2 className="h-5 w-5 animate-spin" />
         </div>
       );
     }
 
+    const requests = dashboardData?.recentRequests ?? [];
+    if (requests.length === 0) {
+      return (
+        <div className="text-center py-4 text-sm text-muted-foreground">
+          No recent requests
+        </div>
+      );
+    }
+
+    const formatDate = (dateString: string) => {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric'
+      });
+    };
+
     return (
-      <div className="space-y-4">
-        {bids.map((bid, index) => (
-          <div key={index} className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-              <Gavel className="h-5 w-5 text-primary" />
-            </div>
+      <div className="space-y-3">
+        {requests.slice(0, 5).map((request) => (
+          <div 
+            key={request._id} 
+            className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors group"
+          >
+            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">
-                {bid.vehicleName ?? "Vehicle transport"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {bid.amount != null ? `Bid: $${bid.amount}` : "Bid: N/A"} • {bid.status ?? "Pending"}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium truncate">
+                  {request.vehicleDetails.make} {request.vehicleDetails.model}
+                </p>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                  {request.status}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                <span>
+                  {request.distance.toLocaleString()} mi
+                </span>
+                {request.currentBid && (
+                  <span className="font-medium text-foreground">
+                    ${request.currentBid.amount.toLocaleString()}
+                  </span>
+                )}
+              </div>
             </div>
-            {bid.date && (
-              <p className="text-xs text-muted-foreground shrink-0">{bid.date}</p>
-            )}
+            <div className="text-xs text-muted-foreground">
+              {formatDate(request.updatedAt)}
+            </div>
           </div>
         ))}
       </div>
@@ -156,13 +182,13 @@ const Dashboard = () => {
             >
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Bids</CardTitle>
+                  <CardTitle className="text-base">Recent Requests</CardTitle>
                   <CardDescription>
-                    Your latest bid submissions
+                    Latest 5 requests
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {renderRecentBids()}
+                  {renderRecentRequests()}
                 </CardContent>
               </Card>
             </motion.div>
