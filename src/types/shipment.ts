@@ -7,8 +7,9 @@ export const vehicleDetailsSchema = z.object({
     .number()
     .min(1900)
     .max(new Date().getFullYear() + 1),
-  color: z.string().optional(),
-  drivetrain: z.string().optional(),
+  color: z.string().min(1, "Color is required"),
+  drivetrain: z.string().min(1, "Drivetrain is required"),
+  serialNumber: z.string().min(1, "Serial number is required"),
   isRunning: z.boolean().default(true),
   isAccidented: z.boolean().default(false),
   runningNote: z.string().optional(),
@@ -117,6 +118,7 @@ export interface MyShipmentVehicleDetails {
   year: number;
   color?: string;
   drivetrain?: string;
+  serialNumber?: string;
   isRunning?: boolean;
   isAccidented?: boolean;
   runningNote?: string;

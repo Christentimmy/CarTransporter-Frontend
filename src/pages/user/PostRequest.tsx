@@ -44,6 +44,7 @@ const PostRequest = () => {
   const [year, setYear] = useState("");
   const [color, setColor] = useState("");
   const [drivetrain, setDrivetrain] = useState("");
+  const [serialNumber, setSerialNumber] = useState("");
   const [isRunning, setIsRunning] = useState(true);
   const [isAccidented, setIsAccidented] = useState(false);
   const [keysAvailable, setKeysAvailable] = useState(true);
@@ -143,8 +144,9 @@ const PostRequest = () => {
         make,
         model,
         year: parseInt(year, 10),
-        color: color || undefined,
-        drivetrain: drivetrain || undefined,
+        color,
+        drivetrain,
+        serialNumber,
         isRunning,
         isAccidented,
         keysAvailable,
@@ -332,7 +334,8 @@ const PostRequest = () => {
                   id="color"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
-                  placeholder="Optional"
+                  placeholder="e.g., Black"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -341,9 +344,21 @@ const PostRequest = () => {
                   id="drivetrain"
                   value={drivetrain}
                   onChange={(e) => setDrivetrain(e.target.value)}
-                  placeholder="Optional"
+                  placeholder="e.g., FWD / RWD / AWD"
+                  required
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="serialNumber">Serial Number</Label>
+              <Input
+                id="serialNumber"
+                value={serialNumber}
+                onChange={(e) => setSerialNumber(e.target.value)}
+                placeholder="Enter vehicle serial number"
+                required
+              />
             </div>
 
             <div className="flex items-center space-x-2">

@@ -27,8 +27,25 @@ function suggestionToLocation(item: LocationIqSuggestion): CreateShipmentLocatio
   const lat = parseFloat(item.lat);
   const lon = parseFloat(item.lon);
   const addr = item.address ?? {};
+  const countryNormalized = (addr.country ?? "").trim().toLowerCase();
+  const isNorthAmerica =
+    countryNormalized === "canada" ||
+    countryNormalized === "united states" ||
+    countryNormalized === "united states of america" ||
+    countryNormalized === "usa" ||
+    countryNormalized === "us";
+
+  const northAmericaAddress = isNorthAmerica
+    ? [addr.house_number, addr.road, addr.city, addr.state, addr.postcode]
+        .filter(Boolean)
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim()
+    : "";
+
   const address =
-    item.display_name ??
+    northAmericaAddress ||
+    item.display_name ||
     [addr.house_number, addr.road, addr.city, addr.state, addr.postcode, addr.country]
       .filter(Boolean)
       .join(", ");

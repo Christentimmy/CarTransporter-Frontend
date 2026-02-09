@@ -346,6 +346,13 @@ const MyShipments = () => {
                                 </span>
                               </div>
 
+                              {shipment.vehicleDetails.serialNumber && (
+                                <div className="flex items-center gap-2 md:col-span-2">
+                                  <span className="font-medium">Serial Number:</span>
+                                  <span>{shipment.vehicleDetails.serialNumber}</span>
+                                </div>
+                              )}
+
                               {(shipment.vehicleDetails.color ||
                                 shipment.vehicleDetails.drivetrain ||
                                 shipment.vehicleDetails.weight != null ||

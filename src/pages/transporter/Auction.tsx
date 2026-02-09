@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import {
   Truck,
   MapPin,
@@ -27,6 +28,7 @@ import {
   disconnectAuctionSocket,
   type BidErrorPayload,
 } from "@/services/auctionSocket";
+import { getProfile } from "@/services/profileService";
 import type { ListShipmentItem } from "@/types/shipment";
 
 // Mock data - replace with API call
@@ -168,6 +170,13 @@ const Auction = () => {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [isAuctionEnded, setIsAuctionEnded] = useState(false);
   const socketJoinedRef = useRef(false);
+
+  const { data: profileData } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: getProfile,
+  });
+
+  const myUserId = profileData?.data?._id;
 
   const shipmentFromState = (location.state as { shipment?: ListShipmentItem } | null)?.shipment;
   const auctionData = shipmentFromState;
@@ -352,6 +361,24 @@ const Auction = () => {
     const diff = end.getTime() - now.getTime();
     return diff > 0;
   };
+
+  const parsedBidAmount = bidAmount ? Number(bidAmount) : NaN;
+  const bidAmountCents = Number.isFinite(parsedBidAmount)
+    ? Math.round(parsedBidAmount * 100)
+    : NaN;
+
+  const myBidAmountCentsSet = new Set<number>(
+    myUserId
+      ? bids
+          .filter((b) => b.bidder?._id === myUserId)
+          .map((b) => Math.round((b.amount ?? 0) * 100))
+      : [],
+  );
+
+  const isDuplicateBid = Number.isFinite(bidAmountCents) && myBidAmountCentsSet.has(bidAmountCents);
+  const isInvalidBid = !Number.isFinite(parsedBidAmount) || parsedBidAmount <= 0;
+  const isNotBetterThanLowest = lowestBid > 0 && Number.isFinite(parsedBidAmount) && parsedBidAmount >= lowestBid;
+  const isBidButtonDisabled = !getTimeRemaining() || isInvalidBid || isDuplicateBid || isNotBetterThanLowest;
 
   return (
     <div className="space-y-6">
@@ -633,11 +660,16 @@ const Auction = () => {
                   type="submit"
                   variant="hero"
                   className="w-full"
-                  disabled={!getTimeRemaining()}
+                  disabled={isBidButtonDisabled}
                 >
                   <Gavel className="mr-2 h-4 w-4" />
                   Submit Bid
                 </Button>
+                {isDuplicateBid && (
+                  <p className="text-xs text-center text-muted-foreground">
+                    You already placed this exact bid amount.
+                  </p>
+                )}
                 {!getTimeRemaining() && (
                   <p className="text-xs text-center text-muted-foreground">
                     This auction has ended

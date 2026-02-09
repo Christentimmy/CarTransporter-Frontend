@@ -237,6 +237,14 @@ const AvailableRequests = () => {
                                   Draft
                                 </Badge>
                               )}
+                              {request.status === "DRAFT" && request.auctionStartTime && (
+                                <Badge variant="outline" className="flex items-center gap-1 shrink-0">
+                                  <Clock className="h-3 w-3" />
+                                  <span className="truncate">
+                                    Starts: {format(parseDate(request.auctionStartTime)!, "MMM d, yyyy h:mm a")}
+                                  </span>
+                                </Badge>
+                              )}
                             </div>
                             <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
                               <div className="flex gap-2 min-w-0">
