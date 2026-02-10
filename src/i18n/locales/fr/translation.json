@@ -125,7 +125,239 @@
         "privacy": "Politique de confidentialité",
         "cookie": "Politique relative aux cookies"
       },
-      "copyright": "© {{year}} BID4TOW. Tous droits réservés."
+      "copyright": " BID4TOW. Tous droits réservés."
+    }
+  },
+  "auth": {
+    "login": {
+      "backToHome": "Retour à l'accueil",
+      "welcomeBack": "Bon retour",
+      "subtitle": "Connectez-vous à votre compte pour continuer",
+      "email": "Email",
+      "emailPlaceholder": "Entrez votre email",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Entrez votre mot de passe",
+      "forgotPassword": "Mot de passe oublié ?",
+      "signIn": "Se connecter",
+      "signingIn": "Connexion...",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "signUp": "S'inscrire"
+    },
+    "register": {
+      "backToHome": "Retour à l'accueil",
+      "createAccount": "Créer un compte",
+      "subtitle": "Inscrivez-vous pour commencer",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Entrez votre nom complet",
+      "email": "Email",
+      "emailPlaceholder": "Entrez votre email",
+      "phoneNumber": "Numéro de téléphone",
+      "phoneNumberPlaceholder": "Entrez votre numéro de téléphone",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Entrez votre mot de passe",
+      "role": "Rôle",
+      "rolePlaceholder": "Sélectionnez votre rôle",
+      "user": "Utilisateur",
+      "transporter": "Transporteur",
+      "companyName": "Nom de l'entreprise",
+      "companyNamePlaceholder": "Entrez le nom de votre entreprise",
+      "businessAddress": "Adresse professionnelle",
+      "businessAddressPlaceholder": "Entrez votre adresse professionnelle",
+      "taxNumber": "Numéro d'identification fiscale",
+      "taxNumberPlaceholder": "Entrez votre numéro d'identification fiscale",
+      "country": "Pays",
+      "countryPlaceholder": "Sélectionner un pays",
+      "stateProvince": "État / Province",
+      "stateProvincePlaceholder": "Entrez l'état ou la province",
+      "postalCode": "Code postal",
+      "postalCodePlaceholder": "Entrez le code postal",
+      "insuranceProvider": "Assureur",
+      "insuranceProviderPlaceholder": "Entrez le nom de l'assureur",
+      "policyNumber": "Numéro de police",
+      "policyNumberPlaceholder": "Entrez le numéro de police",
+      "policyExpiryDate": "Date d'expiration de la police",
+      "creatingAccount": "Création du compte...",
+      "signUp": "S'inscrire",
+      "alreadyHaveAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter",
+      "errors": {
+        "fullNameRequired": "Le nom complet est requis",
+        "emailRequired": "L'email est requis",
+        "phoneNumberRequired": "Le numéro de téléphone est requis",
+        "passwordRequired": "Le mot de passe est requis",
+        "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères",
+        "roleRequired": "Le rôle est requis",
+        "companyNameRequired": "Le nom de l'entreprise est requis",
+        "businessAddressRequired": "L'adresse professionnelle est requise",
+        "taxNumberRequired": "Le numéro d'identification fiscale est requis",
+        "countryRequired": "Le pays est requis",
+        "stateRequired": "L'état/province est requis",
+        "postalCodeRequired": "Le code postal est requis",
+        "insuranceProviderRequired": "L'assureur est requis",
+        "policyNumberRequired": "Le numéro de police est requis",
+        "expiryDateRequired": "La date d'expiration est requise"
+      }
+    },
+    "verifyOtp": {
+      "back": "Retour",
+      "verifyEmail": "Vérifiez votre email",
+      "subtitle": "Nous avons envoyé un code de vérification à {{email}}",
+      "subtitleFallback": "Nous avons envoyé un code de vérification à votre email",
+      "enterCode": "Entrez le code de vérification",
+      "codePlaceholder": "Entrez le code à 4 chiffres",
+      "verifyEmailButton": "Vérifier l'email",
+      "verifying": "Vérification...",
+      "didntReceiveCode": "Vous n'avez pas reçu de code ?",
+      "resendCode": "Renvoyer le code",
+      "errors": {
+        "invalidOtp": "Veuillez entrer un OTP valide à 4 chiffres",
+        "verificationFailed": "La vérification a échoué. Veuillez réessayer.",
+        "resendFailed": "Échec du renvoi de l'OTP. Veuillez réessayer."
+      },
+      "success": {
+        "emailVerified": "Email vérifié avec succès ! 🎉",
+        "otpResent": "Nouvel OTP envoyé à votre email"
+      }
+    }
+  },
+  "user": {
+    "layout": {
+      "appSubtitle": "Tableau de bord utilisateur",
+      "navigation": "Navigation",
+      "menu": {
+        "dashboard": "Tableau de bord",
+        "postVehicleRequest": "Publier une demande",
+        "myRequests": "Mes demandes",
+        "profile": "Profil"
+      },
+      "backToHome": "Retour à l'accueil",
+      "logout": "Déconnexion"
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "subtitle": "Bon retour ! Voici un aperçu de votre activité.",
+      "toast": {
+        "loadFailed": "Impossible de charger les données du tableau de bord"
+      },
+      "stats": {
+        "pending": {
+          "title": "Demandes en attente",
+          "description": "Demandes en attente d'offres"
+        },
+        "completed": {
+          "title": "Demandes terminées",
+          "description": "Livrées avec succès"
+        },
+        "total": {
+          "title": "Demandes totales",
+          "description": "Toutes les demandes"
+        },
+        "revenue": {
+          "title": "Dépenses totales",
+          "description": "Montant total dépensé"
+        }
+      },
+      "recent": {
+        "title": "Demandes récentes",
+        "description": "Vos dernières demandes de transport",
+        "empty": "Aucune demande récente trouvée",
+        "fallbackVehicle": "Transport de véhicule",
+        "fallbackStatus": "En attente",
+        "fallbackAmount": "N/A"
+      }
+    }
+  },
+  "postRequest": {
+    "title": "Publier une demande de véhicule",
+    "subtitle": "Créez une nouvelle demande de transport de véhicule et laissez les transporteurs enchérir.",
+    "sections": {
+      "pickup": {
+        "title": "Lieu de prise en charge",
+        "description": "Où le véhicule doit-il être pris en charge ? Commencez à taper et sélectionnez une adresse.",
+        "addressLabel": "Adresse",
+        "addressPlaceholder": "Adresse, ville, état...",
+        "noteLabel": "Note (Optionnel)",
+        "notePlaceholder": "ex: Appeler à l'arrivée, code du portail, instructions de chargement"
+      },
+      "delivery": {
+        "title": "Lieu de livraison",
+        "description": "Où le véhicule doit-il être livré ? Commencez à taper et sélectionnez une adresse.",
+        "addressLabel": "Adresse",
+        "addressPlaceholder": "Adresse, ville, état...",
+        "noteLabel": "Note (Optionnel)",
+        "notePlaceholder": "ex: Contact du destinataire, instructions de livraison"
+      },
+      "vehicle": {
+        "title": "Détails du véhicule",
+        "description": "Informations sur le véhicule à transporter",
+        "makeLabel": "Marque",
+        "makePlaceholder": "ex: Toyota",
+        "modelLabel": "Modèle",
+        "modelPlaceholder": "ex: Camry",
+        "yearLabel": "Année",
+        "yearPlaceholder": "ex: 2024",
+        "colorLabel": "Couleur",
+        "colorPlaceholder": "ex: Noir",
+        "drivetrainLabel": "Transmission",
+        "drivetrainPlaceholder": "ex: AV / AR / 4X4",
+        "serialNumberLabel": "Numéro de série",
+        "serialNumberPlaceholder": "Entrez le numéro de série du véhicule",
+        "isRunning": "Le véhicule fonctionne",
+        "accidented": "Accidenté",
+        "keysAvailable": "Clés disponibles",
+        "weightLabel": "Poids (kg)",
+        "weightPlaceholder": "Optionnel",
+        "dimensionsLabel": "Dimensions du véhicule (mètres) - Optionnel",
+        "lengthLabel": "Longueur",
+        "widthLabel": "Largeur",
+        "heightLabel": "Hauteur"
+      },
+      "pickupWindow": {
+        "title": "Fenêtre de prise en charge",
+        "description": "Quand le véhicule peut-il être pris en charge ?",
+        "startLabel": "Début de la fenêtre de prise en charge",
+        "endLabel": "Fin de la fenêtre de prise en charge",
+        "pickDate": "Choisir une date"
+      },
+      "deliveryDeadline": {
+        "title": "Date limite de livraison",
+        "description": "Quand le véhicule doit-il être livré ?",
+        "label": "Date limite de livraison",
+        "pickDate": "Choisir une date"
+      },
+      "auction": {
+        "title": "Paramètres de l'enchère",
+        "description": "Configurez le fonctionnement des enchères. Choisissez la date et l'heure de début et de fin.",
+        "startTimeLabel": "Heure de début de l'enchère (date & heure) *",
+        "endTimeLabel": "Heure de fin de l'enchère (date & heure) *",
+        "duration": "Durée : {{hours}} heures",
+        "instantAcceptLabel": "Prix d'acceptation immédiate ($) - Optionnel",
+        "instantAcceptPlaceholder": "Prix d'achat immédiat"
+      },
+      "photos": {
+        "title": "Photos du véhicule",
+        "description": "Téléchargez des photos du véhicule",
+        "uploadLabel": "Télécharger des photos",
+        "altText": "Véhicule {{index}}"
+      }
+    },
+    "actions": {
+      "cancel": "Annuler",
+      "create": "Créer la demande",
+      "creating": "Création..."
+    },
+    "errors": {
+      "pickupAddress": "Veuillez sélectionner une adresse de prise en charge dans les suggestions.",
+      "deliveryAddress": "Veuillez sélectionner une adresse de livraison dans les suggestions.",
+      "pickupWindow": "Veuillez définir les dates de la fenêtre de prise en charge.",
+      "deliveryDeadline": "Veuillez définir la date limite de livraison.",
+      "auctionStart": "Veuillez définir la date et l'heure de début de l'enchère.",
+      "auctionEnd": "Veuillez définir la date et l'heure de fin de l'enchère.",
+      "auctionEndBeforeStart": "La fin de l'enchère doit être après le début.",
+      "createFailed": "Échec de la création de l'expédition."
+    },
+    "success": {
+      "created": "Demande d'expédition créée."
     }
   }
 }

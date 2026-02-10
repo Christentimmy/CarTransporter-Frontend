@@ -19,8 +19,10 @@ import { createShipment } from "@/services/shipmentService";
 import { type CreateShipmentLocation, toShipmentLocationPayload } from "@/types/shipment";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const PostRequest = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,31 +88,31 @@ const PostRequest = () => {
     e.preventDefault();
 
     if (!pickupLocation?.coordinates?.length) {
-      toast.error("Please select a pickup address from the suggestions.");
+      toast.error(t("postRequest.errors.pickupAddress"));
       return;
     }
     if (!deliveryLocation?.coordinates?.length) {
-      toast.error("Please select a delivery address from the suggestions.");
+      toast.error(t("postRequest.errors.deliveryAddress"));
       return;
     }
     if (!pickupWindowStart || !pickupWindowEnd) {
-      toast.error("Please set the pickup window dates.");
+      toast.error(t("postRequest.errors.pickupWindow"));
       return;
     }
     if (!deliveryDeadline) {
-      toast.error("Please set the delivery deadline.");
+      toast.error(t("postRequest.errors.deliveryDeadline"));
       return;
     }
     if (!auctionStartTime) {
-      toast.error("Please set the auction start date and time.");
+      toast.error(t("postRequest.errors.auctionStart"));
       return;
     }
     if (!auctionEndTime) {
-      toast.error("Please set the auction end date and time.");
+      toast.error(t("postRequest.errors.auctionEnd"));
       return;
     }
     if (auctionEndTime.getTime() <= auctionStartTime.getTime()) {
-      toast.error("Auction end must be after auction start.");
+      toast.error(t("postRequest.errors.auctionEndBeforeStart"));
       return;
     }
 
@@ -176,10 +178,10 @@ const PostRequest = () => {
     setIsSubmitting(true);
     try {
       await createShipment(form);
-      toast.success("Shipment request created.");
+      toast.success(t("postRequest.success.created"));
       navigate(redirectPath);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to create shipment.");
+      toast.error(err instanceof Error ? err.message : t("postRequest.errors.createFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -192,9 +194,9 @@ const PostRequest = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Post Vehicle Request</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("postRequest.title")}</h1>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Create a new vehicle transport request and let transporters bid on it.
+          {t("postRequest.subtitle")}
         </p>
       </motion.div>
 
@@ -204,13 +206,13 @@ const PostRequest = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />
-              Pickup Location
+              {t("postRequest.sections.pickup.title")}
             </CardTitle>
-            <CardDescription className="text-sm">Where should the vehicle be picked up? Start typing and select an address.</CardDescription>
+            <CardDescription className="text-sm">{t("postRequest.sections.pickup.description")}</CardDescription>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
             <div className="space-y-2">
-              <Label htmlFor="pickup-address">Address</Label>
+              <Label htmlFor="pickup-address">{t("postRequest.sections.pickup.addressLabel")}</Label>
               <PlacesAutocomplete
                 id="pickup-address"
                 value={pickupAddress}
@@ -219,7 +221,7 @@ const PostRequest = () => {
                   setPickupLocation(loc);
                   setPickupAddress(loc.address ?? "");
                 }}
-                placeholder="Street address, city, state..."
+                placeholder={t("postRequest.sections.pickup.addressPlaceholder")}
               />
               {pickupLocation && (
                 <p className="text-xs text-muted-foreground">
@@ -229,12 +231,12 @@ const PostRequest = () => {
             </div>
 
             <div className="space-y-2 mt-4">
-              <Label htmlFor="pickup-note">Note (Optional)</Label>
+              <Label htmlFor="pickup-note">{t("postRequest.sections.pickup.noteLabel")}</Label>
               <Input
                 id="pickup-note"
                 value={pickupNote}
                 onChange={(e) => setPickupNote(e.target.value)}
-                placeholder="e.g., Call on arrival, gate code, loading instructions"
+                placeholder={t("postRequest.sections.pickup.notePlaceholder")}
               />
             </div>
           </CardContent>
@@ -245,13 +247,13 @@ const PostRequest = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />
-              Delivery Location
+              {t("postRequest.sections.delivery.title")}
             </CardTitle>
-            <CardDescription className="text-sm">Where should the vehicle be delivered? Start typing and select an address.</CardDescription>
+            <CardDescription className="text-sm">{t("postRequest.sections.delivery.description")}</CardDescription>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
             <div className="space-y-2">
-              <Label htmlFor="delivery-address">Address</Label>
+              <Label htmlFor="delivery-address">{t("postRequest.sections.delivery.addressLabel")}</Label>
               <PlacesAutocomplete
                 id="delivery-address"
                 value={deliveryAddress}
@@ -260,7 +262,7 @@ const PostRequest = () => {
                   setDeliveryLocation(loc);
                   setDeliveryAddress(loc.address ?? "");
                 }}
-                placeholder="Street address, city, state..."
+                placeholder={t("postRequest.sections.delivery.addressPlaceholder")}
               />
               {deliveryLocation && (
                 <p className="text-xs text-muted-foreground">
@@ -270,12 +272,12 @@ const PostRequest = () => {
             </div>
 
             <div className="space-y-2 mt-4">
-              <Label htmlFor="delivery-note">Note (Optional)</Label>
+              <Label htmlFor="delivery-note">{t("postRequest.sections.delivery.noteLabel")}</Label>
               <Input
                 id="delivery-note"
                 value={deliveryNote}
                 onChange={(e) => setDeliveryNote(e.target.value)}
-                placeholder="e.g., Receiver contact, delivery instructions"
+                placeholder={t("postRequest.sections.delivery.notePlaceholder")}
               />
             </div>
           </CardContent>
@@ -286,40 +288,40 @@ const PostRequest = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Truck className="h-4 w-4 sm:h-5 sm:w-5" />
-              Vehicle Details
+              {t("postRequest.sections.vehicle.title")}
             </CardTitle>
-            <CardDescription className="text-sm">Information about the vehicle to be transported</CardDescription>
+            <CardDescription className="text-sm">{t("postRequest.sections.vehicle.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="make">Make</Label>
+                <Label htmlFor="make">{t("postRequest.sections.vehicle.makeLabel")}</Label>
                 <Input
                   id="make"
                   value={make}
                   onChange={(e) => setMake(e.target.value)}
-                  placeholder="e.g., Toyota"
+                  placeholder={t("postRequest.sections.vehicle.makePlaceholder")}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="model">Model</Label>
+                <Label htmlFor="model">{t("postRequest.sections.vehicle.modelLabel")}</Label>
                 <Input
                   id="model"
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
-                  placeholder="e.g., Camry"
+                  placeholder={t("postRequest.sections.vehicle.modelPlaceholder")}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="year">Year</Label>
+                <Label htmlFor="year">{t("postRequest.sections.vehicle.yearLabel")}</Label>
                 <Input
                   id="year"
                   type="number"
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
-                  placeholder="e.g., 2024"
+                  placeholder={t("postRequest.sections.vehicle.yearPlaceholder")}
                   min="1900"
                   max={new Date().getFullYear() + 1}
                   required
@@ -329,34 +331,34 @@ const PostRequest = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="color">Color</Label>
+                <Label htmlFor="color">{t("postRequest.sections.vehicle.colorLabel")}</Label>
                 <Input
                   id="color"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
-                  placeholder="e.g., Black"
+                  placeholder={t("postRequest.sections.vehicle.colorPlaceholder")}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="drivetrain">Drivetrain</Label>
+                <Label htmlFor="drivetrain">{t("postRequest.sections.vehicle.drivetrainLabel")}</Label>
                 <Input
                   id="drivetrain"
                   value={drivetrain}
                   onChange={(e) => setDrivetrain(e.target.value)}
-                  placeholder="e.g., FWD / RWD / AWD"
+                  placeholder={t("postRequest.sections.vehicle.drivetrainPlaceholder")}
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="serialNumber">Serial Number</Label>
+              <Label htmlFor="serialNumber">{t("postRequest.sections.vehicle.serialNumberLabel")}</Label>
               <Input
                 id="serialNumber"
                 value={serialNumber}
                 onChange={(e) => setSerialNumber(e.target.value)}
-                placeholder="Enter vehicle serial number"
+                placeholder={t("postRequest.sections.vehicle.serialNumberPlaceholder")}
                 required
               />
             </div>
@@ -368,7 +370,7 @@ const PostRequest = () => {
                 onCheckedChange={(checked) => setIsRunning(checked as boolean)}
               />
               <Label htmlFor="is-running" className="cursor-pointer">
-                Vehicle is running
+                {t("postRequest.sections.vehicle.isRunning")}
               </Label>
             </div>
 
@@ -380,7 +382,7 @@ const PostRequest = () => {
                   onCheckedChange={(checked) => setIsAccidented(checked as boolean)}
                 />
                 <Label htmlFor="is-accidented" className="cursor-pointer">
-                  Accidented
+                  {t("postRequest.sections.vehicle.accidented")}
                 </Label>
               </div>
 
@@ -391,20 +393,20 @@ const PostRequest = () => {
                   onCheckedChange={(checked) => setKeysAvailable(checked as boolean)}
                 />
                 <Label htmlFor="keys-available" className="cursor-pointer">
-                  Keys available
+                  {t("postRequest.sections.vehicle.keysAvailable")}
                 </Label>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="weight">Weight (kg)</Label>
+                <Label htmlFor="weight">{t("postRequest.sections.vehicle.weightLabel")}</Label>
                 <Input
                   id="weight"
                   type="number"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
-                  placeholder="Optional"
+                  placeholder={t("postRequest.sections.vehicle.weightPlaceholder")}
                   min="0"
                   step="0.1"
                 />
@@ -412,40 +414,40 @@ const PostRequest = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Vehicle Dimensions (meters) - Optional</Label>
+              <Label>{t("postRequest.sections.vehicle.dimensionsLabel")}</Label>
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="length">Length</Label>
+                  <Label htmlFor="length">{t("postRequest.sections.vehicle.lengthLabel")}</Label>
                   <Input
                     id="length"
                     type="number"
                     value={length}
                     onChange={(e) => setLength(e.target.value)}
-                    placeholder="Length"
+                    placeholder={t("postRequest.sections.vehicle.lengthLabel")}
                     min="0"
                     step="0.01"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="width">Width</Label>
+                  <Label htmlFor="width">{t("postRequest.sections.vehicle.widthLabel")}</Label>
                   <Input
                     id="width"
                     type="number"
                     value={width}
                     onChange={(e) => setWidth(e.target.value)}
-                    placeholder="Width"
+                    placeholder={t("postRequest.sections.vehicle.widthLabel")}
                     min="0"
                     step="0.01"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="height">Height</Label>
+                  <Label htmlFor="height">{t("postRequest.sections.vehicle.heightLabel")}</Label>
                   <Input
                     id="height"
                     type="number"
                     value={height}
                     onChange={(e) => setHeight(e.target.value)}
-                    placeholder="Height"
+                    placeholder={t("postRequest.sections.vehicle.heightLabel")}
                     min="0"
                     step="0.01"
                   />
@@ -460,14 +462,14 @@ const PostRequest = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-              Pickup Window
+              {t("postRequest.sections.pickupWindow.title")}
             </CardTitle>
-            <CardDescription className="text-sm">When can the vehicle be picked up?</CardDescription>
+            <CardDescription className="text-sm">{t("postRequest.sections.pickupWindow.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label>Pickup Window Start</Label>
+                <Label>{t("postRequest.sections.pickupWindow.startLabel")}</Label>
                 <Popover open={isPickupStartOpen} onOpenChange={setIsPickupStartOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -481,7 +483,7 @@ const PostRequest = () => {
                       {pickupWindowStart ? (
                         format(pickupWindowStart, "PPP")
                       ) : (
-                        <span>Pick a date</span>
+                        <span>{t("postRequest.sections.pickupWindow.pickDate")}</span>
                       )}
                     </Button>
                   </PopoverTrigger>
@@ -501,7 +503,7 @@ const PostRequest = () => {
                 </Popover>
               </div>
               <div className="space-y-2">
-                <Label>Pickup Window End</Label>
+                <Label>{t("postRequest.sections.pickupWindow.endLabel")}</Label>
                 <Popover open={isPickupEndOpen} onOpenChange={setIsPickupEndOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -515,7 +517,7 @@ const PostRequest = () => {
                       {pickupWindowEnd ? (
                         format(pickupWindowEnd, "PPP")
                       ) : (
-                        <span>Pick a date</span>
+                        <span>{t("postRequest.sections.pickupWindow.pickDate")}</span>
                       )}
                     </Button>
                   </PopoverTrigger>
@@ -543,13 +545,13 @@ const PostRequest = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-              Delivery Deadline
+              {t("postRequest.sections.deliveryDeadline.title")}
             </CardTitle>
-            <CardDescription className="text-sm">When must the vehicle be delivered by?</CardDescription>
+            <CardDescription className="text-sm">{t("postRequest.sections.deliveryDeadline.description")}</CardDescription>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
             <div className="space-y-2">
-              <Label>Delivery Deadline</Label>
+              <Label>{t("postRequest.sections.deliveryDeadline.label")}</Label>
               <Popover open={isDeliveryDeadlineOpen} onOpenChange={setIsDeliveryDeadlineOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -563,7 +565,7 @@ const PostRequest = () => {
                     {deliveryDeadline ? (
                       format(deliveryDeadline, "PPP")
                     ) : (
-                      <span>Pick a date</span>
+                      <span>{t("postRequest.sections.deliveryDeadline.pickDate")}</span>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -588,13 +590,13 @@ const PostRequest = () => {
         {/* Auction Settings */}
         <Card>
           <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-lg sm:text-xl">Auction Settings</CardTitle>
-            <CardDescription className="text-sm">Configure how the bidding will work. Pick date and time for start and end.</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">{t("postRequest.sections.auction.title")}</CardTitle>
+            <CardDescription className="text-sm">{t("postRequest.sections.auction.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="auction-start">Auction Start Time (date & time) *</Label>
+                <Label htmlFor="auction-start">{t("postRequest.sections.auction.startTimeLabel")}</Label>
                 <Input
                   id="auction-start"
                   type="datetime-local"
@@ -607,7 +609,7 @@ const PostRequest = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="auction-end">Auction End Time (date & time) *</Label>
+                <Label htmlFor="auction-end">{t("postRequest.sections.auction.endTimeLabel")}</Label>
                 <Input
                   id="auction-end"
                   type="datetime-local"
@@ -626,17 +628,17 @@ const PostRequest = () => {
             </div>
             {auctionStartTime && auctionEndTime && (
               <p className="text-sm text-muted-foreground">
-                Duration: {Math.round((auctionEndTime.getTime() - auctionStartTime.getTime()) / (60 * 60 * 1000))} hours
+                {t("postRequest.sections.auction.duration", { hours: Math.round((auctionEndTime.getTime() - auctionStartTime.getTime()) / (60 * 60 * 1000)) })}
               </p>
             )}
             <div className="space-y-2">
-              <Label htmlFor="instant-accept">Instant Accept Price ($) - Optional</Label>
+              <Label htmlFor="instant-accept">{t("postRequest.sections.auction.instantAcceptLabel")}</Label>
               <Input
                 id="instant-accept"
                 type="number"
                 value={instantAcceptPrice}
                 onChange={(e) => setInstantAcceptPrice(e.target.value)}
-                placeholder="Buy it now price"
+                placeholder={t("postRequest.sections.auction.instantAcceptPlaceholder")}
                 min="0"
                 step="0.01"
               />
@@ -649,13 +651,13 @@ const PostRequest = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
-              Vehicle Photos
+              {t("postRequest.sections.photos.title")}
             </CardTitle>
-            <CardDescription>Upload photos of the vehicle</CardDescription>
+            <CardDescription>{t("postRequest.sections.photos.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="photos">Upload Photos</Label>
+              <Label htmlFor="photos">{t("postRequest.sections.photos.uploadLabel")}</Label>
               <Input
                 id="photos"
                 type="file"
@@ -671,7 +673,7 @@ const PostRequest = () => {
                   <div key={index} className="relative">
                     <img
                       src={URL.createObjectURL(photo)}
-                      alt={`Vehicle ${index + 1}`}
+                      alt={t("postRequest.sections.photos.altText", { index: index + 1 })}
                       className="h-32 w-full rounded-md object-cover"
                     />
                     <Button
@@ -698,10 +700,10 @@ const PostRequest = () => {
             onClick={() => navigate("/user/dashboard")}
             className="w-full sm:w-auto"
           >
-            Cancel
+            {t("postRequest.actions.cancel")}
           </Button>
           <Button type="submit" variant="hero" size="lg" className="w-full sm:w-auto" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Request"}
+            {isSubmitting ? t("postRequest.actions.creating") : t("postRequest.actions.create")}
           </Button>
         </div>
       </form>

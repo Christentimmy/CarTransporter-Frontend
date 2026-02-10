@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { dashboardService } from "@/services/dashboard_services";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface DashboardData {
   pendingRequest: number;
@@ -21,6 +22,7 @@ interface RecentRequest {
 }
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,7 +32,7 @@ const Dashboard = () => {
         const data = await dashboardService.getUserDashboard();
         setDashboardData(data);
       } catch (error) {
-        toast.error("Failed to load dashboard data", {
+        toast.error(t("user.dashboard.toast.loadFailed"), {
           style: { background: '#ef4444', color: '#ffffff' },
         });
         console.error('Error fetching dashboard data:', error);
@@ -40,7 +42,7 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [t]);
 
   // useEffect(() => {
   //   const initializeNotifications = async () => {
@@ -60,30 +62,30 @@ const Dashboard = () => {
 
   const stats = [
     {
-      title: "Pending Requests",
+      title: t("user.dashboard.stats.pending.title"),
       value: dashboardData?.pendingRequest.toString() || "0",
-      description: "Requests awaiting bids",
+      description: t("user.dashboard.stats.pending.description"),
       icon: Clock,
       color: "text-blue-500",
     },
     {
-      title: "Completed Requests",
+      title: t("user.dashboard.stats.completed.title"),
       value: dashboardData?.completedRequest.toString() || "0",
-      description: "Successfully delivered",
+      description: t("user.dashboard.stats.completed.description"),
       icon: CheckCircle,
       color: "text-green-500",
     },
     {
-      title: "Total Requests",
+      title: t("user.dashboard.stats.total.title"),
       value: dashboardData?.totalRequest.toString() || "0",
-      description: "All time requests",
+      description: t("user.dashboard.stats.total.description"),
       icon: FileText,
       color: "text-orange-500",
     },
     {
-      title: "Total Revenue",
+      title: t("user.dashboard.stats.revenue.title"),
       value: dashboardData ? `$${dashboardData.totalRevenue.toLocaleString()}` : "$0",
-      description: "Total amount spent",
+      description: t("user.dashboard.stats.revenue.description"),
       icon: DollarSign,
       color: "text-purple-500",
     },
@@ -97,7 +99,7 @@ const Dashboard = () => {
     if (requests.length === 0) {
       return (
         <div className="text-center py-6 text-muted-foreground">
-          No recent requests found
+          {t("user.dashboard.recent.empty")}
         </div>
       );
     }
@@ -111,15 +113,15 @@ const Dashboard = () => {
             </div>
             <div className="flex-1">
               <p className="text-sm font-medium">
-                {request.vehicleName || 'Vehicle Transport'}
+                {request.vehicleName || t("user.dashboard.recent.fallbackVehicle")}
               </p>
               <p className="text-xs text-muted-foreground">
-                {request.status || 'Pending'}
+                {request.status || t("user.dashboard.recent.fallbackStatus")}
               </p>
             </div>
             <div className="text-right">
               <p className="text-sm font-medium">
-                {request.amount ? `$${request.amount}` : 'N/A'}
+                {request.amount ? `$${request.amount}` : t("user.dashboard.recent.fallbackAmount")}
               </p>
               <p className="text-xs text-muted-foreground">
                 {request.date || ''}
@@ -139,9 +141,9 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("user.dashboard.title")}</h1>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Welcome back! Here's an overview of your activity.
+          {t("user.dashboard.subtitle")}
         </p>
       </motion.div>
 
@@ -191,9 +193,9 @@ const Dashboard = () => {
             >
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Requests</CardTitle>
+                  <CardTitle>{t("user.dashboard.recent.title")}</CardTitle>
                   <CardDescription>
-                    Your latest vehicle transport requests
+                    {t("user.dashboard.recent.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

@@ -25,20 +25,22 @@ import {
   Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Globe } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const menuItems = [
   {
-    title: "Dashboard",
+    titleKey: "user.layout.menu.dashboard",
     icon: LayoutDashboard,
     url: "/user/dashboard",
   },
   {
-    title: "Post Vehicle Request",
+    titleKey: "user.layout.menu.postVehicleRequest",
     icon: Truck,
     url: "/user/post-request",
   },
   {
-    title: "My Requests",
+    titleKey: "user.layout.menu.myRequests",
     icon: FileText,
     url: "/user/my-requests",
   },
@@ -48,7 +50,7 @@ const menuItems = [
   //   url: "/user/notifications",
   // },
   {
-    title: "Profile",
+    titleKey: "user.layout.menu.profile",
     icon: User,
     url: "/user/profile",
   },
@@ -66,6 +68,10 @@ export const UserLayout = () => {
 
 const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLocation> }) => {
   const { setOpenMobile, isMobile } = useSidebar();
+  const { t, i18n } = useTranslation();
+
+  const nextLanguage = i18n.language?.startsWith("fr") ? "en" : "fr";
+  const languageToggleLabel = i18n.language?.startsWith("fr") ? "EN" : "FR";
 
   const handleLinkClick = () => {
     if (isMobile) {
@@ -86,7 +92,7 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">BID4TOW</span>
-                    <span className="truncate text-xs">User Dashboard</span>
+                    <span className="truncate text-xs">{t("user.layout.appSubtitle")}</span>
                   </div>
                 </Link>
               </SidebarMenuButton>
@@ -95,22 +101,23 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroupLabel>{t("user.layout.navigation")}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {menuItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = location.pathname === item.url;
+                  const title = t(item.titleKey);
                   return (
                     <SidebarMenuItem key={item.url}>
                       <SidebarMenuButton
                         asChild
                         isActive={isActive}
-                        tooltip={item.title}
+                        tooltip={title}
                       >
                         <Link to={item.url} onClick={handleLinkClick}>
                           <Icon />
-                          <span>{item.title}</span>
+                          <span>{title}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -123,18 +130,18 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Back to Home">
+              <SidebarMenuButton asChild tooltip={t("user.layout.backToHome")}>
                 <Link to="/" onClick={handleLinkClick}>
                   <Home />
-                  <span>Back to Home</span>
+                  <span>{t("user.layout.backToHome")}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Logout">
+              <SidebarMenuButton asChild tooltip={t("user.layout.logout")}>
                 <Link to="/login" onClick={handleLinkClick}>
                   <LogOut />
-                  <span>Logout</span>
+                  <span>{t("user.layout.logout")}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -146,6 +153,15 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <div className="flex-1" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => i18n.changeLanguage(nextLanguage)}
+            className="bg-background/80 backdrop-blur-xl border border-border/50"
+          >
+            <Globe className="w-4 h-4 mr-2" />
+            {languageToggleLabel}
+          </Button>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-3 sm:p-4 md:p-6">
           <Outlet />

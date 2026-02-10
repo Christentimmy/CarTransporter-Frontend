@@ -125,7 +125,239 @@
         "privacy": "Privacy Policy",
         "cookie": "Cookie Policy"
       },
-      "copyright": "© {{year}} BID4TOW. All rights reserved."
+      "copyright": "  {{year}} BID4TOW. All rights reserved."
+    }
+  },
+  "auth": {
+    "login": {
+      "backToHome": "Back to Home",
+      "welcomeBack": "Welcome Back",
+      "subtitle": "Sign in to your account to continue",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign In",
+      "signingIn": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "register": {
+      "backToHome": "Back to Home",
+      "createAccount": "Create Account",
+      "subtitle": "Sign up to get started",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "phoneNumber": "Phone Number",
+      "phoneNumberPlaceholder": "Enter your phone number",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "role": "Role",
+      "rolePlaceholder": "Select your role",
+      "user": "User",
+      "transporter": "Transporter",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Enter your company name",
+      "businessAddress": "Business Address",
+      "businessAddressPlaceholder": "Enter your business address",
+      "taxNumber": "Tax Number",
+      "taxNumberPlaceholder": "Enter your tax number",
+      "country": "Country",
+      "countryPlaceholder": "Select country",
+      "stateProvince": "State / Province",
+      "stateProvincePlaceholder": "Enter state or province",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "Enter postal code",
+      "insuranceProvider": "Insurance Provider",
+      "insuranceProviderPlaceholder": "Enter insurance provider name",
+      "policyNumber": "Policy Number",
+      "policyNumberPlaceholder": "Enter policy number",
+      "policyExpiryDate": "Policy Expiry Date",
+      "creatingAccount": "Creating account...",
+      "signUp": "Sign Up",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "errors": {
+        "fullNameRequired": "Full name is required",
+        "emailRequired": "Email is required",
+        "phoneNumberRequired": "Phone number is required",
+        "passwordRequired": "Password is required",
+        "passwordMinLength": "Password must be at least 6 characters",
+        "roleRequired": "Role is required",
+        "companyNameRequired": "Company name is required",
+        "businessAddressRequired": "Business address is required",
+        "taxNumberRequired": "Tax number is required",
+        "countryRequired": "Country is required",
+        "stateRequired": "State/Province is required",
+        "postalCodeRequired": "Postal code is required",
+        "insuranceProviderRequired": "Insurance provider is required",
+        "policyNumberRequired": "Policy number is required",
+        "expiryDateRequired": "Expiry date is required"
+      }
+    },
+    "verifyOtp": {
+      "back": "Back",
+      "verifyEmail": "Verify Your Email",
+      "subtitle": "We've sent a verification code to {{email}}",
+      "subtitleFallback": "We've sent a verification code to your email",
+      "enterCode": "Enter Verification Code",
+      "codePlaceholder": "Enter 4-digit code",
+      "verifyEmailButton": "Verify Email",
+      "verifying": "Verifying...",
+      "didntReceiveCode": "Didn't receive a code?",
+      "resendCode": "Resend Code",
+      "errors": {
+        "invalidOtp": "Please enter a valid 4-digit OTP",
+        "verificationFailed": "Verification failed. Please try again.",
+        "resendFailed": "Failed to resend OTP. Please try again."
+      },
+      "success": {
+        "emailVerified": "Email verified successfully! 🎉",
+        "otpResent": "New OTP sent to your email"
+      }
+    }
+  },
+  "user": {
+    "layout": {
+      "appSubtitle": "User Dashboard",
+      "navigation": "Navigation",
+      "menu": {
+        "dashboard": "Dashboard",
+        "postVehicleRequest": "Post Vehicle Request",
+        "myRequests": "My Requests",
+        "profile": "Profile"
+      },
+      "backToHome": "Back to Home",
+      "logout": "Logout"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Welcome back! Here's an overview of your activity.",
+      "toast": {
+        "loadFailed": "Failed to load dashboard data"
+      },
+      "stats": {
+        "pending": {
+          "title": "Pending Requests",
+          "description": "Requests awaiting bids"
+        },
+        "completed": {
+          "title": "Completed Requests",
+          "description": "Successfully delivered"
+        },
+        "total": {
+          "title": "Total Requests",
+          "description": "All time requests"
+        },
+        "revenue": {
+          "title": "Total Revenue",
+          "description": "Total amount spent"
+        }
+      },
+      "recent": {
+        "title": "Recent Requests",
+        "description": "Your latest vehicle transport requests",
+        "empty": "No recent requests found",
+        "fallbackVehicle": "Vehicle Transport",
+        "fallbackStatus": "Pending",
+        "fallbackAmount": "N/A"
+      }
+    }
+  },
+  "postRequest": {
+    "title": "Post Vehicle Request",
+    "subtitle": "Create a new vehicle transport request and let transporters bid on it.",
+    "sections": {
+      "pickup": {
+        "title": "Pickup Location",
+        "description": "Where should the vehicle be picked up? Start typing and select an address.",
+        "addressLabel": "Address",
+        "addressPlaceholder": "Street address, city, state...",
+        "noteLabel": "Note (Optional)",
+        "notePlaceholder": "e.g., Call on arrival, gate code, loading instructions"
+      },
+      "delivery": {
+        "title": "Delivery Location",
+        "description": "Where should the vehicle be delivered? Start typing and select an address.",
+        "addressLabel": "Address",
+        "addressPlaceholder": "Street address, city, state...",
+        "noteLabel": "Note (Optional)",
+        "notePlaceholder": "e.g., Receiver contact, delivery instructions"
+      },
+      "vehicle": {
+        "title": "Vehicle Details",
+        "description": "Information about the vehicle to be transported",
+        "makeLabel": "Make",
+        "makePlaceholder": "e.g., Toyota",
+        "modelLabel": "Model",
+        "modelPlaceholder": "e.g., Camry",
+        "yearLabel": "Year",
+        "yearPlaceholder": "e.g., 2024",
+        "colorLabel": "Color",
+        "colorPlaceholder": "e.g., Black",
+        "drivetrainLabel": "Drivetrain",
+        "drivetrainPlaceholder": "e.g., FWD / RWD / AWD",
+        "serialNumberLabel": "Serial Number",
+        "serialNumberPlaceholder": "Enter vehicle serial number",
+        "isRunning": "Vehicle is running",
+        "accidented": "Accidented",
+        "keysAvailable": "Keys available",
+        "weightLabel": "Weight (kg)",
+        "weightPlaceholder": "Optional",
+        "dimensionsLabel": "Vehicle Dimensions (meters) - Optional",
+        "lengthLabel": "Length",
+        "widthLabel": "Width",
+        "heightLabel": "Height"
+      },
+      "pickupWindow": {
+        "title": "Pickup Window",
+        "description": "When can the vehicle be picked up?",
+        "startLabel": "Pickup Window Start",
+        "endLabel": "Pickup Window End",
+        "pickDate": "Pick a date"
+      },
+      "deliveryDeadline": {
+        "title": "Delivery Deadline",
+        "description": "When must the vehicle be delivered by?",
+        "label": "Delivery Deadline",
+        "pickDate": "Pick a date"
+      },
+      "auction": {
+        "title": "Auction Settings",
+        "description": "Configure how the bidding will work. Pick date and time for start and end.",
+        "startTimeLabel": "Auction Start Time (date & time) *",
+        "endTimeLabel": "Auction End Time (date & time) *",
+        "duration": "Duration: {{hours}} hours",
+        "instantAcceptLabel": "Instant Accept Price ($) - Optional",
+        "instantAcceptPlaceholder": "Buy it now price"
+      },
+      "photos": {
+        "title": "Vehicle Photos",
+        "description": "Upload photos of the vehicle",
+        "uploadLabel": "Upload Photos",
+        "altText": "Vehicle {{index}}"
+      }
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Create Request",
+      "creating": "Creating..."
+    },
+    "errors": {
+      "pickupAddress": "Please select a pickup address from the suggestions.",
+      "deliveryAddress": "Please select a delivery address from the suggestions.",
+      "pickupWindow": "Please set the pickup window dates.",
+      "deliveryDeadline": "Please set the delivery deadline.",
+      "auctionStart": "Please set the auction start date and time.",
+      "auctionEnd": "Please set the auction end date and time.",
+      "auctionEndBeforeStart": "Auction end must be after auction start.",
+      "createFailed": "Failed to create shipment."
+    },
+    "success": {
+      "created": "Shipment request created."
     }
   }
 }

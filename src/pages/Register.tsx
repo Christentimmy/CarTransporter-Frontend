@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Truck, ArrowLeft, Loader2 } from "lucide-react";
+import { Truck, ArrowLeft, Loader2, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,10 +16,15 @@ import {
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { authService, RegisterPayload } from "@/services/auth_services";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+
+  const nextLanguage = i18n.language?.startsWith("fr") ? "en" : "fr";
+  const languageToggleLabel = i18n.language?.startsWith("fr") ? "EN" : "FR";
   
   const {
     register,
@@ -83,6 +88,18 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
       <AnimatedBackground />
+      {/* Language Toggle */}
+      <div className="fixed top-4 right-4 z-50">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => i18n.changeLanguage(nextLanguage)}
+          className="bg-background/80 backdrop-blur-xl border border-border/50"
+        >
+          <Globe className="w-4 h-4 mr-2" />
+          {languageToggleLabel}
+        </Button>
+      </div>
       <div className="relative z-10 min-h-screen flex items-center justify-center px-6 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -96,7 +113,7 @@ const Register = () => {
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Home</span>
+            <span>{t("auth.register.backToHome")}</span>
           </Link>
 
           {/* Register Card */}
@@ -113,23 +130,23 @@ const Register = () => {
 
             {/* Title */}
             <h1 className="font-display text-3xl font-bold text-center mb-2">
-              Create Account
+              {t("auth.register.createAccount")}
             </h1>
             <p className="text-center text-muted-foreground mb-8">
-              Sign up to get started
+              {t("auth.register.subtitle")}
             </p>
 
             {/* Register Form */}
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               {/* Full Name */}
               <div className="space-y-2">
-                <Label htmlFor="full_name">Full Name</Label>
+                <Label htmlFor="full_name">{t("auth.register.fullName")}</Label>
                 <Input
                   id="full_name"
                   type="text"
-                  placeholder="Enter your full name"
+                  placeholder={t("auth.register.fullNamePlaceholder")}
                   className="w-full"
-                  {...register("full_name", { required: "Full name is required" })}
+                  {...register("full_name", { required: t("auth.register.errors.fullNameRequired") })}
                 />
                 {errors.full_name && (
                   <p className="text-sm text-red-500">{errors.full_name.message}</p>
@@ -138,13 +155,13 @@ const Register = () => {
 
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("auth.register.email")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t("auth.register.emailPlaceholder")}
                   className="w-full"
-                  {...register("email", { required: "Email is required" })}
+                  {...register("email", { required: t("auth.register.errors.emailRequired") })}
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -153,13 +170,13 @@ const Register = () => {
 
               {/* Phone Number */}
               <div className="space-y-2">
-                <Label htmlFor="phone_number">Phone Number</Label>
+                <Label htmlFor="phone_number">{t("auth.register.phoneNumber")}</Label>
                 <Input
                   id="phone_number"
                   type="tel"
-                  placeholder="Enter your phone number"
+                  placeholder={t("auth.register.phoneNumberPlaceholder")}
                   className="w-full"
-                  {...register("phone_number", { required: "Phone number is required" })}
+                  {...register("phone_number", { required: t("auth.register.errors.phoneNumberRequired") })}
                 />
                 {errors.phone_number && (
                   <p className="text-sm text-red-500">{errors.phone_number.message}</p>
@@ -168,15 +185,15 @@ const Register = () => {
 
               {/* Password */}
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("auth.register.password")}</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t("auth.register.passwordPlaceholder")}
                   className="w-full"
                   {...register("password", { 
-                    required: "Password is required",
-                    minLength: { value: 6, message: "Password must be at least 6 characters" }
+                    required: t("auth.register.errors.passwordRequired"),
+                    minLength: { value: 6, message: t("auth.register.errors.passwordMinLength") }
                   })}
                 />
                 {errors.password && (
@@ -186,7 +203,7 @@ const Register = () => {
 
               {/* Role */}
               <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
+                <Label htmlFor="role">{t("auth.register.role")}</Label>
                 <Select
                   value={role}
                   onValueChange={(value) => {
@@ -194,11 +211,11 @@ const Register = () => {
                   }}
                 >
                   <SelectTrigger id="role" className="w-full">
-                    <SelectValue placeholder="Select your role" />
+                    <SelectValue placeholder={t("auth.register.rolePlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="transporter">Transporter</SelectItem>
+                    <SelectItem value="user">{t("auth.register.user")}</SelectItem>
+                    <SelectItem value="transporter">{t("auth.register.transporter")}</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.role && (
@@ -218,14 +235,14 @@ const Register = () => {
                   >
                     {/* Company Name */}
                     <div className="space-y-2">
-                      <Label htmlFor="company_name">Company Name</Label>
+                      <Label htmlFor="company_name">{t("auth.register.companyName")}</Label>
                       <Input
                         id="company_name"
                         type="text"
-                        placeholder="Enter your company name"
+                        placeholder={t("auth.register.companyNamePlaceholder")}
                         className="w-full"
                         {...register("company_name", {
-                          required: isTransporter ? "Company name is required" : false,
+                          required: isTransporter ? t("auth.register.errors.companyNameRequired") : false,
                         })}
                       />
                       {errors.company_name && (
@@ -235,14 +252,14 @@ const Register = () => {
 
                     {/* Business Address */}
                     <div className="space-y-2">
-                      <Label htmlFor="business_address">Business Address</Label>
+                      <Label htmlFor="business_address">{t("auth.register.businessAddress")}</Label>
                       <Input
                         id="business_address"
                         type="text"
-                        placeholder="Enter your business address"
+                        placeholder={t("auth.register.businessAddressPlaceholder")}
                         className="w-full"
                         {...register("business_address", {
-                          required: isTransporter ? "Business address is required" : false,
+                          required: isTransporter ? t("auth.register.errors.businessAddressRequired") : false,
                         })}
                       />
                       {errors.business_address && (
@@ -252,14 +269,14 @@ const Register = () => {
 
                     {/* Tax Number */}
                     <div className="space-y-2">
-                      <Label htmlFor="tax_number">Tax Number</Label>
+                      <Label htmlFor="tax_number">{t("auth.register.taxNumber")}</Label>
                       <Input
                         id="tax_number"
                         type="text"
-                        placeholder="Enter your tax number"
+                        placeholder={t("auth.register.taxNumberPlaceholder")}
                         className="w-full"
                         {...register("tax_number", {
-                          required: isTransporter ? "Tax number is required" : false,
+                          required: isTransporter ? t("auth.register.errors.taxNumberRequired") : false,
                         })}
                       />
                       {errors.tax_number && (
@@ -270,17 +287,17 @@ const Register = () => {
                     {/* Region */}
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                       <div className="space-y-2">
-                        <Label htmlFor="region_country">Country</Label>
+                        <Label htmlFor="region_country">{t("auth.register.country")}</Label>
                         <Select
                           value={watch("region.country") || ""}
                           onValueChange={(value) => {
                             register("region.country", {
-                              required: isTransporter ? "Country is required" : false,
+                              required: isTransporter ? t("auth.register.errors.countryRequired") : false,
                             }).onChange({ target: { value, name: "region.country" } });
                           }}
                         >
                           <SelectTrigger id="region_country" className="w-full">
-                            <SelectValue placeholder="Select country" />
+                            <SelectValue placeholder={t("auth.register.countryPlaceholder")} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="USA">USA</SelectItem>
@@ -293,14 +310,14 @@ const Register = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="region_state">State / Province</Label>
+                        <Label htmlFor="region_state">{t("auth.register.stateProvince")}</Label>
                         <Input
                           id="region_state"
                           type="text"
-                          placeholder="Enter state or province"
+                          placeholder={t("auth.register.stateProvincePlaceholder")}
                           className="w-full"
                           {...register("region.state", {
-                            required: isTransporter ? "State/Province is required" : false,
+                            required: isTransporter ? t("auth.register.errors.stateRequired") : false,
                           })}
                         />
                         {errors.region?.state && (
@@ -309,14 +326,14 @@ const Register = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="region_postalCode">Postal Code</Label>
+                        <Label htmlFor="region_postalCode">{t("auth.register.postalCode")}</Label>
                         <Input
                           id="region_postalCode"
                           type="text"
-                          placeholder="Enter postal code"
+                          placeholder={t("auth.register.postalCodePlaceholder")}
                           className="w-full"
                           {...register("region.postalCode", {
-                            required: isTransporter ? "Postal code is required" : false,
+                            required: isTransporter ? t("auth.register.errors.postalCodeRequired") : false,
                           })}
                         />
                         {errors.region?.postalCode && (
@@ -328,14 +345,14 @@ const Register = () => {
                     {/* Insurance */}
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="insurance_name">Insurance Provider</Label>
+                        <Label htmlFor="insurance_name">{t("auth.register.insuranceProvider")}</Label>
                         <Input
                           id="insurance_name"
                           type="text"
-                          placeholder="Enter insurance provider name"
+                          placeholder={t("auth.register.insuranceProviderPlaceholder")}
                           className="w-full"
                           {...register("insurance.name", {
-                            required: isTransporter ? "Insurance provider is required" : false,
+                            required: isTransporter ? t("auth.register.errors.insuranceProviderRequired") : false,
                           })}
                         />
                         {errors.insurance?.name && (
@@ -345,14 +362,14 @@ const Register = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="insurance_policyNumber">Policy Number</Label>
+                          <Label htmlFor="insurance_policyNumber">{t("auth.register.policyNumber")}</Label>
                           <Input
                             id="insurance_policyNumber"
                             type="text"
-                            placeholder="Enter policy number"
+                            placeholder={t("auth.register.policyNumberPlaceholder")}
                             className="w-full"
                             {...register("insurance.policyNumber", {
-                              required: isTransporter ? "Policy number is required" : false,
+                              required: isTransporter ? t("auth.register.errors.policyNumberRequired") : false,
                             })}
                           />
                           {errors.insurance?.policyNumber && (
@@ -363,13 +380,13 @@ const Register = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="insurance_expiryDate">Policy Expiry Date</Label>
+                          <Label htmlFor="insurance_expiryDate">{t("auth.register.policyExpiryDate")}</Label>
                           <Input
                             id="insurance_expiryDate"
                             type="date"
                             className="w-full"
                             {...register("insurance.expiryDate", {
-                              required: isTransporter ? "Expiry date is required" : false,
+                              required: isTransporter ? t("auth.register.errors.expiryDateRequired") : false,
                             })}
                           />
                           {errors.insurance?.expiryDate && (
@@ -394,10 +411,10 @@ const Register = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating account...
+                    {t("auth.register.creatingAccount")}
                   </>
                 ) : (
-                  "Sign Up"
+                  t("auth.register.signUp")
                 )}
               </Button>
             </form>
@@ -405,12 +422,12 @@ const Register = () => {
             {/* Sign In Link */}
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Already have an account?{" "}
+                {t("auth.register.alreadyHaveAccount")}{" "}
                 <Link
                   to="/login"
                   className="text-primary hover:text-primary/90 font-medium transition-colors"
                 >
-                  Sign in
+                  {t("auth.register.signIn")}
                 </Link>
               </p>
             </div>
