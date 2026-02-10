@@ -25,6 +25,7 @@ import VerifyOtp from "./pages/VerifyOtp";
 import NotFound from "./pages/NotFound";
 import AboutUs from "./pages/footer/AboutUs";
 import HelpCenter from "./pages/footer/HelpCenter";
+import Safety from "./pages/footer/Safety";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/help-center" element={<HelpCenter />} />
+          <Route path="/safety" element={<Safety />} />
           {/* User Module Routes */}
           <Route path="/user" element={<UserLayout />}>
             <Route index element={<Navigate to="/user/dashboard" replace />} />

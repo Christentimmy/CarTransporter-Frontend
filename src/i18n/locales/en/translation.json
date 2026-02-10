@@ -988,5 +988,135 @@
       "getStarted": "Get Started"
     },
     "comingSoon": "Coming soon - Full article content will be available shortly"
+  },
+  "safety": {
+    "backToHome": "Back to Home",
+    "title": "Safety & Security",
+    "subtitle": "Your safety is our top priority. Learn about our security features and emergency procedures.",
+    "features": {
+      "title": "Platform Safety Features",
+      "description": "Comprehensive safety measures built into our platform",
+      "verification": {
+        "title": "Identity Verification",
+        "description": "All users and transporters undergo thorough verification",
+        "points": {
+          "identity": "Government ID verification",
+          "documents": "Business license verification",
+          "insurance": "Insurance coverage verification"
+        }
+      },
+      "securePayments": {
+        "title": "Secure Payment System",
+        "description": "Protected transactions and escrow services",
+        "points": {
+          "encrypted": "Encrypted payment processing",
+          "escrow": "Escrow protection for all transactions",
+          "tracking": "Real-time payment tracking"
+        }
+      },
+      "disputeResolution": {
+        "title": "Dispute Resolution",
+        "description": "Fair and transparent dispute handling",
+        "points": {
+          "mediation": "Professional mediation services",
+          "evidence": "Evidence-based resolution process",
+          "resolution": "Quick resolution guarantees"
+        }
+      },
+      "documentation": {
+        "title": "Complete Documentation",
+        "description": "Thorough record-keeping for all transactions",
+        "points": {
+          "contracts": "Digitally signed contracts",
+          "photos": "Before/after photo documentation",
+          "communication": "In-app communication records"
+        }
+      }
+    },
+    "emergency": {
+      "title": "Emergency Procedures",
+      "description": "What to do in emergency situations",
+      "accidents": {
+        "title": "In Case of Accident",
+        "description": "Immediate steps to take if an accident occurs",
+        "steps": {
+          "ensureSafety": "Ensure everyone's safety first",
+          "contactAuthorities": "Contact emergency services immediately",
+          "documentEverything": "Document all damage and incidents",
+          "notifySupport": "Notify BID4TOW support team"
+        }
+      },
+      "breakdown": {
+        "title": "Vehicle Breakdown",
+        "description": "Procedures for vehicle breakdown situations",
+        "steps": {
+          "pullOver": "Pull over to safe location",
+          "hazardLights": "Turn on hazard lights",
+          "callAssistance": "Call roadside assistance",
+          "stayWithVehicle": "Stay with the vehicle until help arrives"
+        }
+      },
+      "lostVehicle": {
+        "title": "Lost Vehicle Situation",
+        "description": "Steps if vehicle is lost or stolen",
+        "steps": {
+          "contactPolice": "File police report immediately",
+          "notifyPlatform": "Notify BID4TOW immediately",
+          "contactOwner": "Contact vehicle owner if applicable",
+          "documentation": "Keep all documentation and records"
+        }
+      }
+    },
+    "tips": {
+      "title": "Safety Tips",
+      "description": "Best practices for safe transportation",
+      "beforeTransport": {
+        "title": "Before Transportation",
+        "tips": {
+          "research": "Research transporter credentials and reviews",
+          "verifyCredentials": "Verify transporter identity and licenses",
+          "meetInPerson": "Meet transporter in person when possible",
+          "readReviews": "Read reviews from other users"
+        }
+      },
+      "duringTransport": {
+        "title": "During Transportation",
+        "tips": {
+          "stayInContact": "Maintain regular contact with transporter",
+          "trackShipment": "Track shipment progress in real-time",
+          "takePhotos": "Take photos before handover and after delivery",
+          "secureBelongings": "Remove valuable personal items from vehicle"
+        }
+      },
+      "afterTransport": {
+        "title": "After Transportation",
+        "tips": {
+          "inspectVehicle": "Thoroughly inspect vehicle upon delivery",
+          "documentIssues": "Document any issues immediately with photos",
+          "confirmDelivery": "Confirm delivery condition matches agreement",
+          "leaveReview": "Leave honest review to help community"
+        }
+      }
+    },
+    "contact": {
+      "title": "Contact Safety Team",
+      "description": "Reach out to our dedicated safety team",
+      "emergency": {
+        "title": "Emergency Hotline",
+        "description": "Call 911 for immediate emergency assistance"
+      },
+      "support": {
+        "title": "Safety Support",
+        "description": "Report safety concerns or suspicious activity"
+      },
+      "report": {
+        "title": "Report Incident",
+        "description": "Report safety incidents or disputes",
+        "button": "File Report"
+      },
+      "alreadyUser": "Already have an account?",
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    }
   }
 }

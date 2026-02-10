@@ -988,5 +988,135 @@
       "getStarted": "Commencer"
     },
     "comingSoon": "Bientôt disponible - Le contenu complet des articles sera disponible sous peu"
+  },
+  "safety": {
+    "backToHome": "Retour à l'accueil",
+    "title": "Sécurité et Protection",
+    "subtitle": "Votre sécurité est notre priorité absolue. Apprenez nos fonctionnalités de sécurité et procédures d'urgence.",
+    "features": {
+      "title": "Fonctionnalités de Sécurité de la Plateforme",
+      "description": "Mesures de sécurité complètes intégrées à notre plateforme",
+      "verification": {
+        "title": "Vérification d'Identité",
+        "description": "Tous les utilisateurs et transporteurs subissent une vérification approfondie",
+        "points": {
+          "identity": "Vérification d'ID gouvernemental",
+          "documents": "Vérification de licence d'affaires",
+          "insurance": "Vérification de couverture d'assurance"
+        }
+      },
+      "securePayments": {
+        "title": "Système de Paiement Sécurisé",
+        "description": "Transactions protégées et services de séquestre",
+        "points": {
+          "encrypted": "Traitement des paiements crypté",
+          "escrow": "Protection de séquestre pour toutes les transactions",
+          "tracking": "Suivi des paiements en temps réel"
+        }
+      },
+      "disputeResolution": {
+        "title": "Résolution de Litiges",
+        "description": "Gestion équitable et transparente des litiges",
+        "points": {
+          "mediation": "Services de médiation professionnelle",
+          "evidence": "Processus de résolution basé sur des preuves",
+          "resolution": "Garanties de résolution rapide"
+        }
+      },
+      "documentation": {
+        "title": "Documentation Complète",
+        "description": "Tenue de registres approfondie pour toutes les transactions",
+        "points": {
+          "contracts": "Contrats signés numériquement",
+          "photos": "Documentation photo avant/après",
+          "communication": "Registres de communication dans l'application"
+        }
+      }
+    },
+    "emergency": {
+      "title": "Procédures d'Urgence",
+      "description": "Que faire dans les situations d'urgence",
+      "accidents": {
+        "title": "En Cas d'Accident",
+        "description": "Mesures immédiates à prendre en cas d'accident",
+        "steps": {
+          "ensureSafety": "Assurer la sécurité de tous d'abord",
+          "contactAuthorities": "Contacter les services d'urgence immédiatement",
+          "documentEverything": "Documenter tous les dommages et incidents",
+          "notifySupport": "Notifier l'équipe de support BID4TOW"
+        }
+      },
+      "breakdown": {
+        "title": "Panne de Véhicule",
+        "description": "Procédures pour les situations de panne de véhicule",
+        "steps": {
+          "pullOver": "S'arrêter à un endroit sûr",
+          "hazardLights": "Allumer les feux de détresse",
+          "callAssistance": "Appeler l'assistance routière",
+          "stayWithVehicle": "Rester avec le véhicule jusqu'à l'arrivée de l'aide"
+        }
+      },
+      "lostVehicle": {
+        "title": "Situation de Véhicule Perdu",
+        "description": "Mesures si le véhicule est perdu ou volé",
+        "steps": {
+          "contactPolice": "Déposer une plainte à la police immédiatement",
+          "notifyPlatform": "Notifier BID4TOW immédiatement",
+          "contactOwner": "Contacter le propriétaire du véhicule si applicable",
+          "documentation": "Conserver toute la documentation et les registres"
+        }
+      }
+    },
+    "tips": {
+      "title": "Conseils de Sécurité",
+      "description": "Meilleures pratiques pour un transport sécurisé",
+      "beforeTransport": {
+        "title": "Avant le Transport",
+        "tips": {
+          "research": "Rechercher les identifiants et avis du transporteur",
+          "verifyCredentials": "Vérifier l'identité et les licences du transporteur",
+          "meetInPerson": "Rencontrer le transporteur en personne si possible",
+          "readReviews": "Lire les avis des autres utilisateurs"
+        }
+      },
+      "duringTransport": {
+        "title": "Pendant le Transport",
+        "tips": {
+          "stayInContact": "Maintenir un contact régulier avec le transporteur",
+          "trackShipment": "Suivre le progrès de l'expédition en temps réel",
+          "takePhotos": "Prendre des photos avant la remise et après la livraison",
+          "secureBelongings": "Retirer les objets personnels de valeur du véhicule"
+        }
+      },
+      "afterTransport": {
+        "title": "Après le Transport",
+        "tips": {
+          "inspectVehicle": "Inspecter le véhicule en profondeur à la livraison",
+          "documentIssues": "Documenter tous les problèmes immédiatement avec des photos",
+          "confirmDelivery": "Confirmer que l'état de livraison correspond à l'accord",
+          "leaveReview": "Laisser un avis honnête pour aider la communauté"
+        }
+      }
+    },
+    "contact": {
+      "title": "Contacter l'Équipe de Sécurité",
+      "description": "Contactez notre équipe de sécurité dédiée",
+      "emergency": {
+        "title": "Ligne d'Urgence",
+        "description": "Appelez le 911 pour une assistance d'urgence immédiate"
+      },
+      "support": {
+        "title": "Support de Sécurité",
+        "description": "Signaler des préoccupations de sécurité ou des activités suspectes"
+      },
+      "report": {
+        "title": "Signaler un Incident",
+        "description": "Signaler des incidents de sécurité ou des litiges",
+        "button": "Déposer une Plainte"
+      },
+      "alreadyUser": "Vous avez déjà un compte ?",
+      "signIn": "Se Connecter",
+      "getStarted": "Commencer"
+    }
   }
 }
