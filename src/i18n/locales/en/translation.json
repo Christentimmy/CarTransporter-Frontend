@@ -677,5 +677,83 @@
       "statusUpdated": "Shipment status updated",
       "updateFailed": "Failed to update shipment status"
     }
+  },
+  "withdrawals": {
+    "title": "Withdrawals",
+    "subtitle": "Request payouts from your transporter earnings and track their status.",
+    "availableBalance": "Available balance",
+    "paymentMethods": {
+      "title": "Payment methods",
+      "addButton": "Add payment method",
+      "loading": "Loading payment methods...",
+      "error": "Failed to load payment methods",
+      "noMethods": "You have no saved payment methods yet. Add one to request withdrawals.",
+      "selected": "Selected"
+    },
+    "newWithdrawal": {
+      "title": "New withdrawal request",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount to withdraw",
+      "selectMethod": "Select a payment method on the left, then enter the amount you want to withdraw.",
+      "submit": "Submit withdrawal request",
+      "submitting": "Submitting..."
+    },
+    "history": {
+      "title": "Withdrawal history",
+      "loading": "Loading withdrawal requests...",
+      "error": "Failed to load withdrawal requests",
+      "noRequests": {
+        "title": "No withdrawal requests yet",
+        "subtitle": "Submit your first withdrawal request to see it listed here."
+      }
+    },
+    "addMethodDialog": {
+      "title": "Add payment method",
+      "description": "Save a payout destination you can reuse for future withdrawals.",
+      "type": "Type",
+      "typePlaceholder": "Select method type",
+      "bankTransfer": "Bank transfer",
+      "creditCard": "Credit/Debit Card",
+      "mobileMoney": "Mobile money",
+      "other": "Other",
+      "accountName": "Account name / label",
+      "accountNamePlaceholder": "e.g. Main business account",
+      "bankName": "Bank name",
+      "bankNamePlaceholder": "Bank name",
+      "accountNumber": "Account number",
+      "accountNumberPlaceholder": "Account number",
+      "routingNumber": "Routing number",
+      "routingNumberPlaceholder": "Routing number",
+      "cardNumber": "Card Number",
+      "cardNumberPlaceholder": "1234 5678 9012 3456",
+      "cardholderName": "Cardholder Name",
+      "cardholderNamePlaceholder": "John Doe",
+      "expiryDate": "Expiry Date",
+      "expiryDatePlaceholder": "MM/YY",
+      "cvv": "CVV",
+      "cvvPlaceholder": "123",
+      "mobileNumber": "Mobile money number",
+      "mobileNumberPlaceholder": "Enter mobile money number",
+      "save": "Save payment method",
+      "saving": "Saving..."
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "processed": "Processed"
+    },
+    "toast": {
+      "requestSubmitted": "Withdrawal request submitted",
+      "submitFailed": "Failed to submit withdrawal request",
+      "methodAdded": "Payment method added",
+      "methodAddFailed": "Failed to add payment method",
+      "validAmount": "Please enter a valid withdrawal amount",
+      "selectMethod": "Please select a payment method",
+      "typeRequired": "Payment method type is required",
+      "accountNameRequired": "Account name is required for this payment method",
+      "bankDetailsRequired": "Bank name and routing number are required for bank accounts",
+      "cardFieldsRequired": "All card fields are required for card payments"
+    }
   }
 }

@@ -677,5 +677,83 @@
       "statusUpdated": "Statut de l'expédition mis à jour",
       "updateFailed": "Échec de la mise à jour du statut de l'expédition"
     }
+  },
+  "withdrawals": {
+    "title": "Retraits",
+    "subtitle": "Demandez des paiements de vos gains de transporteur et suivez leur statut.",
+    "availableBalance": "Solde disponible",
+    "paymentMethods": {
+      "title": "Méthodes de paiement",
+      "addButton": "Ajouter une méthode de paiement",
+      "loading": "Chargement des méthodes de paiement...",
+      "error": "Échec du chargement des méthodes de paiement",
+      "noMethods": "Vous n'avez encore aucune méthode de paiement enregistrée. Ajoutez-en une pour demander des retraits.",
+      "selected": "Sélectionné"
+    },
+    "newWithdrawal": {
+      "title": "Nouvelle demande de retrait",
+      "amount": "Montant",
+      "amountPlaceholder": "Entrez le montant à retirer",
+      "selectMethod": "Sélectionnez une méthode de paiement à gauche, puis entrez le montant que vous souhaitez retirer.",
+      "submit": "Soumettre la demande de retrait",
+      "submitting": "Soumission..."
+    },
+    "history": {
+      "title": "Historique des retraits",
+      "loading": "Chargement des demandes de retrait...",
+      "error": "Échec du chargement des demandes de retrait",
+      "noRequests": {
+        "title": "Aucune demande de retrait encore",
+        "subtitle": "Soumettez votre première demande de retrait pour la voir apparaître ici."
+      }
+    },
+    "addMethodDialog": {
+      "title": "Ajouter une méthode de paiement",
+      "description": "Enregistrez une destination de paiement que vous pouvez réutiliser pour les futurs retraits.",
+      "type": "Type",
+      "typePlaceholder": "Sélectionner le type de méthode",
+      "bankTransfer": "Virement bancaire",
+      "creditCard": "Carte de crédit/débit",
+      "mobileMoney": "Argent mobile",
+      "other": "Autre",
+      "accountName": "Nom du compte / libellé",
+      "accountNamePlaceholder": "ex. Compte d'affaires principal",
+      "bankName": "Nom de la banque",
+      "bankNamePlaceholder": "Nom de la banque",
+      "accountNumber": "Numéro de compte",
+      "accountNumberPlaceholder": "Numéro de compte",
+      "routingNumber": "Numéro de routage",
+      "routingNumberPlaceholder": "Numéro de routage",
+      "cardNumber": "Numéro de carte",
+      "cardNumberPlaceholder": "1234 5678 9012 3456",
+      "cardholderName": "Nom du titulaire",
+      "cardholderNamePlaceholder": "Jean Dupont",
+      "expiryDate": "Date d'expiration",
+      "expiryDatePlaceholder": "MM/AA",
+      "cvv": "CVV",
+      "cvvPlaceholder": "123",
+      "mobileNumber": "Numéro d'argent mobile",
+      "mobileNumberPlaceholder": "Entrez le numéro d'argent mobile",
+      "save": "Enregistrer la méthode de paiement",
+      "saving": "Enregistrement..."
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "processed": "Traité"
+    },
+    "toast": {
+      "requestSubmitted": "Demande de retrait soumise",
+      "submitFailed": "Échec de la soumission de la demande de retrait",
+      "methodAdded": "Méthode de paiement ajoutée",
+      "methodAddFailed": "Échec de l'ajout de la méthode de paiement",
+      "validAmount": "Veuillez entrer un montant de retrait valide",
+      "selectMethod": "Veuillez sélectionner une méthode de paiement",
+      "typeRequired": "Le type de méthode de paiement est requis",
+      "accountNameRequired": "Le nom du compte est requis pour cette méthode de paiement",
+      "bankDetailsRequired": "Le nom de la banque et le numéro de routage sont requis pour les comptes bancaires",
+      "cardFieldsRequired": "Tous les champs de carte sont requis pour les paiements par carte"
+    }
   }
 }

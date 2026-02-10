@@ -36,6 +36,7 @@ import {
   createWithdrawalRequest,
 } from "@/services/withdrawalService";
 import { getProfile, type GetProfileResponse } from "@/services/profileService";
+import { useTranslation } from "react-i18next";
 
 type WithdrawalStatus = "pending" | "approved" | "rejected" | "processed";
 
@@ -72,6 +73,7 @@ const statusVariantMap: Record<
 };
 
 const Withdrawals = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const [amount, setAmount] = useState<string>("");
@@ -117,7 +119,7 @@ const Withdrawals = () => {
   const createWithdrawalMutation = useMutation({
     mutationFn: createWithdrawalRequest,
     onSuccess: async () => {
-      toast.success("Withdrawal request submitted", {
+      toast.success(t("withdrawals.toast.requestSubmitted"), {
         style: { background: "#22c55e", color: "#fff" },
       });
 
@@ -127,7 +129,7 @@ const Withdrawals = () => {
       await queryClient.invalidateQueries({ queryKey: ["withdrawal-requests"] });
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to submit withdrawal request", {
+      toast.error(error instanceof Error ? error.message : t("withdrawals.toast.submitFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     },
@@ -171,7 +173,7 @@ const Withdrawals = () => {
   const addMethodMutation = useMutation({
     mutationFn: addPaymentMethod,
     onSuccess: async () => {
-      toast.success("Payment method added", {
+      toast.success(t("withdrawals.toast.methodAdded"), {
         style: { background: "#22c55e", color: "#fff" },
       });
       setIsAddMethodOpen(false);
@@ -187,7 +189,7 @@ const Withdrawals = () => {
       await queryClient.invalidateQueries({ queryKey: ["payment-methods"] });
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to add payment method", {
+      toast.error(error instanceof Error ? error.message : t("withdrawals.toast.methodAddFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     },
@@ -199,14 +201,14 @@ const Withdrawals = () => {
 
     const parsedAmount = Number(amount);
     if (!amount || Number.isNaN(parsedAmount) || parsedAmount <= 0) {
-      toast.error("Please enter a valid withdrawal amount", {
+      toast.error(t("withdrawals.toast.validAmount"), {
         style: { background: "#ef4444", color: "#fff" },
       });
       return;
     }
 
     if (!selectedMethodId) {
-      toast.error("Please select a payment method", {
+      toast.error(t("withdrawals.toast.selectMethod"), {
         style: { background: "#ef4444", color: "#fff" },
       });
       return;
@@ -258,14 +260,14 @@ const Withdrawals = () => {
             <Wallet className="h-5 w-5" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold tracking-tight sm:text-3xl">Withdrawals</h1>
+            <h1 className="text-xl font-bold tracking-tight sm:text-3xl">{t("withdrawals.title")}</h1>
             <p className="text-xs text-muted-foreground sm:text-sm">
-              Request payouts from your transporter earnings and track their status.
+              {t("withdrawals.subtitle")}
             </p>
           </div>
         </div>
         <div className="mt-1 sm:mt-0 flex flex-col items-start sm:items-end text-xs sm:text-sm">
-          <span className="text-muted-foreground">Available balance</span>
+          <span className="text-muted-foreground">{t("withdrawals.availableBalance")}</span>
           <span className="text-base sm:text-lg font-semibold">{formattedBalance}</span>
         </div>
       </motion.div>
@@ -281,7 +283,7 @@ const Withdrawals = () => {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                   <CreditCard className="h-4 w-4" />
-                  Payment methods
+                  {t("withdrawals.paymentMethods.title")}
                 </CardTitle>
                 <Button
                   type="button"
@@ -291,7 +293,7 @@ const Withdrawals = () => {
                   onClick={() => setIsAddMethodOpen(true)}
                 >
                   <Plus className="mr-1.5 h-3.5 w-3.5" />
-                  Add payment method
+                  {t("withdrawals.paymentMethods.addButton")}
                 </Button>
               </div>
             </CardHeader>
@@ -299,16 +301,16 @@ const Withdrawals = () => {
               {isLoadingMethods ? (
                 <div className="flex items-center justify-center py-10 text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                  Loading payment methods...
+                  {t("withdrawals.paymentMethods.loading")}
                 </div>
               ) : isMethodsError ? (
                 <div className="py-6 text-sm text-destructive">
                   {(methodsError instanceof Error && methodsError.message) ||
-                    "Failed to load payment methods"}
+                    t("withdrawals.paymentMethods.error")}
                 </div>
               ) : methods.length === 0 ? (
                 <div className="py-6 text-sm text-muted-foreground">
-                  You have no saved payment methods yet. Add one to request withdrawals.
+                  {t("withdrawals.paymentMethods.noMethods")}
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -341,7 +343,7 @@ const Withdrawals = () => {
                         </div>
                         {selectedMethodId === method._id && (
                           <Badge variant="default" className="text-[10px]">
-                            Selected
+                            {t("withdrawals.paymentMethods.selected")}
                           </Badge>
                         )}
                       </div>
@@ -362,13 +364,13 @@ const Withdrawals = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <DollarSign className="h-4 w-4" />
-                New withdrawal request
+                {t("withdrawals.newWithdrawal.title")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="amount">Amount</Label>
+                  <Label htmlFor="amount">{t("withdrawals.newWithdrawal.amount")}</Label>
                   <div className="relative">
                     <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
                       $
@@ -381,23 +383,23 @@ const Withdrawals = () => {
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       className="pl-6"
-                      placeholder="Enter amount to withdraw"
+                      placeholder={t("withdrawals.newWithdrawal.amountPlaceholder")}
                     />
                   </div>
                 </div>
 
                 <p className="text-xs text-muted-foreground">
-                  Select a payment method on the left, then enter the amount you want to withdraw.
+                  {t("withdrawals.newWithdrawal.selectMethod")}
                 </p>
 
                 <Button type="submit" variant="hero" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? (
                     <span className="inline-flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Submitting...
+                      {t("withdrawals.newWithdrawal.submitting")}
                     </span>
                   ) : (
-                    "Submit withdrawal request"
+                    t("withdrawals.newWithdrawal.submit")
                   )}
                 </Button>
               </form>
@@ -414,26 +416,26 @@ const Withdrawals = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <History className="h-4 w-4" />
-                Withdrawal history
+                {t("withdrawals.history.title")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               {isLoadingWithdrawals ? (
                 <div className="flex items-center justify-center py-10 text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                  Loading withdrawal requests...
+                  {t("withdrawals.history.loading")}
                 </div>
               ) : isWithdrawalsError ? (
                 <div className="py-6 text-sm text-destructive">
                   {(withdrawalsError instanceof Error && withdrawalsError.message) ||
-                    "Failed to load withdrawal requests"}
+                    t("withdrawals.history.error")}
                 </div>
               ) : combinedRequests.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground">
                   <History className="mb-3 h-10 w-10 opacity-60" />
-                  <p className="text-sm font-medium">No withdrawal requests yet</p>
+                  <p className="text-sm font-medium">{t("withdrawals.history.noRequests.title")}</p>
                   <p className="mt-1 text-xs sm:text-sm">
-                    Submit your first withdrawal request to see it listed here.
+                    {t("withdrawals.history.noRequests.subtitle")}
                   </p>
                 </div>
               ) : (
@@ -453,7 +455,7 @@ const Withdrawals = () => {
                                 maximumFractionDigits: 2,
                               })}
                             </p>
-                            <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+                            <Badge variant={statusConfig.variant}>{t(`withdrawals.status.${item.status}`)}</Badge>
                           </div>
                           <p className="text-xs text-muted-foreground">
                             {renderMethodDetails(item.paymentMethod)}
@@ -494,39 +496,39 @@ const Withdrawals = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add payment method</DialogTitle>
+            <DialogTitle>{t("withdrawals.addMethodDialog.title")}</DialogTitle>
             <DialogDescription>
-              Save a payout destination you can reuse for future withdrawals.
+              {t("withdrawals.addMethodDialog.description")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Type</Label>
+              <Label>{t("withdrawals.addMethodDialog.type")}</Label>
               <Select
                 value={newMethodType}
                 onValueChange={(v) => setNewMethodType(v as PaymentMethodType)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select method type" />
+                  <SelectValue placeholder={t("withdrawals.addMethodDialog.typePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="bank">Bank transfer</SelectItem>
-                  <SelectItem value="card">Credit/Debit Card</SelectItem>
-                  <SelectItem value="mobile_money">Mobile money</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="bank">{t("withdrawals.addMethodDialog.bankTransfer")}</SelectItem>
+                  <SelectItem value="card">{t("withdrawals.addMethodDialog.creditCard")}</SelectItem>
+                  <SelectItem value="mobile_money">{t("withdrawals.addMethodDialog.mobileMoney")}</SelectItem>
+                  <SelectItem value="other">{t("withdrawals.addMethodDialog.other")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {newMethodType !== "card" && (
               <div className="space-y-1.5">
-                <Label htmlFor="newMethodName">Account name / label</Label>
+                <Label htmlFor="newMethodName">{t("withdrawals.addMethodDialog.accountName")}</Label>
                 <Input
                   id="newMethodName"
                   value={newMethodName}
                   onChange={(e) => setNewMethodName(e.target.value)}
-                  placeholder="e.g. Main business account"
+                  placeholder={t("withdrawals.addMethodDialog.accountNamePlaceholder")}
                 />
               </div>
             )}
@@ -534,30 +536,30 @@ const Withdrawals = () => {
             {newMethodType === "bank" && (
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="newBankName">Bank name</Label>
+                  <Label htmlFor="newBankName">{t("withdrawals.addMethodDialog.bankName")}</Label>
                   <Input
                     id="newBankName"
                     value={newBankName}
                     onChange={(e) => setNewBankName(e.target.value)}
-                    placeholder="Bank name"
+                    placeholder={t("withdrawals.addMethodDialog.bankNamePlaceholder")}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="newAccountNumber">Account number</Label>
+                  <Label htmlFor="newAccountNumber">{t("withdrawals.addMethodDialog.accountNumber")}</Label>
                   <Input
                     id="newAccountNumber"
                     value={newAccountNumber}
                     onChange={(e) => setNewAccountNumber(e.target.value)}
-                    placeholder="Account number"
+                    placeholder={t("withdrawals.addMethodDialog.accountNumberPlaceholder")}
                   />
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
-                  <Label htmlFor="newRoutingNumber">Routing number</Label>
+                  <Label htmlFor="newRoutingNumber">{t("withdrawals.addMethodDialog.routingNumber")}</Label>
                   <Input
                     id="newRoutingNumber"
                     value={newRoutingNumber}
                     onChange={(e) => setNewRoutingNumber(e.target.value)}
-                    placeholder="Routing number"
+                    placeholder={t("withdrawals.addMethodDialog.routingNumberPlaceholder")}
                   />
                 </div>
               </div>
@@ -566,42 +568,42 @@ const Withdrawals = () => {
             {newMethodType === "card" && (
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="newCardNumber">Card Number</Label>
+                  <Label htmlFor="newCardNumber">{t("withdrawals.addMethodDialog.cardNumber")}</Label>
                   <Input
                     id="newCardNumber"
                     value={newCardNumber}
                     onChange={(e) => setNewCardNumber(e.target.value)}
-                    placeholder="1234 5678 9012 3456"
+                    placeholder={t("withdrawals.addMethodDialog.cardNumberPlaceholder")}
                     maxLength={19}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="newCardHolderName">Cardholder Name</Label>
+                  <Label htmlFor="newCardHolderName">{t("withdrawals.addMethodDialog.cardholderName")}</Label>
                   <Input
                     id="newCardHolderName"
                     value={newCardHolderName}
                     onChange={(e) => setNewCardHolderName(e.target.value)}
-                    placeholder="John Doe"
+                    placeholder={t("withdrawals.addMethodDialog.cardholderNamePlaceholder")}
                   />
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label htmlFor="newExpiryDate">Expiry Date</Label>
+                    <Label htmlFor="newExpiryDate">{t("withdrawals.addMethodDialog.expiryDate")}</Label>
                     <Input
                       id="newExpiryDate"
                       value={newExpiryDate}
                       onChange={(e) => setNewExpiryDate(e.target.value)}
-                      placeholder="MM/YY"
+                      placeholder={t("withdrawals.addMethodDialog.expiryDatePlaceholder")}
                       maxLength={5}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="newCvv">CVV</Label>
+                    <Label htmlFor="newCvv">{t("withdrawals.addMethodDialog.cvv")}</Label>
                     <Input
                       id="newCvv"
                       value={newCvv}
                       onChange={(e) => setNewCvv(e.target.value)}
-                      placeholder="123"
+                      placeholder={t("withdrawals.addMethodDialog.cvvPlaceholder")}
                       maxLength={4}
                     />
                   </div>
@@ -611,12 +613,12 @@ const Withdrawals = () => {
 
             {newMethodType === "mobile_money" && (
               <div className="space-y-1.5">
-                <Label htmlFor="newMobileNumber">Mobile money number</Label>
+                <Label htmlFor="newMobileNumber">{t("withdrawals.addMethodDialog.mobileNumber")}</Label>
                 <Input
                   id="newMobileNumber"
                   value={newAccountNumber}
                   onChange={(e) => setNewAccountNumber(e.target.value)}
-                  placeholder="Enter mobile money number"
+                  placeholder={t("withdrawals.addMethodDialog.mobileNumberPlaceholder")}
                 />
               </div>
             )}
@@ -629,14 +631,14 @@ const Withdrawals = () => {
               disabled={addMethodMutation.isPending}
               onClick={() => {
                 if (!newMethodType) {
-                  toast.error("Payment method type is required", {
+                  toast.error(t("withdrawals.toast.typeRequired"), {
                     style: { background: "#ef4444", color: "#fff" },
                   });
                   return;
                 }
 
                 if (newMethodType !== "card" && !newMethodName) {
-                  toast.error("Account name is required for this payment method", {
+                  toast.error(t("withdrawals.toast.accountNameRequired"), {
                     style: { background: "#ef4444", color: "#fff" },
                   });
                   return;
@@ -644,7 +646,7 @@ const Withdrawals = () => {
 
                 if (newMethodType === "bank") {
                   if (!newBankName || !newRoutingNumber) {
-                    toast.error("Bank name and routing number are required for bank accounts", {
+                    toast.error(t("withdrawals.toast.bankDetailsRequired"), {
                       style: { background: "#ef4444", color: "#fff" },
                     });
                     return;
@@ -653,7 +655,7 @@ const Withdrawals = () => {
 
                 if (newMethodType === "card") {
                   if (!newCardNumber || !newCardHolderName || !newCvv || !newExpiryDate) {
-                    toast.error("All card fields are required for card payments", {
+                    toast.error(t("withdrawals.toast.cardFieldsRequired"), {
                       style: { background: "#ef4444", color: "#fff" },
                     });
                     return;
@@ -676,7 +678,7 @@ const Withdrawals = () => {
                 addMethodMutation.mutate(payload);
               }}
             >
-              {addMethodMutation.isPending ? "Saving..." : "Save payment method"}
+              {addMethodMutation.isPending ? t("withdrawals.addMethodDialog.saving") : t("withdrawals.addMethodDialog.save")}
             </Button>
           </DialogFooter>
         </DialogContent>
