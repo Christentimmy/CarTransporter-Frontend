@@ -17,8 +17,8 @@ export const Footer = () => {
     //   { name: t("landing.footer.links.blog"), href: "#" },
     // ],
     [t("landing.footer.support")]: [
-      { name: t("landing.footer.links.helpCenter"), href: "#" },
-      { name: t("landing.footer.links.contactUs"), href: "#" },
+      { name: t("landing.footer.links.helpCenter"), href: "/help-center" },
+      // { name: t("landing.footer.links.contactUs"), href: "#" },
       { name: t("landing.footer.links.safety"), href: "#" },
       { name: t("landing.footer.links.faqs"), href: "#" },
     ],

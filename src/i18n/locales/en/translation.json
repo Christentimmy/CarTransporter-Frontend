@@ -908,5 +908,85 @@
       "getStarted": "Get Started",
       "signIn": "Sign In"
     }
+  },
+  "helpCenter": {
+    "backToHome": "Back to Home",
+    "title": "Help Center",
+    "subtitle": "Find answers to your questions and get the support you need",
+    "searchPlaceholder": "Search for help articles...",
+    "views": "views",
+    "categories": {
+      "title": "Browse by Category",
+      "description": "Find the help you need organized by topic",
+      "gettingStarted": {
+        "title": "Getting Started",
+        "description": "New to BID4TOW? Start here",
+        "articles": {
+          "howToRegister": "How to Register an Account",
+          "howToPostRequest": "How to Post a Transportation Request",
+          "howToBid": "How to Bid on Requests",
+          "accountVerification": "Account Verification Process"
+        }
+      },
+      "userGuide": {
+        "title": "User Guide",
+        "description": "Learn how to use our platform effectively",
+        "articles": {
+          "postingRequests": "Posting Transportation Requests",
+          "managingBids": "Managing and Accepting Bids",
+          "paymentProcess": "Payment Process and Methods",
+          "trackingShipments": "Tracking Your Shipments"
+        }
+      },
+      "transporterGuide": {
+        "title": "Transporter Guide",
+        "description": "Everything transporters need to know",
+        "articles": {
+          "becomingTransporter": "Becoming a Verified Transporter",
+          "findingRequests": "Finding and Filtering Requests",
+          "winningBids": "Tips for Winning Bids",
+          "withdrawals": "Withdrawals and Payments"
+        }
+      },
+      "support": {
+        "title": "Support",
+        "description": "Get help with technical issues",
+        "articles": {
+          "contactSupport": "How to Contact Support",
+          "reportIssue": "Reporting an Issue",
+          "disputeResolution": "Dispute Resolution Process",
+          "emergencyHelp": "Emergency Support"
+        }
+      }
+    },
+    "popularArticles": {
+      "title": "Popular Articles",
+      "description": "Most viewed help articles",
+      "howToPost": "How to Post Your First Transportation Request",
+      "paymentMethods": "Accepted Payment Methods",
+      "bidProcess": "Understanding the Bidding Process",
+      "accountIssues": "Common Account Issues and Solutions"
+    },
+    "contactSupport": {
+      "title": "Still Need Help?",
+      "description": "Our support team is here to assist you",
+      "email": {
+        "title": "Email Support",
+        "description": "Get help via email within 24 hours"
+      },
+      "phone": {
+        "title": "Phone Support",
+        "description": "Call us for immediate assistance"
+      },
+      "liveChat": {
+        "title": "Live Chat",
+        "description": "Chat with our support team in real-time",
+        "button": "Start Chat"
+      },
+      "alreadyUser": "Already have an account?",
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    },
+    "comingSoon": "Coming soon - Full article content will be available shortly"
   }
 }

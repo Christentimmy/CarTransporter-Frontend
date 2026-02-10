@@ -908,5 +908,85 @@
       "getStarted": "Commencer",
       "signIn": "Se Connecter"
     }
+  },
+  "helpCenter": {
+    "backToHome": "Retour à l'accueil",
+    "title": "Centre d'Aide",
+    "subtitle": "Trouvez des réponses à vos questions et obtenez le soutien dont vous avez besoin",
+    "searchPlaceholder": "Rechercher des articles d'aide...",
+    "views": "vues",
+    "categories": {
+      "title": "Parcourir par Catégorie",
+      "description": "Trouvez l'aide dont vous avez besoin organisée par sujet",
+      "gettingStarted": {
+        "title": "Premiers Pas",
+        "description": "Nouveau sur BID4TOW ? Commencez ici",
+        "articles": {
+          "howToRegister": "Comment Créer un Compte",
+          "howToPostRequest": "Comment Publier une Demande de Transport",
+          "howToBid": "Comment Faire une Offre sur les Demandes",
+          "accountVerification": "Processus de Vérification du Compte"
+        }
+      },
+      "userGuide": {
+        "title": "Guide Utilisateur",
+        "description": "Apprenez à utiliser notre plateforme efficacement",
+        "articles": {
+          "postingRequests": "Publier des Demandes de Transport",
+          "managingBids": "Gérer et Accepter les Offres",
+          "paymentProcess": "Processus et Méthodes de Paiement",
+          "trackingShipments": "Suivre Vos Expéditions"
+        }
+      },
+      "transporterGuide": {
+        "title": "Guide Transporteur",
+        "description": "Tout ce que les transporteurs doivent savoir",
+        "articles": {
+          "becomingTransporter": "Devenir un Transporteur Vérifié",
+          "findingRequests": "Trouver et Filtrer les Demandes",
+          "winningBids": "Conseils pour Gagner des Offres",
+          "withdrawals": "Retraits et Paiements"
+        }
+      },
+      "support": {
+        "title": "Support",
+        "description": "Obtenir de l'aide pour les problèmes techniques",
+        "articles": {
+          "contactSupport": "Comment Contacter le Support",
+          "reportIssue": "Signaler un Problème",
+          "disputeResolution": "Processus de Résolution de Litiges",
+          "emergencyHelp": "Support d'Urgence"
+        }
+      }
+    },
+    "popularArticles": {
+      "title": "Articles Populaires",
+      "description": "Articles d'aide les plus consultés",
+      "howToPost": "Comment Publier Votre Première Demande de Transport",
+      "paymentMethods": "Méthodes de Paiement Acceptées",
+      "bidProcess": "Comprendre le Processus d'Enchères",
+      "accountIssues": "Problèmes de Compte Courants et Solutions"
+    },
+    "contactSupport": {
+      "title": "Encore Besoin d'Aide ?",
+      "description": "Notre équipe de support est là pour vous aider",
+      "email": {
+        "title": "Support Email",
+        "description": "Obtenez de l'aide par email dans les 24 heures"
+      },
+      "phone": {
+        "title": "Support Téléphonique",
+        "description": "Appelez-nous pour une assistance immédiate"
+      },
+      "liveChat": {
+        "title": "Chat en Direct",
+        "description": "Discutez avec notre équipe de support en temps réel",
+        "button": "Démarrer le Chat"
+      },
+      "alreadyUser": "Vous avez déjà un compte ?",
+      "signIn": "Se Connecter",
+      "getStarted": "Commencer"
+    },
+    "comingSoon": "Bientôt disponible - Le contenu complet des articles sera disponible sous peu"
   }
 }
