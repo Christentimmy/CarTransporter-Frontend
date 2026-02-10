@@ -869,5 +869,44 @@
       "backToHome": "Retour à l'accueil",
       "logout": "Déconnexion"
     }
+  },
+  "aboutUs": {
+    "backToHome": "Retour à l'accueil",
+    "title": "À propos de BID4TOW",
+    "subtitle": "Révolutionner le transport de véhicules grâce à une technologie d'enchères innovante",
+    "mission": {
+      "title": "Notre Mission",
+      "description": "Connecter les propriétaires de véhicules avec des transporteurs fiables grâce à une plateforme d'enchères transparente, efficace et compétitive qui fait gagner du temps et de l'argent à tous."
+    },
+    "values": {
+      "community": {
+        "title": "Communauté d'Abord",
+        "description": "Construire un réseau de confiance de transporteurs et de propriétaires de véhicules"
+      },
+      "efficiency": {
+        "title": "Efficacité Maximale",
+        "description": "Rationaliser le processus de transport avec une technologie intelligente"
+      },
+      "quality": {
+        "title": "Service de Qualité",
+        "description": "Assurer que chaque expédition répond aux plus hauts standards"
+      },
+      "trust": {
+        "title": "Confiance et Sécurité",
+        "description": "Créer des transactions sécurisées et des partenariats fiables"
+      }
+    },
+    "story": {
+      "title": "Notre Histoire",
+      "paragraph1": "BID4TOW est né d'une simple observation : le transport de véhicules était cassé. Les propriétaires de véhicules struggled to find reliable transporters at fair prices, while quality transporters had difficulty connecting with customers who needed their services.",
+      "paragraph2": "Nos fondateurs, expérimentés en logistique et technologie, ont vu une opportunité de créer une solution qui bénéficierait à tous les impliqués. En implémentant un système d'enchères compétitif, nous pouvions assurer une tarification équitable tout en maintenant des standards de service élevés.",
+      "paragraph3": "Aujourd'hui, BID4TOW continue de grandir et d'innover, apportant plus d'efficacité et de transparence à l'industrie du transport de véhicules. Nous sommes fiers d'être la plateforme de confiance connectant des milliers de propriétaires de véhicules avec des transporteurs professionnels à travers le pays."
+    },
+    "cta": {
+      "title": "Prêt à Rejoindre Notre Communauté ?",
+      "description": "Que vous ayez besoin de transporter un véhicule ou que vous soyez un transporteur cherchant plus d'opportunités, nous sommes là pour aider.",
+      "getStarted": "Commencer",
+      "signIn": "Se Connecter"
+    }
   }
 }

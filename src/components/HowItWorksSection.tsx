@@ -33,7 +33,7 @@ export const HowItWorksSection = () => {
   const { t } = useTranslation();
 
   return (
-    <section id="how-it-works" className="relative py-24 bg-card/50">
+    <section id="how-it-works" className="py-20 relative">
       <div className="container mx-auto px-6">
         {/* Section header */}
         <motion.div

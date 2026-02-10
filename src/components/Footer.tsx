@@ -6,17 +6,16 @@ export const Footer = () => {
 
   const translatedFooterLinks = {
     [t("landing.footer.platform")]: [
-      { name: t("landing.footer.links.howItWorks"), href: "#how-it-works" },
+      { name: t("landing.footer.links.howItWorks"), href: "/#how-it-works" },
       { name: t("landing.footer.links.forUsers"), href: "#for-users" },
       { name: t("landing.footer.links.forCompanies"), href: "#for-companies" },
-      { name: t("landing.footer.links.pricing"), href: "#" },
+      { name: t("landing.footer.links.aboutUs"), href: "/about-us" }
     ],
-    [t("landing.footer.company")]: [
-      { name: t("landing.footer.links.aboutUs"), href: "#" },
-      { name: t("landing.footer.links.careers"), href: "#" },
-      { name: t("landing.footer.links.press"), href: "#" },
-      { name: t("landing.footer.links.blog"), href: "#" },
-    ],
+    // [t("landing.footer.company")]: [
+    //   { name: t("landing.footer.links.careers"), href: "#" },
+    //   { name: t("landing.footer.links.press"), href: "#" },
+    //   { name: t("landing.footer.links.blog"), href: "#" },
+    // ],
     [t("landing.footer.support")]: [
       { name: t("landing.footer.links.helpCenter"), href: "#" },
       { name: t("landing.footer.links.contactUs"), href: "#" },

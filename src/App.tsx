@@ -23,6 +23,7 @@ import TransporterNotifications from "./pages/transporter/Notifications";
 import TransporterProfile from "./pages/transporter/Profile";
 import VerifyOtp from "./pages/VerifyOtp";
 import NotFound from "./pages/NotFound";
+import AboutUs from "./pages/footer/AboutUs";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/about-us" element={<AboutUs />} />
           {/* User Module Routes */}
           <Route path="/user" element={<UserLayout />}>
             <Route index element={<Navigate to="/user/dashboard" replace />} />

@@ -869,5 +869,44 @@
       "backToHome": "Back to Home",
       "logout": "Logout"
     }
+  },
+  "aboutUs": {
+    "backToHome": "Back to Home",
+    "title": "About BID4TOW",
+    "subtitle": "Revolutionizing vehicle transportation through innovative bidding technology",
+    "mission": {
+      "title": "Our Mission",
+      "description": "To connect vehicle owners with reliable transporters through a transparent, efficient, and competitive bidding platform that saves time and money for everyone."
+    },
+    "values": {
+      "community": {
+        "title": "Community First",
+        "description": "Building a trusted network of transporters and vehicle owners"
+      },
+      "efficiency": {
+        "title": "Maximum Efficiency",
+        "description": "Streamlining the transportation process with smart technology"
+      },
+      "quality": {
+        "title": "Quality Service",
+        "description": "Ensuring every shipment meets the highest standards"
+      },
+      "trust": {
+        "title": "Trust & Safety",
+        "description": "Creating secure transactions and reliable partnerships"
+      }
+    },
+    "story": {
+      "title": "Our Story",
+      "paragraph1": "BID4TOW was born from a simple observation: vehicle transportation was broken. Vehicle owners struggled to find reliable transporters at fair prices, while quality transporters had difficulty connecting with customers who needed their services.",
+      "paragraph2": "Our founders, experienced in both logistics and technology, saw an opportunity to create a solution that would benefit everyone involved. By implementing a competitive bidding system, we could ensure fair pricing while maintaining high service standards.",
+      "paragraph3": "Today, BID4TOW continues to grow and innovate, bringing more efficiency and transparency to the vehicle transportation industry. We're proud to be the trusted platform connecting thousands of vehicle owners with professional transporters across the country."
+    },
+    "cta": {
+      "title": "Ready to Join Our Community?",
+      "description": "Whether you need to transport a vehicle or you're a transporter looking for more opportunities, we're here to help.",
+      "getStarted": "Get Started",
+      "signIn": "Sign In"
+    }
   }
 }
