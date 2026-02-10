@@ -1,0 +1,131 @@
+{
+  "landing": {
+    "nav": {
+      "home": "Accueil",
+      "howItWorks": "Comment ça marche",
+      "forUsers": "Pour les utilisateurs",
+      "forCompanies": "Pour les entreprises",
+      "login": "Connexion",
+      "register": "Inscription"
+    },
+    "hero": {
+      "badge": "L’avenir du transport de véhicules",
+      "headline1": "Transportez des voitures",
+      "headlineHighlight1": "Plus intelligemment.",
+      "headline2": "Enchérissez",
+      "headlineHighlight2": "Plus vite.",
+      "subheadline": "Une plateforme d’enchères inversées reliant les propriétaires de voitures, les compagnies d’assurance, les enchères automobiles et les auto-clubs à des entreprises de transport fiables. Publiez votre véhicule, regardez les offres rivaliser et obtenez le meilleur prix.",
+      "stats": {
+        "carsTransported": "Voitures transportées",
+        "verifiedTransporters": "Transporteurs vérifiés",
+        "averageSavings": "Économies moyennes"
+      }
+    },
+    "features": {
+      "eyebrow": "Pourquoi BID4TOW",
+      "title": "La façon la plus intelligente d’expédier",
+      "subtitle": "Notre plateforme révolutionne le transport automobile en vous donnant le contrôle. Laissez les entreprises se concurrencer pour votre demande.",
+      "items": {
+        "postInMinutes": {
+          "title": "Publiez en quelques minutes",
+          "description": "Listez votre véhicule à transporter avec quelques informations — enlèvement, livraison et caractéristiques. C’est simple."
+        },
+        "competingBids": {
+          "title": "Offres concurrentes",
+          "description": "Regardez les transporteurs vérifiés se concurrencer pour votre mission, faisant baisser les prix en temps réel."
+        },
+        "lowestBidWins": {
+          "title": "La meilleure offre gagne",
+          "description": "Notre système d’enchères inversées vous garantit toujours le meilleur prix possible pour votre transport."
+        },
+        "anonymousBidding": {
+          "title": "Enchères anonymes",
+          "description": "Toutes les offres sont anonymes, assurant une concurrence équitable sans favoritisme."
+        },
+        "realTimeUpdates": {
+          "title": "Mises à jour en temps réel",
+          "description": "Recevez des notifications instantanées à chaque nouvelle offre et suivez votre expédition à chaque étape."
+        },
+        "verifiedTransporters": {
+          "title": "Transporteurs vérifiés",
+          "description": "Chaque entreprise de transport sur notre plateforme est soigneusement vérifiée pour la sécurité et la fiabilité."
+        }
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "Processus simple",
+      "title": "Comment ça marche",
+      "subtitle": "Quatre étapes simples pour transporter votre véhicule au meilleur prix.",
+      "steps": {
+        "postShipment": {
+          "title": "Publiez votre expédition",
+          "description": "Renseignez les détails du véhicule, les lieux d’enlèvement et de livraison, ainsi que le calendrier souhaité."
+        },
+        "receiveBids": {
+          "title": "Recevez des offres concurrentes",
+          "description": "Des transporteurs vérifiés soumettent anonymement leurs meilleures offres."
+        },
+        "lowestWins": {
+          "title": "La meilleure offre gagne",
+          "description": "Acceptez la meilleure offre ou laissez notre système sélectionner automatiquement la meilleure proposition."
+        },
+        "trackReceive": {
+          "title": "Suivez & recevez",
+          "description": "Suivez votre expédition en temps réel et recevez votre véhicule à destination."
+        }
+      }
+    },
+    "userCompany": {
+      "forCarOwners": "Pour les propriétaires",
+      "forTransportCompanies": "Pour les entreprises de transport",
+      "shipWithConfidence": "Expédiez votre véhicule en toute confiance",
+      "shipWithConfidenceDesc": "Publiez votre demande et laissez des entreprises vérifiées se concurrencer pour le meilleur prix. Simple, transparent et sécurisé.",
+      "growBusiness": "Développez votre activité",
+      "growBusinessDesc": "Rejoignez notre marketplace et accédez à un flux constant de missions. Enchérissez de façon compétitive et bâtissez votre réputation.",
+      "userFeatures": {
+        "f1": "Publiez une expédition en quelques minutes",
+        "f2": "Consultez les offres des transporteurs vérifiés",
+        "f3": "Suivez l’état de l’expédition en temps réel",
+        "f4": "Protection de paiement sécurisée",
+        "f5": "Support client 24/7"
+      },
+      "companyFeatures": {
+        "f1": "Accès à des milliers de demandes",
+        "f2": "Enchères compétitives anonymes",
+        "f3": "Développez votre réputation avec des avis",
+        "f4": "Tableau de bord de gestion flexible",
+        "f5": "Paiements instantanés"
+      }
+    },
+    "cta": {
+      "title": "Prêt à transformer la façon dont vous",
+      "titleHighlight": "expédiez des véhicules ?",
+      "subtitle": "Rejoignez des milliers de clients et d’entreprises de transport satisfaits sur la marketplace la plus innovante du transport automobile."
+    },
+    "footer": {
+      "tagline": "La plateforme révolutionnaire d’enchères inversées pour le transport automobile. Obtenez les meilleurs prix auprès de transporteurs vérifiés.",
+      "platform": "Plateforme",
+      "company": "Entreprise",
+      "support": "Support",
+      "legal": "Légal",
+      "links": {
+        "howItWorks": "Comment ça marche",
+        "forUsers": "Pour les utilisateurs",
+        "forCompanies": "Pour les entreprises",
+        "pricing": "Tarifs",
+        "aboutUs": "À propos",
+        "careers": "Carrières",
+        "press": "Presse",
+        "blog": "Blog",
+        "helpCenter": "Centre d’aide",
+        "contactUs": "Nous contacter",
+        "safety": "Sécurité",
+        "faqs": "FAQ",
+        "terms": "Conditions d’utilisation",
+        "privacy": "Politique de confidentialité",
+        "cookie": "Politique relative aux cookies"
+      },
+      "copyright": "© {{year}} BID4TOW. Tous droits réservés."
+    }
+  }
+}

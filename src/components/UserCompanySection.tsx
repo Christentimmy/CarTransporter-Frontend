@@ -1,25 +1,26 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { ArrowRight, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-const userFeatures = [
-  "Post a car shipment in minutes",
-  "View bids from verified transporters",
-  "Track shipment status in real-time",
-  "Secure payment protection",
-  "24/7 customer support",
-];
-
-const companyFeatures = [
-  "Access to thousands of shipment requests",
-  "Anonymous competitive bidding",
-  "Build your reputation with reviews",
-  "Flexible job management dashboard",
-  "Instant payment processing",
-];
+import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const UserCompanySection = () => {
+  const { t } = useTranslation();
+
+  const userFeatures = [
+    t("landing.userCompany.userFeatures.f1"),
+    t("landing.userCompany.userFeatures.f2"),
+    t("landing.userCompany.userFeatures.f3"),
+    t("landing.userCompany.userFeatures.f4"),
+    t("landing.userCompany.userFeatures.f5"),
+  ];
+
+  const companyFeatures = [
+    t("landing.userCompany.companyFeatures.f1"),
+    t("landing.userCompany.companyFeatures.f2"),
+    t("landing.userCompany.companyFeatures.f3"),
+    t("landing.userCompany.companyFeatures.f4"),
+    t("landing.userCompany.companyFeatures.f5"),
+  ];
+
   return (
     <section className="relative py-24">
       <div className="container mx-auto px-6">
@@ -38,14 +39,13 @@ export const UserCompanySection = () => {
 
             <div className="relative z-10">
               <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
-                For Car Owners
+                {t("landing.userCompany.forCarOwners")}
               </span>
               <h3 className="font-display text-2xl md:text-3xl font-bold mb-4">
-                Ship Your Vehicle with Confidence
+                {t("landing.userCompany.shipWithConfidence")}
               </h3>
               <p className="text-muted-foreground mb-8">
-                Post your transport request and let verified companies compete
-                for the best price. Simple, transparent, and secure.
+                {t("landing.userCompany.shipWithConfidenceDesc")}
               </p>
 
               <ul className="space-y-3 mb-8">
@@ -75,14 +75,13 @@ export const UserCompanySection = () => {
 
             <div className="relative z-10">
               <span className="inline-block px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-semibold mb-4">
-                For Transport Companies
+                {t("landing.userCompany.forTransportCompanies")}
               </span>
               <h3 className="font-display text-2xl md:text-3xl font-bold mb-4">
-                Grow Your Transport Business
+                {t("landing.userCompany.growBusiness")}
               </h3>
               <p className="text-muted-foreground mb-8">
-                Join our marketplace and access a steady stream of transport
-                jobs. Bid competitively and build your reputation.
+                {t("landing.userCompany.growBusinessDesc")}
               </p>
 
               <ul className="space-y-3 mb-8">

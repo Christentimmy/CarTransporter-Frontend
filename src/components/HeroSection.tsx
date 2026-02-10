@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { ArrowRight, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Zap } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const HeroSection = () => {
+  const { t } = useTranslation();
+
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20">
       <div className="container mx-auto px-6 py-20">
@@ -17,7 +18,7 @@ export const HeroSection = () => {
           >
             <Zap className="w-4 h-4 text-primary" />
             <span className="text-sm text-primary font-medium">
-              The Future of Vehicles transport 
+              {t("landing.hero.badge")}
             </span>
           </motion.div>
 
@@ -28,10 +29,10 @@ export const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
           >
-            Move Cars{" "}
-            <span className="text-gradient glow-text">Smarter.</span>
+            {t("landing.hero.headline1")}{" "}
+            <span className="text-gradient glow-text">{t("landing.hero.headlineHighlight1")}</span>
             <br />
-            Bid <span className="text-gradient glow-text">Faster.</span>
+            {t("landing.hero.headline2")} <span className="text-gradient glow-text">{t("landing.hero.headlineHighlight2")}</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -41,9 +42,7 @@ export const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            A reverse-bidding platform connecting car owners, insurance company, car auction and Auto-Club, with trusted transport companies.
-            Post your vehicle, watch the bids compete, and
-            get the lowest price.
+            {t("landing.hero.subheadline")}
           </motion.p>
 
           {/* Stats */}
@@ -54,9 +53,9 @@ export const HeroSection = () => {
             className="grid grid-cols-3 gap-8 mt-16 pt-16 border-t border-border/50"
           >
             {[
-              { value: "50K+", label: "Cars Transported" },
-              { value: "2.5K+", label: "Verified Transporters" },
-              { value: "30%", label: "Average Savings" },
+              { value: "50K+", label: t("landing.hero.stats.carsTransported") },
+              { value: "2.5K+", label: t("landing.hero.stats.verifiedTransporters") },
+              { value: "30%", label: t("landing.hero.stats.averageSavings") },
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <div className="font-display text-2xl md:text-3xl font-bold text-primary mb-1">

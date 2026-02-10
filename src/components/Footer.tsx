@@ -1,32 +1,35 @@
 import { Truck, Mail, Phone, MapPin } from "lucide-react";
-
-const footerLinks = {
-  Platform: [
-    { name: "How It Works", href: "#how-it-works" },
-    { name: "For Users", href: "#for-users" },
-    { name: "For Companies", href: "#for-companies" },
-    { name: "Pricing", href: "#" },
-  ],
-  Company: [
-    { name: "About Us", href: "#" },
-    { name: "Careers", href: "#" },
-    { name: "Press", href: "#" },
-    { name: "Blog", href: "#" },
-  ],
-  Support: [
-    { name: "Help Center", href: "#" },
-    { name: "Contact Us", href: "#" },
-    { name: "Safety", href: "#" },
-    { name: "FAQs", href: "#" },
-  ],
-  Legal: [
-    { name: "Terms of Service", href: "#" },
-    { name: "Privacy Policy", href: "#" },
-    { name: "Cookie Policy", href: "#" },
-  ],
-};
+import { useTranslation } from "react-i18next";
 
 export const Footer = () => {
+  const { t } = useTranslation();
+
+  const translatedFooterLinks = {
+    [t("landing.footer.platform")]: [
+      { name: t("landing.footer.links.howItWorks"), href: "#how-it-works" },
+      { name: t("landing.footer.links.forUsers"), href: "#for-users" },
+      { name: t("landing.footer.links.forCompanies"), href: "#for-companies" },
+      { name: t("landing.footer.links.pricing"), href: "#" },
+    ],
+    [t("landing.footer.company")]: [
+      { name: t("landing.footer.links.aboutUs"), href: "#" },
+      { name: t("landing.footer.links.careers"), href: "#" },
+      { name: t("landing.footer.links.press"), href: "#" },
+      { name: t("landing.footer.links.blog"), href: "#" },
+    ],
+    [t("landing.footer.support")]: [
+      { name: t("landing.footer.links.helpCenter"), href: "#" },
+      { name: t("landing.footer.links.contactUs"), href: "#" },
+      { name: t("landing.footer.links.safety"), href: "#" },
+      { name: t("landing.footer.links.faqs"), href: "#" },
+    ],
+    [t("landing.footer.legal")]: [
+      { name: t("landing.footer.links.terms"), href: "#" },
+      { name: t("landing.footer.links.privacy"), href: "#" },
+      { name: t("landing.footer.links.cookie"), href: "#" },
+    ],
+  };
+
   return (
     <footer className="relative bg-card/50 border-t border-border/50">
       <div className="container mx-auto px-6 py-16">
@@ -42,8 +45,7 @@ export const Footer = () => {
               </span>
             </a>
             <p className="text-muted-foreground text-sm mb-6 max-w-xs">
-              The revolutionary reverse-bidding platform for car transport.
-              Get the best prices from verified transporters.
+              {t("landing.footer.tagline")}
             </p>
             <div className="space-y-2">
               <a
@@ -68,7 +70,7 @@ export const Footer = () => {
           </div>
 
           {/* Links */}
-          {Object.entries(footerLinks).map(([title, links]) => (
+          {Object.entries(translatedFooterLinks).map(([title, links]) => (
             <div key={title}>
               <h4 className="font-display font-semibold mb-4">{title}</h4>
               <ul className="space-y-2">
@@ -90,7 +92,7 @@ export const Footer = () => {
         {/* Bottom */}
         <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} BID4TOW. All rights reserved.
+            {t("landing.footer.copyright", { year: new Date().getFullYear() })}
           </p>
           <div className="flex items-center gap-6">
             <a

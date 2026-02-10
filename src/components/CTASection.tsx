@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 export const CTASection = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative py-24 overflow-hidden">
       {/* Background effects */}
@@ -24,12 +24,11 @@ export const CTASection = () => {
           className="max-w-3xl mx-auto text-center"
         >
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-            Ready to Transform How You{" "}
-            <span className="text-gradient">Ship Vehicles?</span>
+            {t("landing.cta.title")}{" "}
+            <span className="text-gradient">{t("landing.cta.titleHighlight")}</span>
           </h2>
           <p className="text-lg text-muted-foreground mb-10">
-            Join thousands of satisfied customers and transport companies on
-            most innovative car transport marketplace.
+            {t("landing.cta.subtitle")}
           </p>
         </motion.div>
       </div>

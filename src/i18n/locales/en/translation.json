@@ -1,0 +1,131 @@
+{
+  "landing": {
+    "nav": {
+      "home": "Home",
+      "howItWorks": "How It Works",
+      "forUsers": "For Users",
+      "forCompanies": "For Companies",
+      "login": "Login",
+      "register": "Register"
+    },
+    "hero": {
+      "badge": "The Future of Vehicles transport",
+      "headline1": "Move Cars",
+      "headlineHighlight1": "Smarter.",
+      "headline2": "Bid",
+      "headlineHighlight2": "Faster.",
+      "subheadline": "A reverse-bidding platform connecting car owners, insurance company, car auction and Auto-Club, with trusted transport companies. Post your vehicle, watch the bids compete, and get the lowest price.",
+      "stats": {
+        "carsTransported": "Cars Transported",
+        "verifiedTransporters": "Verified Transporters",
+        "averageSavings": "Average Savings"
+      }
+    },
+    "features": {
+      "eyebrow": "Why BID4TOW",
+      "title": "The Smarter Way to Ship",
+      "subtitle": "Our platform revolutionizes car transport by putting you in control. Let companies compete for your business.",
+      "items": {
+        "postInMinutes": {
+          "title": "Post in Minutes",
+          "description": "List your vehicle for transport with just a few details—pickup, drop-off, and car specs. It's that simple."
+        },
+        "competingBids": {
+          "title": "Competing Bids",
+          "description": "Watch verified transport companies compete for your job, driving prices down in real-time."
+        },
+        "lowestBidWins": {
+          "title": "Lowest Bid Wins",
+          "description": "Our reverse-auction system ensures you always get the best possible price for your transport."
+        },
+        "anonymousBidding": {
+          "title": "Anonymous Bidding",
+          "description": "All bids are anonymous, ensuring fair competition without bias or favoritism."
+        },
+        "realTimeUpdates": {
+          "title": "Real-Time Updates",
+          "description": "Get instant notifications as new bids come in and track your shipment every step of the way."
+        },
+        "verifiedTransporters": {
+          "title": "Verified Transporters",
+          "description": "Every transport company on our platform is thoroughly verified for safety and reliability."
+        }
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "Simple Process",
+      "title": "How It Works",
+      "subtitle": "Four simple steps to get your vehicle transported at the best possible price.",
+      "steps": {
+        "postShipment": {
+          "title": "Post Your Shipment",
+          "description": "Enter your vehicle details, pickup and drop-off locations, and preferred timeline."
+        },
+        "receiveBids": {
+          "title": "Receive Competing Bids",
+          "description": "Verified transport companies anonymously submit their best competitive bids."
+        },
+        "lowestWins": {
+          "title": "Lowest Bid Wins",
+          "description": "Accept the lowest bid or let our system auto-select the best offer for you."
+        },
+        "trackReceive": {
+          "title": "Track & Receive",
+          "description": "Monitor your shipment in real-time and receive your vehicle at the destination."
+        }
+      }
+    },
+    "userCompany": {
+      "forCarOwners": "For Car Owners",
+      "forTransportCompanies": "For Transport Companies",
+      "shipWithConfidence": "Ship Your Vehicle with Confidence",
+      "shipWithConfidenceDesc": "Post your transport request and let verified companies compete for the best price. Simple, transparent, and secure.",
+      "growBusiness": "Grow Your Transport Business",
+      "growBusinessDesc": "Join our marketplace and access a steady stream of transport jobs. Bid competitively and build your reputation.",
+      "userFeatures": {
+        "f1": "Post a car shipment in minutes",
+        "f2": "View bids from verified transporters",
+        "f3": "Track shipment status in real-time",
+        "f4": "Secure payment protection",
+        "f5": "24/7 customer support"
+      },
+      "companyFeatures": {
+        "f1": "Access to thousands of shipment requests",
+        "f2": "Anonymous competitive bidding",
+        "f3": "Build your reputation with reviews",
+        "f4": "Flexible job management dashboard",
+        "f5": "Instant payment processing"
+      }
+    },
+    "cta": {
+      "title": "Ready to Transform How You",
+      "titleHighlight": "Ship Vehicles?",
+      "subtitle": "Join thousands of satisfied customers and transport companies on most innovative car transport marketplace."
+    },
+    "footer": {
+      "tagline": "The revolutionary reverse-bidding platform for car transport. Get the best prices from verified transporters.",
+      "platform": "Platform",
+      "company": "Company",
+      "support": "Support",
+      "legal": "Legal",
+      "links": {
+        "howItWorks": "How It Works",
+        "forUsers": "For Users",
+        "forCompanies": "For Companies",
+        "pricing": "Pricing",
+        "aboutUs": "About Us",
+        "careers": "Careers",
+        "press": "Press",
+        "blog": "Blog",
+        "helpCenter": "Help Center",
+        "contactUs": "Contact Us",
+        "safety": "Safety",
+        "faqs": "FAQs",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "cookie": "Cookie Policy"
+      },
+      "copyright": "© {{year}} BID4TOW. All rights reserved."
+    }
+  }
+}

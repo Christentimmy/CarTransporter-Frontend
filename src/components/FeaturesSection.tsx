@@ -1,47 +1,44 @@
 import { motion } from "framer-motion";
 import { Car, Zap, DollarSign, Shield, Clock, Users } from "lucide-react";
 import { FeatureCard } from "./FeatureCard";
+import { useTranslation } from "react-i18next";
 
 const features = [
   {
     icon: Car,
-    title: "Post in Minutes",
-    description:
-      "List your vehicle for transport with just a few details—pickup, drop-off, and car specs. It's that simple.",
+    titleKey: "landing.features.items.postInMinutes.title",
+    descriptionKey: "landing.features.items.postInMinutes.description",
   },
   {
     icon: Zap,
-    title: "Competing Bids",
-    description:
-      "Watch verified transport companies compete for your job, driving prices down in real-time.",
+    titleKey: "landing.features.items.competingBids.title",
+    descriptionKey: "landing.features.items.competingBids.description",
   },
   {
     icon: DollarSign,
-    title: "Lowest Bid Wins",
-    description:
-      "Our reverse-auction system ensures you always get the best possible price for your transport.",
+    titleKey: "landing.features.items.lowestBidWins.title",
+    descriptionKey: "landing.features.items.lowestBidWins.description",
   },
   {
     icon: Shield,
-    title: "Anonymous Bidding",
-    description:
-      "All bids are anonymous, ensuring fair competition without bias or favoritism.",
+    titleKey: "landing.features.items.anonymousBidding.title",
+    descriptionKey: "landing.features.items.anonymousBidding.description",
   },
   {
     icon: Clock,
-    title: "Real-Time Updates",
-    description:
-      "Get instant notifications as new bids come in and track your shipment every step of the way.",
+    titleKey: "landing.features.items.realTimeUpdates.title",
+    descriptionKey: "landing.features.items.realTimeUpdates.description",
   },
   {
     icon: Users,
-    title: "Verified Transporters",
-    description:
-      "Every transport company on our platform is thoroughly verified for safety and reliability.",
+    titleKey: "landing.features.items.verifiedTransporters.title",
+    descriptionKey: "landing.features.items.verifiedTransporters.description",
   },
 ];
 
 export const FeaturesSection = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative py-24 overflow-hidden">
       {/* Section header */}
@@ -53,14 +50,13 @@ export const FeaturesSection = () => {
           className="text-center max-w-2xl mx-auto"
         >
           <span className="text-primary text-sm font-semibold tracking-wider uppercase mb-4 block">
-            Why BID4TOW
+            {t("landing.features.eyebrow")}
           </span>
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            The Smarter Way to Ship
+            {t("landing.features.title")}
           </h2>
           <p className="text-muted-foreground">
-            Our platform revolutionizes car transport by putting you in control.
-            Let companies compete for your business.
+            {t("landing.features.subtitle")}
           </p>
         </motion.div>
       </div>
@@ -69,7 +65,13 @@ export const FeaturesSection = () => {
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
-            <FeatureCard key={feature.title} {...feature} index={index} />
+            <FeatureCard
+              key={feature.titleKey}
+              icon={feature.icon}
+              title={t(feature.titleKey)}
+              description={t(feature.descriptionKey)}
+              index={index}
+            />
           ))}
         </div>
       </div>

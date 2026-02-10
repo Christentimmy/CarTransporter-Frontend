@@ -3,16 +3,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const navLinks = [
-  { name: "Home", href: "#home" },
-  { name: "How It Works", href: "#how-it-works" },
-  { name: "For Users", href: "#for-users" },
-  { name: "For Companies", href: "#for-companies" },
+  { nameKey: "landing.nav.home", href: "#home" },
+  { nameKey: "landing.nav.howItWorks", href: "#how-it-works" },
+  { nameKey: "landing.nav.forUsers", href: "#for-users" },
+  { nameKey: "landing.nav.forCompanies", href: "#for-companies" },
 ];
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+
+  const nextLanguage = i18n.language?.startsWith("fr") ? "en" : "fr";
+  const languageToggleLabel = i18n.language?.startsWith("fr") ? "EN" : "FR";
 
   return (
     <motion.nav
@@ -37,11 +42,11 @@ export const Navbar = () => {
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
-                key={link.name}
+                key={link.nameKey}
                 href={link.href}
                 className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium relative group"
               >
-                {link.name}
+                {t(link.nameKey)}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
@@ -49,14 +54,21 @@ export const Navbar = () => {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => i18n.changeLanguage(nextLanguage)}
+            >
+              {languageToggleLabel}
+            </Button>
             <Link to="/login">
               <Button variant="ghost" size="sm">
-                Login
+                {t("landing.nav.login")}
               </Button>
             </Link>
             <Link to="/register">
               <Button variant="outline" size="sm">
-                Register
+                {t("landing.nav.register")}
               </Button>
             </Link>
           </div>
@@ -84,23 +96,33 @@ export const Navbar = () => {
             <div className="container mx-auto px-6 py-4 flex flex-col gap-4">
               {navLinks.map((link) => (
                 <a
-                  key={link.name}
+                  key={link.nameKey}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
                   className="text-muted-foreground hover:text-foreground transition-colors py-2"
                 >
-                  {link.name}
+                  {t(link.nameKey)}
                 </a>
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                <Button
+                  variant="ghost"
+                  className="justify-start w-full"
+                  onClick={() => {
+                    i18n.changeLanguage(nextLanguage);
+                    setIsOpen(false);
+                  }}
+                >
+                  {languageToggleLabel}
+                </Button>
                 <Link to="/login" onClick={() => setIsOpen(false)}>
                   <Button variant="ghost" className="justify-start w-full">
-                    Login
+                    {t("landing.nav.login")}
                   </Button>
                 </Link>
                 <Link to="/register" onClick={() => setIsOpen(false)}>
                   <Button variant="outline" className="justify-start w-full">
-                    Register
+                    {t("landing.nav.register")}
                   </Button>
                 </Link>
               </div>
