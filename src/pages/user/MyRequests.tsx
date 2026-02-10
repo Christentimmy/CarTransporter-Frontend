@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/pagination";
 import { getMyShipments, processPayment } from "@/services/shipmentService";
 import type { MyShipment } from "@/types/shipment";
+import { useTranslation } from "react-i18next";
 
 declare global {
   interface Window {
@@ -91,6 +92,7 @@ function formatLocation(loc: MyShipment["pickupLocation"]) {
 }
 
 const MyRequests = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
@@ -337,7 +339,7 @@ const MyRequests = () => {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground">Loading your requests...</p>
+        <p className="text-muted-foreground">{t("myRequests.loading")}</p>
       </div>
     );
   }
@@ -347,15 +349,15 @@ const MyRequests = () => {
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
           <XCircle className="h-12 w-12 text-destructive mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Failed to load requests</h3>
+          <h3 className="text-lg font-semibold mb-2">{t("myRequests.error.title")}</h3>
           <p className="text-muted-foreground text-center mb-4">
-            {error instanceof Error ? error.message : "Something went wrong"}
+            {error instanceof Error ? error.message : t("myRequests.error.somethingWrong")}
           </p>
           <Button
             variant="outline"
             onClick={() => window.location.reload()}
           >
-            Retry
+            {t("myRequests.error.retry")}
           </Button>
         </CardContent>
       </Card>
@@ -372,15 +374,15 @@ const MyRequests = () => {
         className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
       >
         <div className="min-w-0">
-          <h1 className="text-xl font-bold tracking-tight sm:text-3xl">My Requests</h1>
+          <h1 className="text-xl font-bold tracking-tight sm:text-3xl">{t("myRequests.title")}</h1>
           <p className="text-xs text-muted-foreground sm:text-base">
-            View and manage your transport requests
+            {t("myRequests.subtitle")}
           </p>
         </div>
         <Link to="/user/post-request" className="w-full sm:w-auto shrink-0">
           <Button variant="hero" className="w-full sm:w-auto" size="sm">
             <Plus className="mr-2 h-4 w-4 shrink-0" />
-            New Request
+            {t("myRequests.newRequest")}
           </Button>
         </Link>
       </motion.div>
@@ -395,7 +397,7 @@ const MyRequests = () => {
         <div className="relative min-w-0 flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 shrink-0 text-muted-foreground" />
           <Input
-            placeholder="Search vehicle, city..."
+            placeholder={t("myRequests.filters.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-9 pl-9 sm:h-10"
@@ -404,19 +406,19 @@ const MyRequests = () => {
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="h-9 w-full sm:h-10 sm:w-[180px]">
             <Filter className="mr-2 h-4 w-4 shrink-0" />
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder={t("myRequests.filters.statusPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="DRAFT">Draft</SelectItem>
-            <SelectItem value="LIVE">Live</SelectItem>
-            <SelectItem value="ENDED">Ended</SelectItem>
-            <SelectItem value="ASSIGNED">Assigned</SelectItem>
-            <SelectItem value="IN_TRANSIT">In Transit</SelectItem>
-            <SelectItem value="DELIVERED">Delivered</SelectItem>
-            <SelectItem value="COMPLETED">Completed</SelectItem>
-            <SelectItem value="DISPUTED">Disputed</SelectItem>
-            <SelectItem value="CANCELLED">Cancelled</SelectItem>
+            <SelectItem value="all">{t("myRequests.filters.allStatus")}</SelectItem>
+            <SelectItem value="DRAFT">{t("myRequests.filters.draft")}</SelectItem>
+            <SelectItem value="LIVE">{t("myRequests.filters.live")}</SelectItem>
+            <SelectItem value="ENDED">{t("myRequests.filters.ended")}</SelectItem>
+            <SelectItem value="ASSIGNED">{t("myRequests.filters.assigned")}</SelectItem>
+            <SelectItem value="IN_TRANSIT">{t("myRequests.filters.inTransit")}</SelectItem>
+            <SelectItem value="DELIVERED">{t("myRequests.filters.delivered")}</SelectItem>
+            <SelectItem value="COMPLETED">{t("myRequests.filters.completed")}</SelectItem>
+            <SelectItem value="DISPUTED">{t("myRequests.filters.disputed")}</SelectItem>
+            <SelectItem value="CANCELLED">{t("myRequests.filters.cancelled")}</SelectItem>
           </SelectContent>
         </Select>
       </motion.div>
@@ -426,17 +428,17 @@ const MyRequests = () => {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Truck className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No requests found</h3>
+            <h3 className="text-lg font-semibold mb-2">{t("myRequests.empty.title")}</h3>
             <p className="text-muted-foreground text-center mb-4">
               {searchQuery || statusFilter !== "all"
-                ? "Try adjusting your filters"
-                : "Get started by creating your first vehicle transport request"}
+                ? t("myRequests.empty.noResults")
+                : t("myRequests.empty.noRequests")}
             </p>
             {!searchQuery && statusFilter === "all" && (
               <Link to="/user/post-request">
                 <Button variant="hero">
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Request
+                  {t("myRequests.empty.createRequest")}
                 </Button>
               </Link>
             )}
@@ -487,7 +489,7 @@ const MyRequests = () => {
                               <div className="flex gap-2 min-w-0">
                                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
                                 <span className="break-words line-clamp-2 min-w-0">
-                                  <span className="text-muted-foreground/80">From </span>
+                                  <span className="text-muted-foreground/80">{t("myRequests.card.from")} </span>
                                   {formatLocation(request.pickupLocation)}
                                 </span>
                               </div>
@@ -499,7 +501,7 @@ const MyRequests = () => {
                               <div className="flex gap-2 min-w-0">
                                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 opacity-60" />
                                 <span className="break-words line-clamp-2 min-w-0">
-                                  <span className="text-muted-foreground/80">To </span>
+                                  <span className="text-muted-foreground/80">{t("myRequests.card.to")} </span>
                                   {formatLocation(request.deliveryLocation)}
                                 </span>
                               </div>
@@ -511,7 +513,7 @@ const MyRequests = () => {
                               <div className="flex items-center gap-2 pt-0.5 min-w-0">
                                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                                 <span>
-                                  Pickup:{" "}
+                                  {t("myRequests.card.pickup")}{" "}
                                   {parseDate(request.pickupWindow.start)
                                     ? format(parseDate(request.pickupWindow.start)!, "MMM d")
                                     : "—"}{" "}
@@ -548,23 +550,24 @@ const MyRequests = () => {
                                     request.vehicleDetails.size?.width != null ||
                                     request.vehicleDetails.size?.height != null) && (
                                     <Badge variant="outline">
-                                      {(request.vehicleDetails.size?.length ?? "—")}
+                                      {(request.vehicleDetails.size?.length ?? "-")}
                                       x
-                                      {(request.vehicleDetails.size?.width ?? "—")}
+                                      {(request.vehicleDetails.size?.width ?? "-")}
                                       x
-                                      {(request.vehicleDetails.size?.height ?? "—")} m
+                                      {(request.vehicleDetails.size?.height ?? "-")}{" "}
+                                      {t("myRequests.card.dimensions")}
                                     </Badge>
                                   )}
                                   {request.vehicleDetails.isAccidented === true && (
-                                    <Badge variant="secondary">Accidented</Badge>
+                                    <Badge variant="secondary">{t("myRequests.card.accidented")}</Badge>
                                   )}
                                   {request.vehicleDetails.keysAvailable != null && (
                                     <Badge
                                       variant={request.vehicleDetails.keysAvailable ? "default" : "secondary"}
                                     >
                                       {request.vehicleDetails.keysAvailable
-                                        ? "Keys Available"
-                                        : "No Keys"}
+                                        ? t("myRequests.card.keysAvailable")
+                                        : t("myRequests.card.noKeys")}
                                     </Badge>
                                   )}
                                 </div>
@@ -581,7 +584,7 @@ const MyRequests = () => {
                         >
                           <Button variant="hero" size="sm" className="w-full sm:w-auto">
                             <Gavel className="mr-2 h-4 w-4 shrink-0" />
-                            View Live Auction
+                            {t("myRequests.card.viewLiveAuction")}
                           </Button>
                         </Link>
                       )}
@@ -597,7 +600,7 @@ const MyRequests = () => {
                             setIsPayDialogOpen(true);
                           }}
                         >
-                          Pay now
+                          {t("myRequests.card.payNow")}
                         </Button>
                       )}
                     </div>
@@ -605,7 +608,7 @@ const MyRequests = () => {
                   <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-2 sm:gap-4 pt-3 sm:pt-4 border-t">
                       <div className="min-w-0">
-                        <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Delivery Deadline</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.deliveryDeadline")}</p>
                         <p className="text-xs sm:text-sm font-medium truncate" title={parseDate(request.deliveryDeadline) ? format(parseDate(request.deliveryDeadline)!, "MMM d, yyyy") : undefined}>
                           {parseDate(request.deliveryDeadline)
                             ? format(parseDate(request.deliveryDeadline)!, "MMM d, yyyy")
@@ -614,7 +617,7 @@ const MyRequests = () => {
                       </div>
                       {request.distance != null && (
                         <div className="min-w-0">
-                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Distance</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.distance")}</p>
                           <p className="text-xs sm:text-sm font-medium">
                             {request.distance.toLocaleString()} km
                           </p>
@@ -622,7 +625,7 @@ const MyRequests = () => {
                       )}
                       {request.estimatedTime != null && (
                         <div className="min-w-0">
-                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Est. Time</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.estTime")}</p>
                           <p className="text-xs sm:text-sm font-medium">
                             ~{Math.round(request.estimatedTime / 60)} hrs
                           </p>
@@ -630,7 +633,7 @@ const MyRequests = () => {
                       )}
                       {request.status === "DRAFT" && request.auctionStartTime && (
                         <div className="min-w-0 col-span-2 md:col-span-1">
-                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Auction Starts</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.auctionStarts")}</p>
                           <p className="text-xs sm:text-sm font-medium break-words">
                             {parseDate(request.auctionStartTime)
                               ? format(parseDate(request.auctionStartTime)!, "MMM d, h:mm a")
@@ -640,7 +643,7 @@ const MyRequests = () => {
                       )}
                       {request.status === "LIVE" && request.auctionEndTime && (
                         <div className="min-w-0 col-span-2 md:col-span-1">
-                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Auction Ends</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.auctionEnds")}</p>
                           <p className="text-xs sm:text-sm font-medium break-words">
                             {parseDate(request.auctionEndTime)
                               ? format(parseDate(request.auctionEndTime)!, "MMM d, h:mm a")
@@ -719,18 +722,18 @@ const MyRequests = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Pay for shipment</DialogTitle>
+            <DialogTitle>{t("myRequests.payment.title")}</DialogTitle>
             <DialogDescription>
-              Enter your card details to pay for this assigned shipment.
+              {t("myRequests.payment.description")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3">
             {selectedShipmentForPayment && (
               <div className="rounded-md border p-3 text-sm">
-                <p className="font-medium mb-1">Payment summary</p>
+                <p className="font-medium mb-1">{t("myRequests.payment.summary")}</p>
                 <div className="flex items-center justify-between text-muted-foreground">
-                  <span>Shipment amount</span>
+                  <span>{t("myRequests.payment.shipmentAmount")}</span>
                   <span>
                     {selectedShipmentForPayment.currentBid?.amount != null
                       ? `$${selectedShipmentForPayment.currentBid.amount.toLocaleString()}`
@@ -738,7 +741,7 @@ const MyRequests = () => {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-muted-foreground mt-1">
-                  <span>Platform fee (10%)</span>
+                  <span>{t("myRequests.payment.platformFee")}</span>
                   <span>
                     {selectedShipmentForPayment.currentBid?.amount != null
                       ? `$${(selectedShipmentForPayment.currentBid.amount * 0.1).toFixed(2)}`
@@ -746,7 +749,7 @@ const MyRequests = () => {
                   </span>
                 </div>
                 <div className="mt-2 border-t pt-2 flex items-center justify-between">
-                  <span className="font-semibold">Total to pay</span>
+                  <span className="font-semibold">{t("myRequests.payment.totalToPay")}</span>
                   <span className="font-semibold">
                     {selectedShipmentForPayment.currentBid?.amount != null
                       ? `$${(selectedShipmentForPayment.currentBid.amount * 1.1).toFixed(2)}`
@@ -760,7 +763,7 @@ const MyRequests = () => {
             </div>
 
             {!isPaymentReady && (
-              <p className="text-sm text-muted-foreground">Loading payment form...</p>
+              <p className="text-sm text-muted-foreground">{t("myRequests.payment.loadingForm")}</p>
             )}
           </div>
 
@@ -771,7 +774,7 @@ const MyRequests = () => {
               onClick={handlePayNow}
               disabled={!isPaymentReady || isProcessingPayment}
             >
-              {isProcessingPayment ? "Processing..." : "Pay now"}
+              {isProcessingPayment ? t("myRequests.payment.processing") : t("myRequests.payment.payNow")}
             </Button>
           </DialogFooter>
         </DialogContent>

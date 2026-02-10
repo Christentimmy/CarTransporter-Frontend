@@ -35,8 +35,10 @@ import { getProfile, type GetProfileResponse, updateProfile, type UpdateProfileP
 import { changePassword, type ChangePasswordPayload } from "@/services/securityService";
 import { authService } from "@/services/auth_services";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
@@ -97,14 +99,14 @@ const Profile = () => {
   const updateProfileMutation = useMutation({
     mutationFn: (payload: UpdateProfilePayload) => updateProfile(payload),
     onSuccess: async () => {
-      toast.success("Profile updated", {
+      toast.success(t("profile.toast.profileUpdated"), {
         style: { background: "#22c55e", color: "#fff" },
       });
       setIsEditing(false);
       await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : "Failed to update profile", {
+      toast.error(err instanceof Error ? err.message : t("profile.toast.updateFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     },
@@ -113,7 +115,7 @@ const Profile = () => {
   const changePasswordMutation = useMutation({
     mutationFn: (payload: ChangePasswordPayload) => changePassword(payload),
     onSuccess: () => {
-      toast.success("Password changed successfully", {
+      toast.success(t("profile.toast.passwordChanged"), {
         style: { background: "#22c55e", color: "#fff" },
       });
       setIsChangePasswordOpen(false);
@@ -122,24 +124,24 @@ const Profile = () => {
       setConfirmNewPassword("");
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : "Failed to change password", {
+      toast.error(err instanceof Error ? err.message : t("profile.toast.passwordChangeFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     },
   });
 
   const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
-    approved: { label: "Approved", variant: "default", icon: CheckCircle2 },
-    rejected: { label: "Rejected", variant: "destructive", icon: XCircle },
-    pending: { label: "Pending", variant: "secondary", icon: Clock },
-    banned: { label: "Banned", variant: "destructive", icon: AlertCircle },
+    approved: { label: t("profile.status.approved"), variant: "default", icon: CheckCircle2 },
+    rejected: { label: t("profile.status.rejected"), variant: "destructive", icon: XCircle },
+    pending: { label: t("profile.status.pending"), variant: "secondary", icon: Clock },
+    banned: { label: t("profile.status.banned"), variant: "destructive", icon: AlertCircle },
   };
 
   const roleConfig: Record<string, { label: string; icon: any }> = {
-    user: { label: "User", icon: User },
-    transporter: { label: "Transporter", icon: Truck },
-    admin: { label: "Admin", icon: Shield },
-    super_admin: { label: "Super Admin", icon: Shield },
+    user: { label: t("profile.roles.user"), icon: User },
+    transporter: { label: t("profile.roles.transporter"), icon: Truck },
+    admin: { label: t("profile.roles.admin"), icon: Shield },
+    super_admin: { label: t("profile.roles.superAdmin"), icon: Shield },
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -202,7 +204,7 @@ const Profile = () => {
 
   const handleVerifyEmailOtp = async () => {
     if (!otpValue) {
-      toast.error("Enter the OTP sent to your registered email", {
+      toast.error(t("profile.toast.enterOtp"), {
         style: { background: "#ef4444", color: "#fff" },
       });
       return;
@@ -264,7 +266,7 @@ const Profile = () => {
 
       updateProfileMutation.mutate(payload);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "OTP verification failed", {
+      toast.error(err instanceof Error ? err.message : t("profile.toast.otpVerificationFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     }
@@ -275,11 +277,11 @@ const Profile = () => {
     try {
       // Resend OTP to the existing email address
       await authService.resendOtp({ email: user.email });
-      toast.success("OTP resent to your registered email", {
+      toast.success(t("profile.toast.otpResent"), {
         style: { background: "#22c55e", color: "#fff" },
       });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to resend OTP", {
+      toast.error(err instanceof Error ? err.message : t("profile.toast.otpResendFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     }
@@ -309,14 +311,14 @@ const Profile = () => {
     e.preventDefault();
 
     if (!oldPassword || !newPassword) {
-      toast.error("Please enter both old and new passwords", {
+      toast.error(t("profile.toast.enterBothPasswords"), {
         style: { background: "#ef4444", color: "#fff" },
       });
       return;
     }
 
     if (newPassword !== confirmNewPassword) {
-      toast.error("New passwords do not match", {
+      toast.error(t("profile.toast.passwordsDoNotMatch"), {
         style: { background: "#ef4444", color: "#fff" },
       });
       return;
@@ -347,7 +349,7 @@ const Profile = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-10 text-muted-foreground">
-        Loading profile...
+        {t("profile.loading")}
       </div>
     );
   }
@@ -355,7 +357,7 @@ const Profile = () => {
   if (isError) {
     return (
       <div className="flex items-center justify-center py-10 text-destructive text-sm">
-        {(error instanceof Error && error.message) || "Failed to load profile"}
+        {(error instanceof Error && error.message) || t("profile.error")}
       </div>
     );
   }
@@ -374,15 +376,15 @@ const Profile = () => {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4"
       >
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("profile.title")}</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Manage your account information and settings
+            {t("profile.subtitle")}
           </p>
         </div>
         {!isEditing ? (
           <Button variant="outline" onClick={() => setIsEditing(true)}>
             <Edit className="mr-2 h-4 w-4" />
-            Edit Profile
+            {t("profile.editProfile")}
           </Button>
         ) : (
           <div className="flex gap-2">
@@ -391,7 +393,7 @@ const Profile = () => {
             </Button>
             <Button variant="hero" onClick={handleSubmit}>
               <Save className="mr-2 h-4 w-4" />
-              Save Changes
+              {t("profile.saveChanges")}
             </Button>
           </div>
         )}
@@ -403,14 +405,14 @@ const Profile = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              Account Status
+              {t("profile.accountStatus.title")}
             </CardTitle>
-            <CardDescription>Your account verification and status</CardDescription>
+            <CardDescription>{t("profile.accountStatus.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Role:</span>
+                <span className="text-sm font-medium">{t("profile.accountStatus.role")}</span>
                 <Badge variant="outline" className="flex items-center gap-1">
                   <RoleIcon className="h-3 w-3" />
                   {roleConfig[user.role]?.label || "User"}
@@ -418,7 +420,7 @@ const Profile = () => {
               </div>
               {user.status && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Status:</span>
+                  <span className="text-sm font-medium">{t("profile.accountStatus.status")}</span>
                   {getStatusBadge()}
                 </div>
               )}
@@ -428,34 +430,34 @@ const Profile = () => {
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Email Verification</span>
+                  <span className="text-sm font-medium">{t("profile.accountStatus.emailVerification")}</span>
                 </div>
                 {user.is_email_verified ? (
                   <Badge variant="default" className="flex items-center gap-1">
                     <CheckCircle2 className="h-3 w-3" />
-                    Verified
+                    {t("profile.accountStatus.verified")}
                   </Badge>
                 ) : (
                   <Badge variant="secondary" className="flex items-center gap-1">
                     <XCircle className="h-3 w-3" />
-                    Unverified
+                    {t("profile.accountStatus.unverified")}
                   </Badge>
                 )}
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Phone Verification</span>
+                  <span className="text-sm font-medium">{t("profile.accountStatus.phoneVerification")}</span>
                 </div>
                 {user.is_phone_verified ? (
                   <Badge variant="default" className="flex items-center gap-1">
                     <CheckCircle2 className="h-3 w-3" />
-                    Verified
+                    {t("profile.accountStatus.verified")}
                   </Badge>
                 ) : (
                   <Badge variant="secondary" className="flex items-center gap-1">
                     <XCircle className="h-3 w-3" />
-                    Unverified
+                    {t("profile.accountStatus.unverified")}
                   </Badge>
                 )}
               </div>
@@ -468,13 +470,13 @@ const Profile = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <User className="h-4 w-4 sm:h-5 sm:w-5" />
-              Personal Information
+              {t("profile.personalInfo.title")}
             </CardTitle>
-            <CardDescription className="text-sm">Your basic account information</CardDescription>
+            <CardDescription className="text-sm">{t("profile.personalInfo.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("profile.personalInfo.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -485,24 +487,24 @@ const Profile = () => {
               />
               {!user.is_email_verified && (
                 <p className="text-xs text-muted-foreground">
-                  Your email is not verified. Please verify it to access all features.
+                  {t("profile.personalInfo.emailNotVerified")}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone_number">Phone Number</Label>
+              <Label htmlFor="phone_number">{t("profile.personalInfo.phone")}</Label>
               <Input
                 id="phone_number"
                 type="tel"
                 value={formData.phone_number}
                 onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                 disabled={!isEditing}
-                placeholder="Enter your phone number"
+                placeholder={t("profile.personalInfo.phonePlaceholder")}
               />
               {!user.is_phone_verified && (
                 <p className="text-xs text-muted-foreground">
-                  Your phone number is not verified.
+                  {t("profile.personalInfo.phoneNotVerified")}
                 </p>
               )}
             </div>
@@ -515,51 +517,51 @@ const Profile = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-5 w-5" />
-                Business Information
+                {t("profile.businessInfo.title")}
               </CardTitle>
-              <CardDescription>Your company and business details</CardDescription>
+              <CardDescription>{t("profile.businessInfo.description")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="company_name">Company Name</Label>
+                <Label htmlFor="company_name">{t("profile.businessInfo.companyName")}</Label>
                 <Input
                   id="company_name"
                   value={formData.company_name}
                   onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                   disabled={!isEditing}
-                  placeholder="Enter your company name"
+                  placeholder={t("profile.businessInfo.companyPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="business_address">Business Address</Label>
+                <Label htmlFor="business_address">{t("profile.businessInfo.businessAddress")}</Label>
                 <Input
                   id="business_address"
                   value={formData.business_address}
                   onChange={(e) => setFormData({ ...formData, business_address: e.target.value })}
                   disabled={!isEditing}
-                  placeholder="Enter your business address"
+                  placeholder={t("profile.businessInfo.businessPlaceholder")}
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="tax_number">Tax Number</Label>
+                  <Label htmlFor="tax_number">{t("profile.businessInfo.taxNumber")}</Label>
                   <Input
                     id="tax_number"
                     value={formData.tax_number}
                     onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })}
                     disabled={!isEditing}
-                    placeholder="Enter your tax number"
+                    placeholder={t("profile.businessInfo.taxPlaceholder")}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="region_country">Region</Label>
+                  <Label htmlFor="region_country">{t("profile.businessInfo.region")}</Label>
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                     <div className="space-y-1.5">
                       <Label htmlFor="region_country" className="text-xs text-muted-foreground">
-                        Country
+                        {t("profile.businessInfo.country")}
                       </Label>
                       <Select
                         value={formData.region.country}
@@ -572,7 +574,7 @@ const Profile = () => {
                         disabled={!isEditing}
                       >
                         <SelectTrigger id="region_country">
-                          <SelectValue placeholder="Select country" />
+                          <SelectValue placeholder={t("profile.businessInfo.countryPlaceholder")} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="USA">USA</SelectItem>
@@ -583,7 +585,7 @@ const Profile = () => {
 
                     <div className="space-y-1.5">
                       <Label htmlFor="region_state" className="text-xs text-muted-foreground">
-                        State / Province
+                        {t("profile.businessInfo.state")}
                       </Label>
                       <Input
                         id="region_state"
@@ -595,13 +597,13 @@ const Profile = () => {
                           })
                         }
                         disabled={!isEditing}
-                        placeholder="Enter state or province"
+                        placeholder={t("profile.businessInfo.statePlaceholder")}
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <Label htmlFor="region_postalCode" className="text-xs text-muted-foreground">
-                        Postal Code
+                        {t("profile.businessInfo.postalCode")}
                       </Label>
                       <Input
                         id="region_postalCode"
@@ -613,7 +615,7 @@ const Profile = () => {
                           })
                         }
                         disabled={!isEditing}
-                        placeholder="Enter postal code"
+                        placeholder={t("profile.businessInfo.postalPlaceholder")}
                       />
                     </div>
                   </div>
@@ -628,13 +630,13 @@ const Profile = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
-              Security
+              {t("profile.security.title")}
             </CardTitle>
-            <CardDescription className="text-sm">Manage your password and security settings</CardDescription>
+            <CardDescription className="text-sm">{t("profile.security.description")}</CardDescription>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
             <Button type="button" variant="outline" onClick={handleOpenChangePassword}>
-              Change Password
+              {t("profile.security.changePassword")}
             </Button>
           </CardContent>
         </Card>
@@ -643,29 +645,28 @@ const Profile = () => {
       <Dialog open={isOtpDialogOpen} onOpenChange={setIsOtpDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Verify new email</DialogTitle>
+            <DialogTitle>{t("profile.otpDialog.title")}</DialogTitle>
             <DialogDescription>
-              Enter the one-time password (OTP) sent to your current email address to confirm this
-              change.
+              {t("profile.otpDialog.description")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label htmlFor="otp">OTP</Label>
+            <Label htmlFor="otp">{t("profile.otpDialog.otp")}</Label>
             <Input
               id="otp"
               value={otpValue}
               onChange={(e) => setOtpValue(e.target.value)}
-              placeholder="Enter OTP"
+              placeholder={t("profile.otpDialog.otpPlaceholder")}
             />
           </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={handleResendOtp}>
-              Resend OTP
+              {t("profile.otpDialog.resendOtp")}
             </Button>
             <Button type="button" variant="hero" onClick={handleVerifyEmailOtp}>
-              Verify &amp; Save
+              {t("profile.otpDialog.verifySave")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -674,41 +675,41 @@ const Profile = () => {
       <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Change Password</DialogTitle>
-            <DialogDescription>Update your account password.</DialogDescription>
+            <DialogTitle>{t("profile.changePasswordDialog.title")}</DialogTitle>
+            <DialogDescription>{t("profile.changePasswordDialog.description")}</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmitChangePassword} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="old_password">Current Password</Label>
+              <Label htmlFor="old_password">{t("profile.changePasswordDialog.currentPassword")}</Label>
               <Input
                 id="old_password"
                 type="password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
-                placeholder="Enter current password"
+                placeholder={t("profile.changePasswordDialog.currentPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="new_password">New Password</Label>
+              <Label htmlFor="new_password">{t("profile.changePasswordDialog.newPassword")}</Label>
               <Input
                 id="new_password"
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password"
+                placeholder={t("profile.changePasswordDialog.newPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirm_new_password">Confirm New Password</Label>
+              <Label htmlFor="confirm_new_password">{t("profile.changePasswordDialog.confirmPassword")}</Label>
               <Input
                 id="confirm_new_password"
                 type="password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
-                placeholder="Re-enter new password"
+                placeholder={t("profile.changePasswordDialog.confirmPlaceholder")}
               />
             </div>
 
@@ -718,10 +719,10 @@ const Profile = () => {
                 variant="outline"
                 onClick={() => setIsChangePasswordOpen(false)}
               >
-                Cancel
+                {t("profile.cancel")}
               </Button>
               <Button type="submit" variant="hero" disabled={changePasswordMutation.isPending}>
-                {changePasswordMutation.isPending ? "Changing..." : "Change Password"}
+                {changePasswordMutation.isPending ? t("profile.changePasswordDialog.changing") : t("profile.changePasswordDialog.title")}
               </Button>
             </DialogFooter>
           </form>

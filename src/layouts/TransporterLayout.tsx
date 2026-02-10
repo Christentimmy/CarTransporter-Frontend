@@ -27,7 +27,10 @@ import {
   Home,
   Wallet,
   Plus,
+  Languages,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 
 const menuItems = [
   {
@@ -78,6 +81,13 @@ export const TransporterLayout = () => {
 const TransporterLayoutContent = () => {
   const location = useLocation();
   const { isMobile, setOpenMobile } = useSidebar();
+  const { i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === "en" ? "fr" : "en";
+    i18n.changeLanguage(newLang);
+    localStorage.setItem("language", newLang);
+  };
 
   useEffect(() => {
     if (isMobile) setOpenMobile(false);
@@ -152,6 +162,15 @@ const TransporterLayoutContent = () => {
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <div className="flex-1" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleLanguage}
+            className="gap-2"
+          >
+            <Languages className="h-4 w-4" />
+            {i18n.language === "en" ? "FR" : "EN"}
+          </Button>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
           <Outlet />

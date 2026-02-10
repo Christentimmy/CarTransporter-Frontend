@@ -359,5 +359,206 @@
     "success": {
       "created": "Demande d'expédition créée."
     }
+  },
+  "myRequests": {
+    "title": "Mes demandes",
+    "subtitle": "Affichez et gérez vos demandes de transport",
+    "newRequest": "Nouvelle demande",
+    "filters": {
+      "searchPlaceholder": "Rechercher véhicule, ville...",
+      "statusPlaceholder": "Statut",
+      "allStatus": "Tous les statuts",
+      "draft": "Brouillon",
+      "live": "En cours",
+      "ended": "Terminé",
+      "assigned": "Assigné",
+      "inTransit": "En transit",
+      "delivered": "Livré",
+      "completed": "Terminé",
+      "disputed": "Contesté",
+      "cancelled": "Annulé"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "live": "En cours",
+      "ended": "Terminé",
+      "assigned": "Assigné",
+      "inTransit": "En transit",
+      "delivered": "Livré",
+      "completed": "Terminé",
+      "disputed": "Contesté",
+      "cancelled": "Annulé"
+    },
+    "escrow": {
+      "paidInEscrow": "Payé en séquestre",
+      "paidOut": "Payé",
+      "refunded": "Remboursé",
+      "awaitingPayment": "En attente de paiement"
+    },
+    "empty": {
+      "title": "Aucune demande trouvée",
+      "noResults": "Essayez d'ajuster vos filtres",
+      "noRequests": "Commencez par créer votre première demande de transport de véhicule",
+      "createRequest": "Créer une demande"
+    },
+    "loading": "Chargement de vos demandes...",
+    "error": {
+      "title": "Échec du chargement des demandes",
+      "retry": "Réessayer",
+      "somethingWrong": "Une erreur s'est produite"
+    },
+    "card": {
+      "from": "De",
+      "to": "À",
+      "note": "Note : ",
+      "pickup": "Prise en charge :",
+      "deliveryDeadline": "Date limite de livraison",
+      "distance": "Distance",
+      "estTime": "Temps estimé",
+      "auctionStarts": "Début de l'enchère",
+      "auctionEnds": "Fin de l'enchère",
+      "viewLiveAuction": "Voir l'enchère en direct",
+      "payNow": "Payer maintenant",
+      "color": "Couleur",
+      "drivetrain": "Transmission",
+      "weight": "kg",
+      "dimensions": "m",
+      "accidented": "Accidenté",
+      "keysAvailable": "Clés disponibles",
+      "noKeys": "Pas de clés"
+    },
+    "payment": {
+      "title": "Payer pour l'expédition",
+      "description": "Entrez vos coordonnées bancaires pour payer cette expédition assignée.",
+      "summary": "Résumé du paiement",
+      "shipmentAmount": "Montant de l'expédition",
+      "platformFee": "Frais de plateforme (10%)",
+      "totalToPay": "Total à payer",
+      "loadingForm": "Chargement du formulaire de paiement...",
+      "processing": "Traitement...",
+      "payNow": "Payer maintenant"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Gérez vos informations de compte et paramètres",
+    "editProfile": "Modifier le profil",
+    "cancel": "Annuler",
+    "saveChanges": "Enregistrer les modifications",
+    "loading": "Chargement du profil...",
+    "error": "Échec du chargement du profil",
+    "accountStatus": {
+      "title": "Statut du compte",
+      "description": "Vérification et statut de votre compte",
+      "role": "Rôle :",
+      "status": "Statut :",
+      "emailVerification": "Vérification de l'email",
+      "phoneVerification": "Vérification du téléphone",
+      "verified": "Vérifié",
+      "unverified": "Non vérifié"
+    },
+    "personalInfo": {
+      "title": "Informations personnelles",
+      "description": "Vos informations de compte de base",
+      "email": "Email",
+      "phone": "Numéro de téléphone",
+      "phonePlaceholder": "Entrez votre numéro de téléphone",
+      "emailNotVerified": "Votre email n'est pas vérifié. Veuillez le vérifier pour accéder à toutes les fonctionnalités.",
+      "phoneNotVerified": "Votre numéro de téléphone n'est pas vérifié."
+    },
+    "businessInfo": {
+      "title": "Informations professionnelles",
+      "description": "Détails de votre entreprise et de vos activités",
+      "companyName": "Nom de l'entreprise",
+      "companyPlaceholder": "Entrez le nom de votre entreprise",
+      "businessAddress": "Adresse professionnelle",
+      "businessPlaceholder": "Entrez votre adresse professionnelle",
+      "taxNumber": "Numéro d'identification fiscale",
+      "taxPlaceholder": "Entrez votre numéro d'identification fiscale",
+      "region": "Région",
+      "country": "Pays",
+      "countryPlaceholder": "Sélectionner un pays",
+      "state": "État / Province",
+      "statePlaceholder": "Entrez l'état ou la province",
+      "postalCode": "Code postal",
+      "postalPlaceholder": "Entrez le code postal"
+    },
+    "security": {
+      "title": "Sécurité",
+      "description": "Gérez votre mot de passe et paramètres de sécurité",
+      "changePassword": "Changer le mot de passe"
+    },
+    "otpDialog": {
+      "title": "Vérifier le nouvel email",
+      "description": "Entrez le mot de passe à usage unique (OTP) envoyé à votre adresse email actuelle pour confirmer ce changement.",
+      "otp": "OTP",
+      "otpPlaceholder": "Entrez l'OTP",
+      "resendOtp": "Renvoyer l'OTP",
+      "verifySave": "Vérifier et enregistrer"
+    },
+    "changePasswordDialog": {
+      "title": "Changer le mot de passe",
+      "description": "Mettez à jour le mot de passe de votre compte.",
+      "currentPassword": "Mot de passe actuel",
+      "currentPlaceholder": "Entrez le mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "newPlaceholder": "Entrez le nouveau mot de passe",
+      "confirmPassword": "Confirmer le nouveau mot de passe",
+      "confirmPlaceholder": "Entrez à nouveau le nouveau mot de passe",
+      "changing": "Modification..."
+    },
+    "status": {
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "pending": "En attente",
+      "banned": "Banni"
+    },
+    "roles": {
+      "user": "Utilisateur",
+      "transporter": "Transporteur",
+      "admin": "Admin",
+      "superAdmin": "Super Admin"
+    },
+    "toast": {
+      "profileUpdated": "Profil mis à jour",
+      "updateFailed": "Échec de la mise à jour du profil",
+      "passwordChanged": "Mot de passe changé avec succès",
+      "passwordChangeFailed": "Échec du changement de mot de passe",
+      "enterOtp": "Entrez l'OTP envoyé à votre email enregistré",
+      "otpVerificationFailed": "Échec de la vérification OTP",
+      "otpResent": "OTP renvoyé à votre email enregistré",
+      "otpResendFailed": "Échec du renvoi de l'OTP",
+      "enterBothPasswords": "Veuillez entrer l'ancien et le nouveau mot de passe",
+      "passwordsDoNotMatch": "Les nouveaux mots de passe ne correspondent pas"
+    }
+  },
+  "transporterDashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Bon retour ! Voici un aperçu de votre activité de transporteur.",
+    "stats": {
+      "pendingRequests": "Demandes en attente",
+      "pendingDescription": "En attente de votre enchère",
+      "completedRequests": "Demandes terminées",
+      "completedDescription": "Livré avec succès",
+      "totalRequests": "Total des demandes",
+      "totalDescription": "Toutes périodes",
+      "totalBalance": "Solde total",
+      "balanceDescription": "Solde toutes périodes"
+    },
+    "recentRequests": {
+      "title": "Demandes récentes",
+      "description": "5 dernières demandes",
+      "noRequests": "Aucune demande récente"
+    },
+    "quickActions": {
+      "title": "Actions rapides",
+      "description": "Tâches courantes et raccourcis",
+      "browseRequests": "Parcourir les demandes disponibles",
+      "viewBids": "Voir mes enchères",
+      "trackShipments": "Suivre les expéditions"
+    },
+    "toast": {
+      "loadFailed": "Échec du chargement des données du tableau de bord"
+    }
   }
 }

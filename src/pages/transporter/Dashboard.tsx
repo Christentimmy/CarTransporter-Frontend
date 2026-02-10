@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { dashboardService, type TransporterDashboardStats } from "@/services/dashboard_services";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState<TransporterDashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -17,7 +19,7 @@ const Dashboard = () => {
         const data = await dashboardService.getTransporterDashboard();
         setDashboardData(data);
       } catch (error) {
-        toast.error("Failed to load dashboard data", {
+        toast.error(t("transporterDashboard.toast.loadFailed"), {
           style: { background: "#ef4444", color: "#ffffff" },
         });
         console.error("Error fetching transporter dashboard:", error);
@@ -31,30 +33,30 @@ const Dashboard = () => {
 
     const stats = [
     {
-      title: "Pending Requests",
+      title: t("transporterDashboard.stats.pendingRequests"),
       value: dashboardData?.pendingRequest?.toString() ?? "0",
-      description: "Awaiting your bid",
+      description: t("transporterDashboard.stats.pendingDescription"),
       icon: Gavel,
       color: "text-blue-500",
     },
     {
-      title: "Completed Requests",
+      title: t("transporterDashboard.stats.completedRequests"),
       value: dashboardData?.completedRequest?.toString() ?? "0",
-      description: "Successfully delivered",
+      description: t("transporterDashboard.stats.completedDescription"),
       icon: CheckCircle2,
       color: "text-green-500",
     },
     {
-      title: "Total Requests",
+      title: t("transporterDashboard.stats.totalRequests"),
       value: dashboardData?.totalRequest?.toString() ?? "0",
-      description: "All time",
+      description: t("transporterDashboard.stats.totalDescription"),
       icon: Package,
       color: "text-orange-500",
     },
     {
-      title: "Total Balance",
+      title: t("transporterDashboard.stats.totalBalance"),
       value: dashboardData?.totalBalance != null ? `$${dashboardData.totalBalance.toLocaleString()}` : "$0",
-      description: "All time balance",
+      description: t("transporterDashboard.stats.balanceDescription"),
       icon: DollarSign,
       color: "text-purple-500",
     },
@@ -73,7 +75,7 @@ const Dashboard = () => {
     if (requests.length === 0) {
       return (
         <div className="text-center py-4 text-sm text-muted-foreground">
-          No recent requests
+          {t("transporterDashboard.recentRequests.noRequests")}
         </div>
       );
     }
@@ -130,9 +132,9 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("transporterDashboard.title")}</h1>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Welcome back! Here's an overview of your transporter activity.
+          {t("transporterDashboard.subtitle")}
         </p>
       </motion.div>
 
@@ -182,9 +184,9 @@ const Dashboard = () => {
             >
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Recent Requests</CardTitle>
+                  <CardTitle className="text-base">{t("transporterDashboard.recentRequests.title")}</CardTitle>
                   <CardDescription>
-                    Latest 5 requests
+                    {t("transporterDashboard.recentRequests.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -200,9 +202,9 @@ const Dashboard = () => {
             >
               <Card className="h-full">
                 <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
+                  <CardTitle>{t("transporterDashboard.quickActions.title")}</CardTitle>
                   <CardDescription>
-                    Common tasks and shortcuts
+                    {t("transporterDashboard.quickActions.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -210,19 +212,19 @@ const Dashboard = () => {
                     <Link to="/transporter/available-requests">
                       <Button variant="outline" className="w-full justify-start">
                         <Search className="mr-2 h-4 w-4" />
-                        Browse Available Requests
+                        {t("transporterDashboard.quickActions.browseRequests")}
                       </Button>
                     </Link>
                     <Link to="/transporter/my-bids">
                       <Button variant="outline" className="w-full justify-start">
                         <Gavel className="mr-2 h-4 w-4" />
-                        View My Bids
+                        {t("transporterDashboard.quickActions.viewBids")}
                       </Button>
                     </Link>
                     <Link to="/transporter/my-shipments">
                       <Button variant="outline" className="w-full justify-start">
                         <Package className="mr-2 h-4 w-4" />
-                        Track Shipments
+                        {t("transporterDashboard.quickActions.trackShipments")}
                       </Button>
                     </Link>
                   </div>

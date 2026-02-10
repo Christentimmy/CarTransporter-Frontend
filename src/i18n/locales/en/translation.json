@@ -359,5 +359,206 @@
     "success": {
       "created": "Shipment request created."
     }
+  },
+  "myRequests": {
+    "title": "My Requests",
+    "subtitle": "View and manage your transport requests",
+    "newRequest": "New Request",
+    "filters": {
+      "searchPlaceholder": "Search vehicle, city...",
+      "statusPlaceholder": "Status",
+      "allStatus": "All Status",
+      "draft": "Draft",
+      "live": "Live",
+      "ended": "Ended",
+      "assigned": "Assigned",
+      "inTransit": "In Transit",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "disputed": "Disputed",
+      "cancelled": "Cancelled"
+    },
+    "status": {
+      "draft": "Draft",
+      "live": "Live",
+      "ended": "Ended",
+      "assigned": "Assigned",
+      "inTransit": "In Transit",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "disputed": "Disputed",
+      "cancelled": "Cancelled"
+    },
+    "escrow": {
+      "paidInEscrow": "Paid in escrow",
+      "paidOut": "Paid out",
+      "refunded": "Refunded",
+      "awaitingPayment": "Awaiting payment"
+    },
+    "empty": {
+      "title": "No requests found",
+      "noResults": "Try adjusting your filters",
+      "noRequests": "Get started by creating your first vehicle transport request",
+      "createRequest": "Create Request"
+    },
+    "loading": "Loading your requests...",
+    "error": {
+      "title": "Failed to load requests",
+      "retry": "Retry",
+      "somethingWrong": "Something went wrong"
+    },
+    "card": {
+      "from": "From",
+      "to": "To",
+      "note": "Note: ",
+      "pickup": "Pickup:",
+      "deliveryDeadline": "Delivery Deadline",
+      "distance": "Distance",
+      "estTime": "Est. Time",
+      "auctionStarts": "Auction Starts",
+      "auctionEnds": "Auction Ends",
+      "viewLiveAuction": "View Live Auction",
+      "payNow": "Pay now",
+      "color": "Color",
+      "drivetrain": "Drivetrain",
+      "weight": "kg",
+      "dimensions": "m",
+      "accidented": "Accidented",
+      "keysAvailable": "Keys Available",
+      "noKeys": "No Keys"
+    },
+    "payment": {
+      "title": "Pay for shipment",
+      "description": "Enter your card details to pay for this assigned shipment.",
+      "summary": "Payment summary",
+      "shipmentAmount": "Shipment amount",
+      "platformFee": "Platform fee (10%)",
+      "totalToPay": "Total to pay",
+      "loadingForm": "Loading payment form...",
+      "processing": "Processing...",
+      "payNow": "Pay now"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your account information and settings",
+    "editProfile": "Edit Profile",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "loading": "Loading profile...",
+    "error": "Failed to load profile",
+    "accountStatus": {
+      "title": "Account Status",
+      "description": "Your account verification and status",
+      "role": "Role:",
+      "status": "Status:",
+      "emailVerification": "Email Verification",
+      "phoneVerification": "Phone Verification",
+      "verified": "Verified",
+      "unverified": "Unverified"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "description": "Your basic account information",
+      "email": "Email",
+      "phone": "Phone Number",
+      "phonePlaceholder": "Enter your phone number",
+      "emailNotVerified": "Your email is not verified. Please verify it to access all features.",
+      "phoneNotVerified": "Your phone number is not verified."
+    },
+    "businessInfo": {
+      "title": "Business Information",
+      "description": "Your company and business details",
+      "companyName": "Company Name",
+      "companyPlaceholder": "Enter your company name",
+      "businessAddress": "Business Address",
+      "businessPlaceholder": "Enter your business address",
+      "taxNumber": "Tax Number",
+      "taxPlaceholder": "Enter your tax number",
+      "region": "Region",
+      "country": "Country",
+      "countryPlaceholder": "Select country",
+      "state": "State / Province",
+      "statePlaceholder": "Enter state or province",
+      "postalCode": "Postal Code",
+      "postalPlaceholder": "Enter postal code"
+    },
+    "security": {
+      "title": "Security",
+      "description": "Manage your password and security settings",
+      "changePassword": "Change Password"
+    },
+    "otpDialog": {
+      "title": "Verify new email",
+      "description": "Enter the one-time password (OTP) sent to your current email address to confirm this change.",
+      "otp": "OTP",
+      "otpPlaceholder": "Enter OTP",
+      "resendOtp": "Resend OTP",
+      "verifySave": "Verify & Save"
+    },
+    "changePasswordDialog": {
+      "title": "Change Password",
+      "description": "Update your account password.",
+      "currentPassword": "Current Password",
+      "currentPlaceholder": "Enter current password",
+      "newPassword": "New Password",
+      "newPlaceholder": "Enter new password",
+      "confirmPassword": "Confirm New Password",
+      "confirmPlaceholder": "Re-enter new password",
+      "changing": "Changing..."
+    },
+    "status": {
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pending": "Pending",
+      "banned": "Banned"
+    },
+    "roles": {
+      "user": "User",
+      "transporter": "Transporter",
+      "admin": "Admin",
+      "superAdmin": "Super Admin"
+    },
+    "toast": {
+      "profileUpdated": "Profile updated",
+      "updateFailed": "Failed to update profile",
+      "passwordChanged": "Password changed successfully",
+      "passwordChangeFailed": "Failed to change password",
+      "enterOtp": "Enter the OTP sent to your registered email",
+      "otpVerificationFailed": "OTP verification failed",
+      "otpResent": "OTP resent to your registered email",
+      "otpResendFailed": "Failed to resend OTP",
+      "enterBothPasswords": "Please enter both old and new passwords",
+      "passwordsDoNotMatch": "New passwords do not match"
+    }
+  },
+  "transporterDashboard": {
+    "title": "Dashboard",
+    "subtitle": "Welcome back! Here's an overview of your transporter activity.",
+    "stats": {
+      "pendingRequests": "Pending Requests",
+      "pendingDescription": "Awaiting your bid",
+      "completedRequests": "Completed Requests",
+      "completedDescription": "Successfully delivered",
+      "totalRequests": "Total Requests",
+      "totalDescription": "All time",
+      "totalBalance": "Total Balance",
+      "balanceDescription": "All time balance"
+    },
+    "recentRequests": {
+      "title": "Recent Requests",
+      "description": "Latest 5 requests",
+      "noRequests": "No recent requests"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "description": "Common tasks and shortcuts",
+      "browseRequests": "Browse Available Requests",
+      "viewBids": "View My Bids",
+      "trackShipments": "Track Shipments"
+    },
+    "toast": {
+      "loadFailed": "Failed to load dashboard data"
+    }
   }
 }
