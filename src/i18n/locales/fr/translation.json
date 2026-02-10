@@ -560,5 +560,122 @@
     "toast": {
       "loadFailed": "Échec du chargement des données du tableau de bord"
     }
+  },
+  "availableRequests": {
+    "title": "Demandes disponibles",
+    "subtitle": "Parcourez les demandes de transport de véhicules en direct et placez vos enchères",
+    "search": {
+      "placeholder": "Rechercher par véhicule, ville..."
+    },
+    "loading": "Chargement des demandes disponibles...",
+    "error": {
+      "title": "Échec du chargement des demandes",
+      "retry": "Réessayer",
+      "somethingWrong": "Une erreur s'est produite"
+    },
+    "empty": {
+      "title": "Aucune demande trouvée",
+      "adjustSearch": "Essayez d'ajuster votre recherche",
+      "noRequests": "Aucune demande en direct ou brouillon disponible pour le moment"
+    },
+    "card": {
+      "from": "De",
+      "to": "À",
+      "note": "Note : ",
+      "pickup": "Prise en charge :",
+      "deliveryDeadline": "Date limite de livraison",
+      "distance": "Distance :",
+      "estTime": "Temps estimé",
+      "currentBid": "Enchère la plus basse actuelle",
+      "noBids": "Aucune enchère pour le moment",
+      "viewAuction": "Voir l'enchère",
+      "vehicle": "Véhicule :",
+      "running": "En marche",
+      "notRunning": "Ne marche pas",
+      "accidented": "Accidenté",
+      "keys": "Clés",
+      "noKeys": "Pas de clés",
+      "starts": "Débute :",
+      "ended": "Terminé",
+      "daysLeft": "jour(s) restant(s)",
+      "hoursLeft": "h m restant(s)",
+      "draft": "Brouillon"
+    },
+    "toast": {
+      "auctionNotLive": "L'enchère n'est pas en direct pour cette expédition",
+      "connectionFailed": "Échec de la connexion au serveur d'enchères",
+      "bidError": "Erreur d'enchère"
+    }
+  },
+  "myShipments": {
+    "title": "Mes expéditions",
+    "subtitle": "Afficher et gérer les expéditions que vous avez remportées",
+    "search": {
+      "placeholder": "Rechercher par véhicule, ville..."
+    },
+    "filter": {
+      "placeholder": "Filtrer par statut",
+      "all": "Tous les statuts",
+      "assigned": "Assigné",
+      "inTransit": "En transit",
+      "delivered": "Livré",
+      "completed": "Terminé",
+      "disputed": "Disputé",
+      "cancelled": "Annulé"
+    },
+    "loading": "Chargement de vos expéditions...",
+    "error": {
+      "title": "Échec du chargement des expéditions",
+      "unknown": "Erreur inconnue"
+    },
+    "empty": {
+      "title": "Aucune expédition trouvée",
+      "adjustFilters": "Essayez d'ajuster vos filtres",
+      "noShipments": "Vous n'avez encore reçu aucune expédition"
+    },
+    "card": {
+      "from": "De",
+      "to": "À",
+      "note": "Note : ",
+      "pickup": "Prise en charge :",
+      "distance": "Distance :",
+      "winningBid": "Enchère gagnante :",
+      "serialNumber": "Numéro de série :",
+      "vehicle": "Véhicule :",
+      "running": "En marche",
+      "notRunning": "Ne marche pas",
+      "accidented": "Accidenté",
+      "keys": "Clés",
+      "noKeys": "Pas de clés",
+      "assignedDate": "Date d'assignation",
+      "deliveryDeadline": "Date limite de livraison",
+      "waitingPayment": "En attente du paiement du client avant de pouvoir mettre à jour le statut de cette expédition."
+    },
+    "statusDialog": {
+      "title": "Mettre à jour le statut de l'expédition",
+      "description": "Mettre à jour le statut de cette expédition",
+      "currentStatus": "Statut actuel",
+      "newStatus": "Nouveau statut",
+      "selectStatus": "Sélectionner un nouveau statut",
+      "cancel": "Annuler",
+      "update": "Mettre à jour le statut",
+      "updating": "Mise à jour...",
+      "inTransitInfo": "Marquer comme \"En transit\" signifie que vous avez commencé le processus de prise en charge et que le véhicule est maintenant en cours de transport.",
+      "deliveredInfo": "Marquer comme \"Livré\" signifie que le véhicule a été livré avec succès à la destination.",
+      "disputedInfo": "Marquer comme \"Disputé\" indique qu'il y a un problème avec cette expédition qui doit être résolu."
+    },
+    "status": {
+      "assigned": "Assigné",
+      "ended": "Terminé",
+      "inTransit": "En transit",
+      "delivered": "Livré",
+      "completed": "Terminé",
+      "disputed": "Disputé",
+      "cancelled": "Annulé"
+    },
+    "toast": {
+      "statusUpdated": "Statut de l'expédition mis à jour",
+      "updateFailed": "Échec de la mise à jour du statut de l'expédition"
+    }
   }
 }

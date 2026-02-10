@@ -560,5 +560,122 @@
     "toast": {
       "loadFailed": "Failed to load dashboard data"
     }
+  },
+  "availableRequests": {
+    "title": "Available Requests",
+    "subtitle": "Browse live vehicle transport requests and place your bids",
+    "search": {
+      "placeholder": "Search by vehicle, city..."
+    },
+    "loading": "Loading available requests...",
+    "error": {
+      "title": "Failed to load requests",
+      "retry": "Retry",
+      "somethingWrong": "Something went wrong"
+    },
+    "empty": {
+      "title": "No requests found",
+      "adjustSearch": "Try adjusting your search",
+      "noRequests": "No live or draft requests available at the moment"
+    },
+    "card": {
+      "from": "From",
+      "to": "To",
+      "note": "Note: ",
+      "pickup": "Pickup:",
+      "deliveryDeadline": "Delivery Deadline",
+      "distance": "Distance:",
+      "estTime": "Est. Time",
+      "currentBid": "Current Lowest Bid",
+      "noBids": "No bids yet",
+      "viewAuction": "View Auction",
+      "vehicle": "Vehicle:",
+      "running": "Running",
+      "notRunning": "Not Running",
+      "accidented": "Accidented",
+      "keys": "Keys",
+      "noKeys": "No Keys",
+      "starts": "Starts:",
+      "ended": "Ended",
+      "daysLeft": "day(s) left",
+      "hoursLeft": "h m left",
+      "draft": "Draft"
+    },
+    "toast": {
+      "auctionNotLive": "Auction is not live for this shipment",
+      "connectionFailed": "Failed to connect to auction server",
+      "bidError": "Bid error"
+    }
+  },
+  "myShipments": {
+    "title": "My Shipments",
+    "subtitle": "View and manage shipments you've won",
+    "search": {
+      "placeholder": "Search by vehicle, city..."
+    },
+    "filter": {
+      "placeholder": "Filter by status",
+      "all": "All Status",
+      "assigned": "Assigned",
+      "inTransit": "In Transit",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "disputed": "Disputed",
+      "cancelled": "Cancelled"
+    },
+    "loading": "Loading your shipments...",
+    "error": {
+      "title": "Failed to load shipments",
+      "unknown": "Unknown error"
+    },
+    "empty": {
+      "title": "No shipments found",
+      "adjustFilters": "Try adjusting your filters",
+      "noShipments": "You haven't been assigned any shipments yet"
+    },
+    "card": {
+      "from": "From",
+      "to": "To",
+      "note": "Note: ",
+      "pickup": "Pickup:",
+      "distance": "Distance:",
+      "winningBid": "Winning Bid:",
+      "serialNumber": "Serial Number:",
+      "vehicle": "Vehicle:",
+      "running": "Running",
+      "notRunning": "Not Running",
+      "accidented": "Accidented",
+      "keys": "Keys",
+      "noKeys": "No Keys",
+      "assignedDate": "Assigned Date",
+      "deliveryDeadline": "Delivery Deadline",
+      "waitingPayment": "Waiting for client payment before you can update this shipment's status."
+    },
+    "statusDialog": {
+      "title": "Update Shipment Status",
+      "description": "Update status of this shipment",
+      "currentStatus": "Current Status",
+      "newStatus": "New Status",
+      "selectStatus": "Select new status",
+      "cancel": "Cancel",
+      "update": "Update Status",
+      "updating": "Updating...",
+      "inTransitInfo": "Marking as \"In Transit\" means you've started the pickup process and the vehicle is now being transported.",
+      "deliveredInfo": "Marking as \"Delivered\" means the vehicle has been successfully delivered to the destination.",
+      "disputedInfo": "Marking as \"Disputed\" indicates there is an issue with this shipment that needs to be resolved."
+    },
+    "status": {
+      "assigned": "Assigned",
+      "ended": "Ended",
+      "inTransit": "In Transit",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "disputed": "Disputed",
+      "cancelled": "Cancelled"
+    },
+    "toast": {
+      "statusUpdated": "Shipment status updated",
+      "updateFailed": "Failed to update shipment status"
+    }
   }
 }

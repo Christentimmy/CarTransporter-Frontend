@@ -37,6 +37,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { getMyAssignedShipments, updateShipmentStatus } from "@/services/shipmentService";
 import type { AssignedShipment } from "@/types/shipment";
+import { useTranslation } from "react-i18next";
 
 function formatLocation(loc: AssignedShipment["pickupLocation"]) {
   if (loc.address) return loc.address;
@@ -87,7 +88,19 @@ const statusConfig: Record<
   },
 };
 
+const getStatusBadge = (status: string) => {
+    const config = statusConfig[status] || statusConfig.ASSIGNED;
+    const Icon = config.icon;
+    return (
+      <Badge variant={config.variant} className="flex items-center gap-1">
+        <Icon className="h-3 w-3" />
+        {config.label}
+      </Badge>
+    );
+  };
+
 const MyShipments = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page] = useState(1);
@@ -107,13 +120,13 @@ const MyShipments = () => {
     mutationFn: ({ shipmentId, status }: { shipmentId: string; status: string }) =>
       updateShipmentStatus(shipmentId, status),
     onSuccess: async (res) => {
-      toast.success(res.message ?? "Shipment status updated", {
+      toast.success(res.message ?? t("myShipments.toast.statusUpdated"), {
         style: { background: "#22c55e", color: "#fff" },
       });
       await queryClient.invalidateQueries({ queryKey: ["my-assigned-shipments"] });
     },
     onError: (e) => {
-      toast.error(e instanceof Error ? e.message : "Failed to update shipment status", {
+      toast.error(e instanceof Error ? e.message : t("myShipments.toast.updateFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     },
@@ -179,7 +192,7 @@ const MyShipments = () => {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground">Loading your shipments...</p>
+        <p className="text-muted-foreground">{t("myShipments.loading")}</p>
       </div>
     );
   }
@@ -187,9 +200,9 @@ const MyShipments = () => {
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
-        <p className="text-destructive font-medium">Failed to load shipments</p>
+        <p className="text-destructive font-medium">{t("myShipments.error.title")}</p>
         <p className="text-muted-foreground text-sm mt-2">
-          {error instanceof Error ? error.message : "Unknown error"}
+          {error instanceof Error ? error.message : t("myShipments.error.unknown")}
         </p>
       </div>
     );
@@ -205,9 +218,9 @@ const MyShipments = () => {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Shipments</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("myShipments.title")}</h1>
           <p className="text-muted-foreground">
-            View and manage shipments you've won
+            {t("myShipments.subtitle")}
           </p>
         </div>
       </motion.div>
@@ -222,7 +235,7 @@ const MyShipments = () => {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search by vehicle, city..."
+            placeholder={t("myShipments.search.placeholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -231,16 +244,16 @@ const MyShipments = () => {
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full sm:w-[180px]">
             <Filter className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder={t("myShipments.filter.placeholder")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="ASSIGNED">Assigned</SelectItem>
-            <SelectItem value="IN_TRANSIT">In Transit</SelectItem>
-            <SelectItem value="DELIVERED">Delivered</SelectItem>
-            <SelectItem value="COMPLETED">Completed</SelectItem>
-            <SelectItem value="DISPUTED">Disputed</SelectItem>
-            <SelectItem value="CANCELLED">Cancelled</SelectItem>
+            <SelectItem value="all">{t("myShipments.filter.all")}</SelectItem>
+            <SelectItem value="ASSIGNED">{t("myShipments.filter.assigned")}</SelectItem>
+            <SelectItem value="IN_TRANSIT">{t("myShipments.filter.inTransit")}</SelectItem>
+            <SelectItem value="DELIVERED">{t("myShipments.filter.delivered")}</SelectItem>
+            <SelectItem value="COMPLETED">{t("myShipments.filter.completed")}</SelectItem>
+            <SelectItem value="DISPUTED">{t("myShipments.filter.disputed")}</SelectItem>
+            <SelectItem value="CANCELLED">{t("myShipments.filter.cancelled")}</SelectItem>
           </SelectContent>
         </Select>
       </motion.div>
@@ -250,11 +263,11 @@ const MyShipments = () => {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Package className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No shipments found</h3>
+            <h3 className="text-lg font-semibold mb-2">{t("myShipments.empty.title")}</h3>
             <p className="text-muted-foreground text-center">
               {searchQuery || statusFilter !== "all"
-                ? "Try adjusting your filters"
-                : "You haven't been assigned any shipments yet"}
+                ? t("myShipments.empty.adjustFilters")
+                : t("myShipments.empty.noShipments")}
             </p>
           </CardContent>
         </Card>
@@ -302,37 +315,37 @@ const MyShipments = () => {
                               <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4" />
                                 <span>
-                                  <span className="text-muted-foreground/80">From </span>
+                                  <span className="text-muted-foreground/80">{t("myShipments.card.from")} </span>
                                   {formatLocation(shipment.pickupLocation)}
                                 </span>
                               </div>
                               {shipment.pickupLocation.note && (
                                 <p className="md:col-span-2 ml-6 text-xs text-muted-foreground/80 break-words">
-                                  Note: {shipment.pickupLocation.note}
+                                  {t("myShipments.card.note")}{shipment.pickupLocation.note}
                                 </p>
                               )}
                               <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4 opacity-60" />
                                 <span>
-                                  <span className="text-muted-foreground/80">To </span>
+                                  <span className="text-muted-foreground/80">{t("myShipments.card.to")} </span>
                                   {formatLocation(shipment.deliveryLocation)}
                                 </span>
                               </div>
                               {shipment.deliveryLocation.note && (
                                 <p className="md:col-span-2 ml-6 text-xs text-muted-foreground/80 break-words">
-                                  Note: {shipment.deliveryLocation.note}
+                                  {t("myShipments.card.note")}{shipment.deliveryLocation.note}
                                 </p>
                               )}
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4" />
                                 <span>
-                                  Pickup:{" "}
+                                  {t("myShipments.card.pickup")}{" "}
                                   {pickupStart ? format(pickupStart, "MMM d") : "—"} -{" "}
                                   {pickupEnd ? format(pickupEnd, "MMM d, yyyy") : "—"}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <span className="font-medium">Distance:</span>
+                                <span className="font-medium">{t("myShipments.card.distance")}</span>
                                 <span>
                                   {shipment.distance != null
                                     ? `${shipment.distance.toLocaleString()} km`
@@ -340,7 +353,7 @@ const MyShipments = () => {
                                 </span>
                               </div>
                               <div className="flex items-center gap-2 md:col-span-2">
-                                <span className="font-medium">Winning Bid:</span>
+                                <span className="font-medium">{t("myShipments.card.winningBid")}</span>
                                 <span className="font-semibold text-primary">
                                   {winningAmount != null ? `$${winningAmount.toLocaleString()}` : "—"}
                                 </span>
@@ -348,7 +361,7 @@ const MyShipments = () => {
 
                               {shipment.vehicleDetails.serialNumber && (
                                 <div className="flex items-center gap-2 md:col-span-2">
-                                  <span className="font-medium">Serial Number:</span>
+                                  <span className="font-medium">{t("myShipments.card.serialNumber")}</span>
                                   <span>{shipment.vehicleDetails.serialNumber}</span>
                                 </div>
                               )}
@@ -366,16 +379,16 @@ const MyShipments = () => {
                                   <Badge
                                     variant={(shipment.vehicleDetails.isRunning ?? true) ? "default" : "secondary"}
                                   >
-                                    {(shipment.vehicleDetails.isRunning ?? true) ? "Running" : "Not Running"}
+                                    {(shipment.vehicleDetails.isRunning ?? true) ? t("myShipments.card.running") : t("myShipments.card.notRunning")}
                                   </Badge>
                                   {shipment.vehicleDetails.isAccidented === true && (
-                                    <Badge variant="secondary">Accidented</Badge>
+                                    <Badge variant="secondary">{t("myShipments.card.accidented")}</Badge>
                                   )}
                                   {shipment.vehicleDetails.keysAvailable != null && (
                                     <Badge
                                       variant={shipment.vehicleDetails.keysAvailable ? "default" : "secondary"}
                                     >
-                                      {shipment.vehicleDetails.keysAvailable ? "Keys" : "No Keys"}
+                                      {shipment.vehicleDetails.keysAvailable ? t("myShipments.card.keys") : t("myShipments.card.noKeys")}
                                     </Badge>
                                   )}
                                   {shipment.vehicleDetails.color && (
@@ -416,39 +429,39 @@ const MyShipments = () => {
                                 onClick={() => handleStatusUpdate(shipment._id, shipment.status)}
                                 className="w-full sm:w-auto"
                               >
-                                Update Status
+                                {t("myShipments.card.updateStatus")}
                               </Button>
                             </DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
-                                <DialogTitle>Update Shipment Status</DialogTitle>
+                                <DialogTitle>{t("myShipments.statusDialog.title")}</DialogTitle>
                                 <DialogDescription>
-                                  Update the status of this shipment
+                                  {t("myShipments.statusDialog.description")}
                                 </DialogDescription>
                               </DialogHeader>
                               {selectedShipmentData && (
                                 <div className="space-y-4">
                                   <div className="space-y-2">
-                                    <Label>Current Status</Label>
+                                    <Label>{t("myShipments.statusDialog.currentStatus")}</Label>
                                     <p className="text-sm font-medium">
                                       {statusConfig[selectedShipmentData.status]?.label}
                                     </p>
                                   </div>
                                   <div className="space-y-2">
-                                    <Label htmlFor="new-status">New Status</Label>
+                                    <Label htmlFor="new-status">{t("myShipments.statusDialog.newStatus")}</Label>
                                     <Select value={newStatus} onValueChange={setNewStatus}>
                                       <SelectTrigger id="new-status">
-                                        <SelectValue placeholder="Select new status" />
+                                        <SelectValue placeholder={t("myShipments.statusDialog.selectStatus")} />
                                       </SelectTrigger>
                                       <SelectContent>
                                         <SelectItem value="IN_TRANSIT">
-                                          {statusConfig.IN_TRANSIT.label}
+                                          {t("myShipments.status.inTransit")}
                                         </SelectItem>
                                         <SelectItem value="DELIVERED">
-                                          {statusConfig.DELIVERED.label}
+                                          {t("myShipments.status.delivered")}
                                         </SelectItem>
                                         <SelectItem value="DISPUTED">
-                                          {statusConfig.DISPUTED.label}
+                                          {t("myShipments.status.disputed")}
                                         </SelectItem>
                                       </SelectContent>
                                     </Select>
@@ -456,21 +469,21 @@ const MyShipments = () => {
                                   {newStatus === "IN_TRANSIT" && (
                                     <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800">
                                       <p className="text-sm text-blue-900 dark:text-blue-100">
-                                        Marking as "In Transit" means you've started the pickup process and the vehicle is now being transported.
+                                        {t("myShipments.statusDialog.inTransitInfo")}
                                       </p>
                                     </div>
                                   )}
                                   {newStatus === "DELIVERED" && (
                                     <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800">
                                       <p className="text-sm text-green-900 dark:text-green-100">
-                                        Marking as "Delivered" means the vehicle has been successfully delivered to the destination.
+                                        {t("myShipments.statusDialog.deliveredInfo")}
                                       </p>
                                     </div>
                                   )}
                                   {newStatus === "DISPUTED" && (
                                     <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800">
                                       <p className="text-sm text-red-900 dark:text-red-100">
-                                        Marking as "Disputed" indicates there is an issue with this shipment that needs to be resolved.
+                                        {t("myShipments.statusDialog.disputedInfo")}
                                       </p>
                                     </div>
                                   )}
@@ -486,7 +499,7 @@ const MyShipments = () => {
                                     setNewStatus("");
                                   }}
                                 >
-                                  Cancel
+                                  {t("myShipments.statusDialog.cancel")}
                                 </Button>
                                 <Button
                                   type="button"
@@ -494,7 +507,7 @@ const MyShipments = () => {
                                   onClick={handleStatusSubmit}
                                   disabled={isUpdatingStatus}
                                 >
-                                  {isUpdatingStatus ? "Updating..." : "Update Status"}
+                                  {isUpdatingStatus ? t("myShipments.statusDialog.updating") : t("myShipments.statusDialog.update")}
                                 </Button>
                               </DialogFooter>
                             </DialogContent>
@@ -502,7 +515,7 @@ const MyShipments = () => {
                         )}
                         {!canUpdateStatus && shipment.status === "ASSIGNED" && (
                           <p className="text-xs sm:text-sm text-muted-foreground max-w-xs text-left sm:text-right">
-                            Waiting for client payment before you can update this shipment's status.
+                            {t("myShipments.card.waitingPayment")}
                           </p>
                         )}
                       </div>
@@ -511,13 +524,13 @@ const MyShipments = () => {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
                       <div>
-                        <p className="text-sm text-muted-foreground mb-1">Assigned Date</p>
+                        <p className="text-sm text-muted-foreground mb-1">{t("myShipments.card.assignedDate")}</p>
                         <p className="text-sm font-medium">
                           {assignedAt ? format(assignedAt, "MMM d, yyyy") : "—"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground mb-1">Delivery Deadline</p>
+                        <p className="text-sm text-muted-foreground mb-1">{t("myShipments.card.deliveryDeadline")}</p>
                         <p className="text-sm font-medium">
                           {deliveryDeadline ? format(deliveryDeadline, "MMM d, yyyy") : "—"}
                         </p>

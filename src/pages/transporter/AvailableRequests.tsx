@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/pagination";
 import { getListShipments } from "@/services/shipmentService";
 import type { ListShipmentItem } from "@/types/shipment";
+import { useTranslation } from "react-i18next";
 
 function formatLocation(loc: ListShipmentItem["pickupLocation"]) {
   if (loc.address) return loc.address;
@@ -44,22 +45,23 @@ function parseDate(dateStr: string) {
   }
 }
 
-function getTimeRemaining(endTimeStr: string) {
+function getTimeRemaining(endTimeStr: string, t: (key: string) => string) {
   const endTime = parseDate(endTimeStr);
   if (!endTime) return "—";
   const now = new Date();
   const diff = endTime.getTime() - now.getTime();
-  if (diff <= 0) return "Ended";
+  if (diff <= 0) return t("availableRequests.card.ended");
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   if (hours > 24) {
     const days = Math.floor(hours / 24);
-    return `${days} day${days > 1 ? "s" : ""} left`;
+    return `${days} ${t("availableRequests.card.daysLeft")}`;
   }
-  return `${hours}h ${minutes}m left`;
+  return `${hours}h ${minutes}m ${t("availableRequests.card.hoursLeft")}`;
 }
 
 const AvailableRequests = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const limit = 10;
@@ -68,13 +70,13 @@ const AvailableRequests = () => {
 
   const handleViewAuction = (shipment: ListShipmentItem) => {
     if (shipment.status !== "LIVE") {
-      toast.error("Auction is not live for this shipment");
+      toast.error(t("availableRequests.toast.auctionNotLive"));
       return;
     }
     const shipmentId = shipment._id;
     const s = getAuctionSocket();
     if (!s) {
-      toast.error("Failed to connect to auction server");
+      toast.error(t("availableRequests.toast.connectionFailed"));
       return;
     }
 
@@ -87,9 +89,9 @@ const AvailableRequests = () => {
     const handleBidError = (error: unknown) => {
       console.error("Bid error:", error);
       if (error && typeof error === "object" && "message" in error) {
-        toast.error(String((error as { message?: unknown }).message ?? "Bid error"));
+        toast.error(String((error as { message?: unknown }).message ?? t("availableRequests.toast.bidError")));
       } else {
-        toast.error("Bid error");
+        toast.error(t("availableRequests.toast.bidError"));
       }
     };
 
@@ -107,7 +109,6 @@ const AvailableRequests = () => {
     queryKey: ["list-shipments", page, limit],
     queryFn: () => getListShipments({ page, limit }),
   });
-
 
   const shipments = data?.data ?? [];
   const pagination = data?.pagination;
@@ -127,7 +128,7 @@ const AvailableRequests = () => {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground">Loading available requests...</p>
+        <p className="text-muted-foreground">{t("availableRequests.loading")}</p>
       </div>
     );
   }
@@ -137,12 +138,12 @@ const AvailableRequests = () => {
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
           <XCircle className="h-12 w-12 text-destructive mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Failed to load requests</h3>
+          <h3 className="text-lg font-semibold mb-2">{t("availableRequests.error.title")}</h3>
           <p className="text-muted-foreground text-center mb-4">
-            {error instanceof Error ? error.message : "Something went wrong"}
+            {error instanceof Error ? error.message : t("availableRequests.error.somethingWrong")}
           </p>
           <Button variant="outline" onClick={() => window.location.reload()}>
-            Retry
+            {t("availableRequests.error.retry")}
           </Button>
         </CardContent>
       </Card>
@@ -157,9 +158,9 @@ const AvailableRequests = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Available Requests</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("availableRequests.title")}</h1>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Browse live vehicle transport requests and place your bids
+          {t("availableRequests.subtitle")}
         </p>
       </motion.div>
 
@@ -173,7 +174,7 @@ const AvailableRequests = () => {
         <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground shrink-0" />
           <Input
-            placeholder="Search by vehicle, city..."
+            placeholder={t("availableRequests.search.placeholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -186,11 +187,11 @@ const AvailableRequests = () => {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Truck className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No requests found</h3>
+            <h3 className="text-lg font-semibold mb-2">{t("availableRequests.empty.title")}</h3>
             <p className="text-muted-foreground text-center">
               {searchQuery
-                ? "Try adjusting your search"
-                : "No live or draft requests available at the moment"}
+                ? t("availableRequests.empty.adjustSearch")
+                : t("availableRequests.empty.noRequests")}
             </p>
           </CardContent>
         </Card>
@@ -230,19 +231,19 @@ const AvailableRequests = () => {
                               {request.auctionEndTime && request.status === "LIVE" && (
                                 <Badge variant="default" className="flex items-center gap-1 shrink-0">
                                   <Clock className="h-3 w-3" />
-                                  {getTimeRemaining(request.auctionEndTime)}
+                                  {getTimeRemaining(request.auctionEndTime, t)}
                                 </Badge>
                               )}
                               {request.status === "DRAFT" && (
                                 <Badge variant="secondary" className="shrink-0">
-                                  Draft
+                                  {t("availableRequests.card.draft")}
                                 </Badge>
                               )}
                               {request.status === "DRAFT" && request.auctionStartTime && (
                                 <Badge variant="outline" className="flex items-center gap-1 shrink-0">
                                   <Clock className="h-3 w-3" />
                                   <span className="truncate">
-                                    Starts: {format(parseDate(request.auctionStartTime)!, "MMM d, yyyy h:mm a")}
+                                    {t("availableRequests.card.starts")} {format(parseDate(request.auctionStartTime)!, "MMM d, yyyy h:mm a")}
                                   </span>
                                 </Badge>
                               )}
@@ -251,31 +252,31 @@ const AvailableRequests = () => {
                               <div className="flex gap-2 min-w-0">
                                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
                                 <span className="break-words line-clamp-2 min-w-0">
-                                  <span className="text-muted-foreground/80">From </span>
+                                  <span className="text-muted-foreground/80">{t("availableRequests.card.from")} </span>
                                   {formatLocation(request.pickupLocation)}
                                 </span>
                               </div>
                               {request.pickupLocation.note && (
                                 <p className="ml-5 text-xs text-muted-foreground/80 break-words">
-                                  Note: {request.pickupLocation.note}
+                                  {t("availableRequests.card.note")}{request.pickupLocation.note}
                                 </p>
                               )}
                               <div className="flex gap-2 min-w-0">
                                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 opacity-60" />
                                 <span className="break-words line-clamp-2 min-w-0">
-                                  <span className="text-muted-foreground/80">To </span>
+                                  <span className="text-muted-foreground/80">{t("availableRequests.card.to")} </span>
                                   {formatLocation(request.deliveryLocation)}
                                 </span>
                               </div>
                               {request.deliveryLocation.note && (
                                 <p className="ml-5 text-xs text-muted-foreground/80 break-words">
-                                  Note: {request.deliveryLocation.note}
+                                  {t("availableRequests.card.note")}{request.deliveryLocation.note}
                                 </p>
                               )}
                               <div className="flex items-center gap-2 pt-0.5 min-w-0">
                                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                                 <span>
-                                  Pickup:{" "}
+                                  {t("availableRequests.card.pickup")}{" "}
                                   {parseDate(request.pickupWindow.start)
                                     ? format(parseDate(request.pickupWindow.start)!, "MMM d")
                                     : "—"}{" "}
@@ -287,25 +288,25 @@ const AvailableRequests = () => {
                               </div>
                               {request.distance != null && (
                                 <div className="flex items-center gap-2">
-                                  <span className="font-medium text-foreground/80">Distance:</span>
+                                  <span className="font-medium text-foreground/80">{t("availableRequests.card.distance")}</span>
                                   <span>{request.distance.toLocaleString()} km</span>
                                 </div>
                               )}
                               <div className="flex flex-wrap items-center gap-2">
-                                <span className="font-medium text-foreground/80">Vehicle:</span>
+                                <span className="font-medium text-foreground/80">{t("availableRequests.card.vehicle")}</span>
                                 <Badge
                                   variant={(request.vehicleDetails.isRunning ?? true) ? "default" : "secondary"}
                                 >
-                                  {(request.vehicleDetails.isRunning ?? true) ? "Running" : "Not Running"}
+                                  {(request.vehicleDetails.isRunning ?? true) ? t("availableRequests.card.running") : t("availableRequests.card.notRunning")}
                                 </Badge>
                                 {request.vehicleDetails.isAccidented === true && (
-                                  <Badge variant="secondary">Accidented</Badge>
+                                  <Badge variant="secondary">{t("availableRequests.card.accidented")}</Badge>
                                 )}
                                 {request.vehicleDetails.keysAvailable != null && (
                                   <Badge
                                     variant={request.vehicleDetails.keysAvailable ? "default" : "secondary"}
                                   >
-                                    {request.vehicleDetails.keysAvailable ? "Keys" : "No Keys"}
+                                    {request.vehicleDetails.keysAvailable ? t("availableRequests.card.keys") : t("availableRequests.card.noKeys")}
                                   </Badge>
                                 )}
                                 {request.vehicleDetails.color && (
@@ -342,7 +343,7 @@ const AvailableRequests = () => {
                             onClick={() => handleViewAuction(request)}
                           >
                             <Gavel className="mr-2 h-4 w-4 shrink-0" />
-                            View Auction
+                            {t("availableRequests.card.viewAuction")}
                           </Button>
                         )}
                       </div>
@@ -352,15 +353,15 @@ const AvailableRequests = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-3 gap-y-2 sm:gap-4 pt-3 sm:pt-4 border-t">
                       <div className="min-w-0">
                         <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
-                          Current Lowest Bid
+                          {t("availableRequests.card.currentBid")}
                         </p>
                         <p className="text-sm sm:text-lg font-semibold">
-                          ${request.currentBid?.amount.toLocaleString() ?? "No bids yet"}
+                          ${request.currentBid?.amount.toLocaleString() ?? t("availableRequests.card.noBids")}
                         </p>
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
-                          Delivery Deadline
+                          {t("availableRequests.card.deliveryDeadline")}
                         </p>
                         <p className="text-xs sm:text-sm font-medium">
                           {parseDate(request.deliveryDeadline)
