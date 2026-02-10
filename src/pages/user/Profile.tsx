@@ -389,7 +389,7 @@ const Profile = () => {
         ) : (
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleCancel}>
-              Cancel
+              {t("profile.cancel")}
             </Button>
             <Button variant="hero" onClick={handleSubmit}>
               <Save className="mr-2 h-4 w-4" />
@@ -415,7 +415,7 @@ const Profile = () => {
                 <span className="text-sm font-medium">{t("profile.accountStatus.role")}</span>
                 <Badge variant="outline" className="flex items-center gap-1">
                   <RoleIcon className="h-3 w-3" />
-                  {roleConfig[user.role]?.label || "User"}
+                  {roleConfig[user.role]?.label || t("profile.roles.user")}
                 </Badge>
               </div>
               {user.status && (
@@ -529,7 +529,7 @@ const Profile = () => {
                   value={formData.company_name}
                   onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                   disabled={!isEditing}
-                  placeholder={t("profile.businessInfo.companyPlaceholder")}
+                  placeholder={t("profile.businessInfo.companyNamePlaceholder")}
                 />
               </div>
 
@@ -540,7 +540,7 @@ const Profile = () => {
                   value={formData.business_address}
                   onChange={(e) => setFormData({ ...formData, business_address: e.target.value })}
                   disabled={!isEditing}
-                  placeholder={t("profile.businessInfo.businessPlaceholder")}
+                  placeholder={t("profile.businessInfo.businessAddressPlaceholder")}
                 />
               </div>
 
@@ -552,7 +552,7 @@ const Profile = () => {
                     value={formData.tax_number}
                     onChange={(e) => setFormData({ ...formData, tax_number: e.target.value })}
                     disabled={!isEditing}
-                    placeholder={t("profile.businessInfo.taxPlaceholder")}
+                    placeholder={t("profile.businessInfo.taxNumberPlaceholder")}
                   />
                 </div>
 
@@ -574,7 +574,7 @@ const Profile = () => {
                         disabled={!isEditing}
                       >
                         <SelectTrigger id="region_country">
-                          <SelectValue placeholder={t("profile.businessInfo.countryPlaceholder")} />
+                        placeholder={t("profile.businessInfo.countryPlaceholder")}
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="USA">USA</SelectItem>
@@ -615,7 +615,7 @@ const Profile = () => {
                           })
                         }
                         disabled={!isEditing}
-                        placeholder={t("profile.businessInfo.postalPlaceholder")}
+                        placeholder={t("profile.businessInfo.postalCodePlaceholder")}
                       />
                     </div>
                   </div>
@@ -645,28 +645,28 @@ const Profile = () => {
       <Dialog open={isOtpDialogOpen} onOpenChange={setIsOtpDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("profile.otpDialog.title")}</DialogTitle>
+            <DialogTitle>{t("profile.emailVerificationDialog.title")}</DialogTitle>
             <DialogDescription>
-              {t("profile.otpDialog.description")}
+              {t("profile.emailVerificationDialog.description")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label htmlFor="otp">{t("profile.otpDialog.otp")}</Label>
+            <Label htmlFor="otp">{t("profile.emailVerificationDialog.otp")}</Label>
             <Input
               id="otp"
               value={otpValue}
               onChange={(e) => setOtpValue(e.target.value)}
-              placeholder={t("profile.otpDialog.otpPlaceholder")}
+              placeholder={t("profile.emailVerificationDialog.otpPlaceholder")}
             />
           </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={handleResendOtp}>
-              {t("profile.otpDialog.resendOtp")}
+              {t("profile.emailVerificationDialog.resendOtp")}
             </Button>
             <Button type="button" variant="hero" onClick={handleVerifyEmailOtp}>
-              {t("profile.otpDialog.verifySave")}
+              {t("profile.emailVerificationDialog.verifySave")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -687,7 +687,7 @@ const Profile = () => {
                 type="password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
-                placeholder={t("profile.changePasswordDialog.currentPlaceholder")}
+                placeholder={t("profile.changePasswordDialog.currentPasswordPlaceholder")}
               />
             </div>
 
@@ -698,7 +698,7 @@ const Profile = () => {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder={t("profile.changePasswordDialog.newPlaceholder")}
+                placeholder={t("profile.changePasswordDialog.newPasswordPlaceholder")}
               />
             </div>
 
@@ -709,7 +709,7 @@ const Profile = () => {
                 type="password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
-                placeholder={t("profile.changePasswordDialog.confirmPlaceholder")}
+                placeholder={t("profile.changePasswordDialog.confirmNewPasswordPlaceholder")}
               />
             </div>
 
@@ -722,7 +722,7 @@ const Profile = () => {
                 {t("profile.cancel")}
               </Button>
               <Button type="submit" variant="hero" disabled={changePasswordMutation.isPending}>
-                {changePasswordMutation.isPending ? t("profile.changePasswordDialog.changing") : t("profile.changePasswordDialog.title")}
+                {changePasswordMutation.isPending ? t("profile.changePasswordDialog.changing") : t("profile.changePasswordDialog.changePassword")}
               </Button>
             </DialogFooter>
           </form>

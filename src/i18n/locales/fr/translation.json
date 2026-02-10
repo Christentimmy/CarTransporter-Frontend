@@ -755,5 +755,119 @@
       "bankDetailsRequired": "Le nom de la banque et le numéro de routage sont requis pour les comptes bancaires",
       "cardFieldsRequired": "Tous les champs de carte sont requis pour les paiements par carte"
     }
+  },
+  "transporterProfile": {
+    "title": "Profil",
+    "subtitle": "Gérez les informations et paramètres de votre compte transporteur",
+    "editProfile": "Modifier le profil",
+    "cancel": "Annuler",
+    "saveChanges": "Enregistrer les modifications",
+    "loading": "Chargement du profil...",
+    "error": "Échec du chargement du profil",
+    "accountStatus": {
+      "title": "Statut du compte",
+      "description": "Vérification et statut de votre compte",
+      "role": "Rôle :",
+      "status": "Statut :",
+      "emailVerification": "Vérification e-mail",
+      "phoneVerification": "Vérification téléphone",
+      "verified": "Vérifié",
+      "unverified": "Non vérifié"
+    },
+    "personalInfo": {
+      "title": "Informations personnelles",
+      "description": "Vos informations de compte transporteur de base",
+      "email": "E-mail",
+      "phone": "Numéro de téléphone",
+      "phonePlaceholder": "Entrez votre numéro de téléphone",
+      "emailNotVerified": "Votre e-mail n'est pas vérifié. Veuillez le vérifier pour accéder à toutes les fonctionnalités.",
+      "phoneNotVerified": "Votre numéro de téléphone n'est pas vérifié."
+    },
+    "businessInfo": {
+      "title": "Informations professionnelles",
+      "description": "Détails de votre entreprise et de vos activités professionnelles",
+      "companyName": "Nom de l'entreprise",
+      "companyNamePlaceholder": "Entrez le nom de votre entreprise",
+      "taxNumber": "Numéro fiscal",
+      "taxNumberPlaceholder": "Entrez votre numéro fiscal",
+      "businessAddress": "Adresse professionnelle",
+      "businessAddressPlaceholder": "Entrez votre adresse professionnelle",
+      "region": "Région",
+      "country": "Pays",
+      "state": "État / Province",
+      "postalCode": "Code postal",
+      "countryPlaceholder": "Sélectionner le pays",
+      "statePlaceholder": "Entrez l'état ou la province",
+      "postalCodePlaceholder": "Entrez le code postal"
+    },
+    "security": {
+      "title": "Sécurité",
+      "description": "Gérez votre mot de passe et paramètres de sécurité",
+      "changePassword": "Changer le mot de passe"
+    },
+    "status": {
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "pending": "En attente",
+      "banned": "Banni"
+    },
+    "role": {
+      "user": "Utilisateur",
+      "transporter": "Transporteur",
+      "admin": "Admin",
+      "superAdmin": "Super Admin"
+    },
+    "emailVerificationDialog": {
+      "title": "Vérifier le nouvel e-mail",
+      "description": "Entrez le mot de passe à usage unique (OTP) envoyé à votre adresse e-mail actuelle pour confirmer ce changement.",
+      "otp": "OTP",
+      "otpPlaceholder": "Entrez l'OTP",
+      "resendOtp": "Renvoyer l'OTP",
+      "verifySave": "Vérifier & Enregistrer"
+    },
+    "changePasswordDialog": {
+      "title": "Changer le mot de passe",
+      "description": "Mettez à jour le mot de passe de votre compte transporteur.",
+      "currentPassword": "Mot de passe actuel",
+      "currentPasswordPlaceholder": "Entrez le mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+      "confirmNewPassword": "Confirmer le nouveau mot de passe",
+      "confirmNewPasswordPlaceholder": "Réentrez le nouveau mot de passe",
+      "cancel": "Annuler",
+      "changePassword": "Changer le mot de passe",
+      "changing": "Modification..."
+    },
+    "toast": {
+      "profileUpdated": "Profil mis à jour",
+      "updateFailed": "Échec de la mise à jour du profil",
+      "passwordChanged": "Mot de passe changé avec succès",
+      "passwordChangeFailed": "Échec du changement de mot de passe",
+      "enterOtp": "Entrez l'OTP envoyé à votre e-mail enregistré",
+      "otpVerificationFailed": "Échec de la vérification OTP",
+      "otpResent": "OTP renvoyé à votre e-mail enregistré",
+      "otpResendFailed": "Échec du renvoi de l'OTP",
+      "enterBothPasswords": "Veuillez entrer l'ancien et le nouveau mot de passe",
+      "passwordsDoNotMatch": "Les nouveaux mots de passe ne correspondent pas"
+    }
+  },
+  "transporterSidebar": {
+    "brand": {
+      "name": "BID4TOW",
+      "dashboard": "Tableau de bord transporteur"
+    },
+    "navigation": "Navigation",
+    "menu": {
+      "dashboard": "Tableau de bord",
+      "postRequest": "Publier une demande",
+      "availableRequests": "Demandes disponibles",
+      "myShipments": "Mes expéditions",
+      "withdrawals": "Retraits",
+      "profile": "Profil"
+    },
+    "footer": {
+      "backToHome": "Retour à l'accueil",
+      "logout": "Déconnexion"
+    }
   }
 }

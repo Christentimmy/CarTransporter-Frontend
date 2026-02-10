@@ -755,5 +755,119 @@
       "bankDetailsRequired": "Bank name and routing number are required for bank accounts",
       "cardFieldsRequired": "All card fields are required for card payments"
     }
+  },
+  "transporterProfile": {
+    "title": "Profile",
+    "subtitle": "Manage your transporter account information and settings",
+    "editProfile": "Edit Profile",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "loading": "Loading profile...",
+    "error": "Failed to load profile",
+    "accountStatus": {
+      "title": "Account Status",
+      "description": "Your account verification and status",
+      "role": "Role:",
+      "status": "Status:",
+      "emailVerification": "Email Verification",
+      "phoneVerification": "Phone Verification",
+      "verified": "Verified",
+      "unverified": "Unverified"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "description": "Your basic transporter account information",
+      "email": "Email",
+      "phone": "Phone Number",
+      "phonePlaceholder": "Enter your phone number",
+      "emailNotVerified": "Your email is not verified. Please verify it to access all features.",
+      "phoneNotVerified": "Your phone number is not verified."
+    },
+    "businessInfo": {
+      "title": "Business Information",
+      "description": "Your company and business details",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Enter your company name",
+      "taxNumber": "Tax Number",
+      "taxNumberPlaceholder": "Enter your tax number",
+      "businessAddress": "Business Address",
+      "businessAddressPlaceholder": "Enter your business address",
+      "region": "Region",
+      "country": "Country",
+      "state": "State / Province",
+      "postalCode": "Postal Code",
+      "countryPlaceholder": "Select country",
+      "statePlaceholder": "Enter state or province",
+      "postalCodePlaceholder": "Enter postal code"
+    },
+    "security": {
+      "title": "Security",
+      "description": "Manage your password and security settings",
+      "changePassword": "Change Password"
+    },
+    "status": {
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pending": "Pending",
+      "banned": "Banned"
+    },
+    "role": {
+      "user": "User",
+      "transporter": "Transporter",
+      "admin": "Admin",
+      "superAdmin": "Super Admin"
+    },
+    "emailVerificationDialog": {
+      "title": "Verify new email",
+      "description": "Enter one-time password (OTP) sent to your current email address to confirm this change.",
+      "otp": "OTP",
+      "otpPlaceholder": "Enter OTP",
+      "resendOtp": "Resend OTP",
+      "verifySave": "Verify & Save"
+    },
+    "changePasswordDialog": {
+      "title": "Change Password",
+      "description": "Update your transporter account password.",
+      "currentPassword": "Current Password",
+      "currentPasswordPlaceholder": "Enter current password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmNewPassword": "Confirm New Password",
+      "confirmNewPasswordPlaceholder": "Re-enter new password",
+      "cancel": "Cancel",
+      "changePassword": "Change Password",
+      "changing": "Changing..."
+    },
+    "toast": {
+      "profileUpdated": "Profile updated",
+      "updateFailed": "Failed to update profile",
+      "passwordChanged": "Password changed successfully",
+      "passwordChangeFailed": "Failed to change password",
+      "enterOtp": "Enter the OTP sent to your registered email",
+      "otpVerificationFailed": "OTP verification failed",
+      "otpResent": "OTP resent to your registered email",
+      "otpResendFailed": "Failed to resend OTP",
+      "enterBothPasswords": "Please enter both old and new passwords",
+      "passwordsDoNotMatch": "New passwords do not match"
+    }
+  },
+  "transporterSidebar": {
+    "brand": {
+      "name": "BID4TOW",
+      "dashboard": "Transporter Dashboard"
+    },
+    "navigation": "Navigation",
+    "menu": {
+      "dashboard": "Dashboard",
+      "postRequest": "Post Request",
+      "availableRequests": "Available Requests",
+      "myShipments": "My Shipments",
+      "withdrawals": "Withdrawals",
+      "profile": "Profile"
+    },
+    "footer": {
+      "backToHome": "Back to Home",
+      "logout": "Logout"
+    }
   }
 }

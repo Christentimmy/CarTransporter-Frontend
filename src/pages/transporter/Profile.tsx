@@ -35,8 +35,10 @@ import { getProfile, type GetProfileResponse, updateProfile, type UpdateProfileP
 import { changePassword, type ChangePasswordPayload } from "@/services/securityService";
 import { authService } from "@/services/auth_services";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const TransporterProfile = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
@@ -116,14 +118,14 @@ const TransporterProfile = () => {
   const updateProfileMutation = useMutation({
     mutationFn: (payload: UpdateProfilePayload) => updateProfile(payload),
     onSuccess: async () => {
-      toast.success("Profile updated", {
+      toast.success(t("transporterProfile.toast.profileUpdated"), {
         style: { background: "#22c55e", color: "#fff" },
       });
       setIsEditing(false);
       await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : "Failed to update profile", {
+      toast.error(err instanceof Error ? err.message : t("transporterProfile.toast.updateFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     },
@@ -132,7 +134,7 @@ const TransporterProfile = () => {
   const changePasswordMutation = useMutation({
     mutationFn: (payload: ChangePasswordPayload) => changePassword(payload),
     onSuccess: () => {
-      toast.success("Password changed successfully", {
+      toast.success(t("transporterProfile.toast.passwordChanged"), {
         style: { background: "#22c55e", color: "#fff" },
       });
       setIsChangePasswordOpen(false);
@@ -141,7 +143,7 @@ const TransporterProfile = () => {
       setConfirmNewPassword("");
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : "Failed to change password", {
+      toast.error(err instanceof Error ? err.message : t("transporterProfile.toast.passwordChangeFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     },
@@ -203,7 +205,7 @@ const TransporterProfile = () => {
 
   const handleVerifyEmailOtp = async () => {
     if (!otpValue) {
-      toast.error("Enter the OTP sent to your registered email", {
+      toast.error(t("transporterProfile.toast.enterOtp"), {
         style: { background: "#ef4444", color: "#fff" },
       });
       return;
@@ -265,7 +267,7 @@ const TransporterProfile = () => {
 
       updateProfileMutation.mutate(payload);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "OTP verification failed", {
+      toast.error(err instanceof Error ? err.message : t("transporterProfile.toast.otpVerificationFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     }
@@ -276,11 +278,11 @@ const TransporterProfile = () => {
     try {
       // Resend OTP to the existing email address
       await authService.resendOtp({ email: user.email });
-      toast.success("OTP resent to your registered email", {
+      toast.success(t("transporterProfile.toast.otpResent"), {
         style: { background: "#22c55e", color: "#fff" },
       });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to resend OTP", {
+      toast.error(err instanceof Error ? err.message : t("transporterProfile.toast.otpResendFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     }
@@ -310,14 +312,14 @@ const TransporterProfile = () => {
     e.preventDefault();
 
     if (!oldPassword || !newPassword) {
-      toast.error("Please enter both old and new passwords", {
+      toast.error(t("transporterProfile.toast.enterBothPasswords"), {
         style: { background: "#ef4444", color: "#fff" },
       });
       return;
     }
 
     if (newPassword !== confirmNewPassword) {
-      toast.error("New passwords do not match", {
+      toast.error(t("transporterProfile.toast.passwordsDoNotMatch"), {
         style: { background: "#ef4444", color: "#fff" },
       });
       return;
@@ -348,7 +350,7 @@ const TransporterProfile = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-10 text-muted-foreground">
-        Loading profile...
+        <div className="text-sm text-muted-foreground">{t("transporterProfile.loading")}</div>
       </div>
     );
   }
@@ -356,7 +358,7 @@ const TransporterProfile = () => {
   if (isError) {
     return (
       <div className="flex items-center justify-center py-10 text-destructive text-sm">
-        {(error instanceof Error && error.message) || "Failed to load profile"}
+        {(error instanceof Error && error.message) || t("transporterProfile.error")}
       </div>
     );
   }
@@ -375,24 +377,24 @@ const TransporterProfile = () => {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4"
       >
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("transporterProfile.title")}</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Manage your transporter account information and settings
+            {t("transporterProfile.subtitle")}
           </p>
         </div>
         {!isEditing ? (
           <Button variant="outline" onClick={() => setIsEditing(true)}>
             <Edit className="mr-2 h-4 w-4" />
-            Edit Profile
+            {t("transporterProfile.editProfile")}
           </Button>
         ) : (
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleCancel}>
-              Cancel
+              {t("transporterProfile.cancel")}
             </Button>
             <Button variant="hero" onClick={handleSubmit}>
               <Save className="mr-2 h-4 w-4" />
-              Save Changes
+              {t("transporterProfile.saveChanges")}
             </Button>
           </div>
         )}
@@ -404,22 +406,22 @@ const TransporterProfile = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              Account Status
+              {t("transporterProfile.accountStatus.title")}
             </CardTitle>
-            <CardDescription>Your account verification and status</CardDescription>
+            <CardDescription>{t("transporterProfile.accountStatus.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Role:</span>
+                <span className="text-sm font-medium">{t("transporterProfile.accountStatus.role")}</span>
                 <Badge variant="outline" className="flex items-center gap-1">
                   <RoleIcon className="h-3 w-3" />
-                  {roleConfig[user.role]?.label || "Transporter"}
+                  {roleConfig[user.role]?.label || t("transporterProfile.role.transporter")}
                 </Badge>
               </div>
               {user.status && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Status:</span>
+                  <span className="text-sm font-medium">{t("transporterProfile.accountStatus.status")}</span>
                   {getStatusBadge()}
                 </div>
               )}
@@ -429,34 +431,34 @@ const TransporterProfile = () => {
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Email Verification</span>
+                  <span className="text-sm font-medium">{t("transporterProfile.accountStatus.emailVerification")}</span>
                 </div>
                 {user.is_email_verified ? (
                   <Badge variant="default" className="flex items-center gap-1">
                     <CheckCircle2 className="h-3 w-3" />
-                    Verified
+                    {t("transporterProfile.accountStatus.verified")}
                   </Badge>
                 ) : (
                   <Badge variant="secondary" className="flex items-center gap-1">
                     <XCircle className="h-3 w-3" />
-                    Unverified
+                    {t("transporterProfile.accountStatus.unverified")}
                   </Badge>
                 )}
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Phone Verification</span>
+                  <span className="text-sm font-medium">{t("transporterProfile.accountStatus.phoneVerification")}</span>
                 </div>
                 {user.is_phone_verified ? (
                   <Badge variant="default" className="flex items-center gap-1">
                     <CheckCircle2 className="h-3 w-3" />
-                    Verified
+                    {t("transporterProfile.accountStatus.verified")}
                   </Badge>
                 ) : (
                   <Badge variant="secondary" className="flex items-center gap-1">
                     <XCircle className="h-3 w-3" />
-                    Unverified
+                    {t("transporterProfile.accountStatus.unverified")}
                   </Badge>
                 )}
               </div>
@@ -469,15 +471,15 @@ const TransporterProfile = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <User className="h-4 w-4 sm:h-5 sm:w-5" />
-              Personal Information
+              {t("transporterProfile.personalInfo.title")}
             </CardTitle>
             <CardDescription className="text-sm">
-              Your basic transporter account information
+              {t("transporterProfile.personalInfo.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("transporterProfile.personalInfo.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -488,13 +490,13 @@ const TransporterProfile = () => {
               />
               {!user.is_email_verified && (
                 <p className="text-xs text-muted-foreground">
-                  Your email is not verified. Please verify it to access all features.
+                  {t("transporterProfile.personalInfo.emailNotVerified")}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone_number">Phone Number</Label>
+              <Label htmlFor="phone_number">{t("transporterProfile.personalInfo.phone")}</Label>
               <Input
                 id="phone_number"
                 type="tel"
@@ -503,11 +505,11 @@ const TransporterProfile = () => {
                   setFormData({ ...formData, phone_number: e.target.value })
                 }
                 disabled={!isEditing}
-                placeholder="Enter your phone number"
+                placeholder={t("transporterProfile.personalInfo.phonePlaceholder")}
               />
               {!user.is_phone_verified && (
                 <p className="text-xs text-muted-foreground">
-                  Your phone number is not verified.
+                  {t("transporterProfile.personalInfo.phoneNotVerified")}
                 </p>
               )}
             </div>
@@ -519,14 +521,14 @@ const TransporterProfile = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Building2 className="h-5 w-5" />
-              Business Information
+              {t("transporterProfile.businessInfo.title")}
             </CardTitle>
-            <CardDescription className="text-sm">Your company and business details</CardDescription>
+            <CardDescription className="text-sm">{t("transporterProfile.businessInfo.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="company_name">Company Name</Label>
+                <Label htmlFor="company_name">{t("transporterProfile.businessInfo.companyName")}</Label>
                 <Input
                   id="company_name"
                   value={formData.company_name}
@@ -534,12 +536,12 @@ const TransporterProfile = () => {
                     setFormData({ ...formData, company_name: e.target.value })
                   }
                   disabled={!isEditing}
-                  placeholder="Enter your company name"
+                  placeholder={t("transporterProfile.businessInfo.companyNamePlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tax_number">Tax Number</Label>
+                <Label htmlFor="tax_number">{t("transporterProfile.businessInfo.taxNumber")}</Label>
                 <Input
                   id="tax_number"
                   value={formData.tax_number}
@@ -547,13 +549,13 @@ const TransporterProfile = () => {
                     setFormData({ ...formData, tax_number: e.target.value })
                   }
                   disabled={!isEditing}
-                  placeholder="Enter your tax number"
+                  placeholder={t("transporterProfile.businessInfo.taxNumberPlaceholder")}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="business_address">Business Address</Label>
+              <Label htmlFor="business_address">{t("transporterProfile.businessInfo.businessAddress")}</Label>
               <Input
                 id="business_address"
                 value={formData.business_address}
@@ -561,16 +563,16 @@ const TransporterProfile = () => {
                   setFormData({ ...formData, business_address: e.target.value })
                 }
                 disabled={!isEditing}
-                placeholder="Enter your business address"
+                placeholder={t("transporterProfile.businessInfo.businessAddressPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="region_country">Region</Label>
+              <Label htmlFor="region_country">{t("transporterProfile.businessInfo.region")}</Label>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="region_country" className="text-xs text-muted-foreground">
-                    Country
+                    {t("transporterProfile.businessInfo.country")}
                   </Label>
                   <Select
                     value={formData.region.country}
@@ -583,7 +585,7 @@ const TransporterProfile = () => {
                     disabled={!isEditing}
                   >
                     <SelectTrigger id="region_country">
-                      <SelectValue placeholder="Select country" />
+                      <SelectValue placeholder={t("transporterProfile.businessInfo.countryPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="USA">USA</SelectItem>
@@ -594,7 +596,7 @@ const TransporterProfile = () => {
 
                 <div className="space-y-1.5">
                   <Label htmlFor="region_state" className="text-xs text-muted-foreground">
-                    State / Province
+                    {t("transporterProfile.businessInfo.state")}
                   </Label>
                   <Input
                     id="region_state"
@@ -606,13 +608,13 @@ const TransporterProfile = () => {
                       })
                     }
                     disabled={!isEditing}
-                    placeholder="Enter state or province"
+                    placeholder={t("transporterProfile.businessInfo.statePlaceholder")}
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <Label htmlFor="region_postalCode" className="text-xs text-muted-foreground">
-                    Postal Code
+                    {t("transporterProfile.businessInfo.postalCode")}
                   </Label>
                   <Input
                     id="region_postalCode"
@@ -624,7 +626,7 @@ const TransporterProfile = () => {
                       })
                     }
                     disabled={!isEditing}
-                    placeholder="Enter postal code"
+                    placeholder={t("transporterProfile.businessInfo.postalCodePlaceholder")}
                   />
                 </div>
               </div>
@@ -637,15 +639,15 @@ const TransporterProfile = () => {
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
-              Security
+              {t("transporterProfile.security.title")}
             </CardTitle>
             <CardDescription className="text-sm">
-              Manage your password and security settings
+              {t("transporterProfile.security.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
             <Button type="button" variant="outline" onClick={handleOpenChangePassword}>
-              Change Password
+              {t("transporterProfile.security.changePassword")}
             </Button>
           </CardContent>
         </Card>
@@ -653,29 +655,28 @@ const TransporterProfile = () => {
       <Dialog open={isOtpDialogOpen} onOpenChange={setIsOtpDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Verify new email</DialogTitle>
+            <DialogTitle>{t("transporterProfile.emailVerificationDialog.title")}</DialogTitle>
             <DialogDescription>
-              Enter the one-time password (OTP) sent to your current email address to confirm this
-              change.
+              {t("transporterProfile.emailVerificationDialog.description")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label htmlFor="otp">OTP</Label>
+            <Label htmlFor="otp">{t("transporterProfile.emailVerificationDialog.otp")}</Label>
             <Input
               id="otp"
               value={otpValue}
               onChange={(e) => setOtpValue(e.target.value)}
-              placeholder="Enter OTP"
+              placeholder={t("transporterProfile.emailVerificationDialog.otpPlaceholder")}
             />
           </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={handleResendOtp}>
-              Resend OTP
+              {t("transporterProfile.emailVerificationDialog.resendOtp")}
             </Button>
             <Button type="button" variant="hero" onClick={handleVerifyEmailOtp}>
-              Verify &amp; Save
+              {t("transporterProfile.emailVerificationDialog.verifySave")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -684,41 +685,41 @@ const TransporterProfile = () => {
       <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Change Password</DialogTitle>
-            <DialogDescription>Update your transporter account password.</DialogDescription>
+            <DialogTitle>{t("transporterProfile.changePasswordDialog.title")}</DialogTitle>
+            <DialogDescription>{t("transporterProfile.changePasswordDialog.description")}</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmitChangePassword} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="old_password">Current Password</Label>
+              <Label htmlFor="old_password">{t("transporterProfile.changePasswordDialog.currentPassword")}</Label>
               <Input
                 id="old_password"
                 type="password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
-                placeholder="Enter current password"
+                placeholder={t("transporterProfile.changePasswordDialog.currentPasswordPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="new_password">New Password</Label>
+              <Label htmlFor="new_password">{t("transporterProfile.changePasswordDialog.newPassword")}</Label>
               <Input
                 id="new_password"
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password"
+                placeholder={t("transporterProfile.changePasswordDialog.newPasswordPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirm_new_password">Confirm New Password</Label>
+              <Label htmlFor="confirm_new_password">{t("transporterProfile.changePasswordDialog.confirmNewPassword")}</Label>
               <Input
                 id="confirm_new_password"
                 type="password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
-                placeholder="Re-enter new password"
+                placeholder={t("transporterProfile.changePasswordDialog.confirmNewPasswordPlaceholder")}
               />
             </div>
 
@@ -728,10 +729,10 @@ const TransporterProfile = () => {
                 variant="outline"
                 onClick={() => setIsChangePasswordOpen(false)}
               >
-                Cancel
+                {t("transporterProfile.changePasswordDialog.cancel")}
               </Button>
               <Button type="submit" variant="hero" disabled={changePasswordMutation.isPending}>
-                {changePasswordMutation.isPending ? "Changing..." : "Change Password"}
+                {changePasswordMutation.isPending ? t("transporterProfile.changePasswordDialog.changing") : t("transporterProfile.changePasswordDialog.changePassword")}
               </Button>
             </DialogFooter>
           </form>

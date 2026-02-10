@@ -32,44 +32,6 @@ import {
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
-const menuItems = [
-  {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    url: "/transporter/dashboard",
-  },
-  {
-    title: "Post Request",
-    icon: Plus,
-    url: "/transporter/post-request",
-  },
-  {
-    title: "Available Requests",
-    icon: Search,
-    url: "/transporter/available-requests",
-  },
-  {
-    title: "My Shipments",
-    icon: Package,
-    url: "/transporter/my-shipments",
-  },
-  {
-    title: "Withdrawals",
-    icon: Wallet,
-    url: "/transporter/withdrawals",
-  },
-  // {
-  //   title: "Notifications",
-  //   icon: Bell,
-  //   url: "/transporter/notifications",
-  // },
-  {
-    title: "Profile",
-    icon: User,
-    url: "/transporter/profile",
-  },
-];
-
 export const TransporterLayout = () => {
   return (
     <SidebarProvider>
@@ -81,7 +43,45 @@ export const TransporterLayout = () => {
 const TransporterLayoutContent = () => {
   const location = useLocation();
   const { isMobile, setOpenMobile } = useSidebar();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+
+  const menuItems = [
+    {
+      title: t("transporterSidebar.menu.dashboard"),
+      icon: LayoutDashboard,
+      url: "/transporter/dashboard",
+    },
+    {
+      title: t("transporterSidebar.menu.postRequest"),
+      icon: Plus,
+      url: "/transporter/post-request",
+    },
+    {
+      title: t("transporterSidebar.menu.availableRequests"),
+      icon: Search,
+      url: "/transporter/available-requests",
+    },
+    {
+      title: t("transporterSidebar.menu.myShipments"),
+      icon: Package,
+      url: "/transporter/my-shipments",
+    },
+    {
+      title: t("transporterSidebar.menu.withdrawals"),
+      icon: Wallet,
+      url: "/transporter/withdrawals",
+    },
+    // {
+    //   title: "Notifications",
+    //   icon: Bell,
+    //   url: "/transporter/notifications",
+    // },
+    {
+      title: t("transporterSidebar.menu.profile"),
+      icon: User,
+      url: "/transporter/profile",
+    },
+  ];
 
   const toggleLanguage = () => {
     const newLang = i18n.language === "en" ? "fr" : "en";
@@ -105,8 +105,8 @@ const TransporterLayoutContent = () => {
                     <Truck className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">BID4TOW</span>
-                    <span className="truncate text-xs">Transporter Dashboard</span>
+                    <span className="truncate font-semibold">{t("transporterSidebar.brand.name")}</span>
+                    <span className="truncate text-xs">{t("transporterSidebar.brand.dashboard")}</span>
                   </div>
                 </Link>
               </SidebarMenuButton>
@@ -115,7 +115,7 @@ const TransporterLayoutContent = () => {
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroupLabel>{t("transporterSidebar.navigation")}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {menuItems.map((item) => {
@@ -139,18 +139,18 @@ const TransporterLayoutContent = () => {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Back to Home">
+              <SidebarMenuButton asChild tooltip={t("transporterSidebar.footer.backToHome")}>
                 <Link to="/">
                   <Home />
-                  <span>Back to Home</span>
+                  <span>{t("transporterSidebar.footer.backToHome")}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Logout">
+              <SidebarMenuButton asChild tooltip={t("transporterSidebar.footer.logout")}>
                 <Link to="/login">
                   <LogOut />
-                  <span>Logout</span>
+                  <span>{t("transporterSidebar.footer.logout")}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
