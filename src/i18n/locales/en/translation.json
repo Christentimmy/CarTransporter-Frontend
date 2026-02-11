@@ -1118,5 +1118,393 @@
       "signIn": "Sign In",
       "getStarted": "Get Started"
     }
+  },
+  "faq": {
+    "backToHome": "Back to Home",
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about BID4TOW",
+    "categories": {
+      "gettingStarted": {
+        "title": "Getting Started",
+        "description": "Questions about using BID4TOW for the first time",
+        "questions": {
+          "createAccount": {
+            "question": "How do I create an account?",
+            "answer": "Creating an account is simple! Click the 'Sign Up' button on our homepage, fill in your personal information, verify your email address, and you're ready to start using BID4TOW. The whole process takes less than 5 minutes."
+          },
+          "freeToUse": {
+            "question": "Is BID4TOW free to use?",
+            "answer": "Yes, creating an account and browsing requests is completely free. We only charge a small commission fee when a transaction is successfully completed. There are no hidden fees or subscription costs."
+          },
+          "vehicleTypes": {
+            "question": "What types of vehicles can be transported?",
+            "answer": "BID4TOW supports all types of vehicles including cars, trucks, motorcycles, SUVs, vans, and even specialty vehicles."
+          },
+          "biddingProcess": {
+            "question": "How does the bidding process work?",
+            "answer": "After you post a transportation request, verified transporters will bid on your job with their prices. You can review all bids, then select the best offer for your needs else lowest bid will be selected."
+          }
+        }
+      },
+      "vehicleOwners": {
+        "title": "For Vehicle Owners",
+        "description": "Everything you need to know about shipping your vehicle",
+        "questions": {
+          "postRequest": {
+            "question": "How do I post a transportation request?",
+            "answer": "Log into your account, click 'Post Request', fill in details about your vehicle, pickup and delivery locations, preferred dates, and any special requirements. Then submit your request and wait for transporters to bid."
+          },
+          "requiredInfo": {
+            "question": "What information do I need to provide?",
+            "answer": "Provide vehicle details, pickup and delivery addresses, preferred timeframe, vehicle condition, and any special requirements like enclosed transport or extra insurance."
+          },
+          "chooseTransporter": {
+            "question": "How do I choose a transporter?",
+            "answer": "Review all bids carefully, choose the transporter that best fits your budget."
+          },
+          "damageDuringTransport": {
+            "question": "What if my vehicle is damaged during transport?",
+            "answer": "All verified transporters carry insurance coverage. If damage occurs, document it immediately with photos, contact the transporter, and file a claim through their insurance."
+          }
+        }
+      },
+      "transporters": {
+        "title": "For Transporters",
+        "description": "Information for transporters looking to join our platform",
+        "questions": {
+          "becomeVerified": {
+            "question": "How do I become a verified transporter?",
+            "answer": "Sign up for a transporter account, complete your profile, submit required documents, undergo background verification, and once approved, you can start bidding on transportation requests."
+          },
+          "findAndBid": {
+            "question": "How do I find and bid on requests?",
+            "answer": "Browse available requests in your service area, review request details, submit competitive bids with your pricing."
+          },
+          "getPaid": {
+            "question": "When and how do I get paid?",
+            "answer": "Payment is typically released within 24-48 hours after successful delivery and confirmation by the vehicle owner. Funds are held in escrow during transport."
+          }
+        }
+      },
+      "safetyInsurance": {
+        "title": "Safety & Insurance",
+        "description": "Important information about safety and coverage",
+        "questions": {
+          "insured": {
+            "question": "Are transporters insured?",
+            "answer": "Yes, all verified transporters must maintain valid commercial insurance coverage that meets or exceeds industry standards."
+          },
+          "coverage": {
+            "question": "What does the insurance cover?",
+            "answer": "Insurance typically covers damage to vehicles during transport, theft, and liability."
+          },
+          "fileClaim": {
+            "question": "How do I file an insurance claim?",
+            "answer": "Document any damage with photos and videos, contact the transporter immediately, and submit a claim to the transporter's insurance company."
+          },
+          "safetyMeasures": {
+            "question": "What safety measures are in place?",
+            "answer": "We implement identity verification, background checks, insurance verification, secure payment processing, dispute resolution, and documentation for all transactions."
+          }
+        }
+      },
+      "technicalSupport": {
+        "title": "Technical Support",
+        "description": "Help with technical issues and account management",
+        "questions": {
+          "resetPassword": {
+            "question": "I forgot my password. How do I reset it?",
+            "answer": "Click 'Forgot Password' on the login page, enter your email address, and we'll send you a password reset link."
+          },
+          "updateProfile": {
+            "question": "How do I update my profile information?",
+            "answer": "Log into your account, go to 'Profile', update your information, and save changes."
+          },
+          "cantLogin": {
+            "question": "Why can't I log into my account?",
+            "answer": "Check that you're using the correct email and password, ensure your account is verified, and try again. If issues persist, contact support."
+          },
+          "contactSupport": {
+            "question": "How do I contact customer support?",
+            "answer": "You can reach our support team through the Help Center or email us at support@bid4tow.com. We typically respond within 24 hours."
+          }
+        }
+      }
+    },
+    "contact": {
+      "title": "Still Have Questions?",
+      "description": "Can't find what you're looking for? Our support team is here to help.",
+      "cards": {
+        "helpCenter": {
+          "title": "Help Center",
+          "description": "Browse our comprehensive help articles",
+          "button": "Visit Help Center"
+        },
+        "support": {
+          "title": "Contact Support",
+          "description": "Get personalized help from our team",
+          "button": "Contact Us"
+        }
+      },
+      "ready": "Ready to get started?",
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    }
+  },
+  "terms": {
+    "backToHome": "Back to Home",
+    "title": "Terms of Service",
+    "subtitle": "Please read these terms carefully before using BID4TOW",
+    "sections": {
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "description": "Agreement to use BID4TOW services",
+        "points": {
+          "0": "By accessing and using BID4TOW, you accept and agree to be bound by these Terms of Service and our Privacy Policy.",
+          "1": "If you do not agree to these terms, you must not access or use our services.",
+          "2": "These terms apply to all users, including vehicle owners, transporters, and visitors.",
+          "3": "We reserve the right to modify these terms at any time with or without notice."
+        }
+      },
+      "services": {
+        "title": "Services Description",
+        "description": "What BID4TOW provides",
+        "points": {
+          "0": "BID4TOW is a platform connecting vehicle owners with verified transporters for vehicle transportation services.",
+          "1": "We facilitate the bidding process, payment processing, and communication between parties.",
+          "2": "We do not provide transportation services directly but act as an intermediary platform.",
+          "3": "Our services include user verification and secure payment processing."
+        }
+      },
+      "userResponsibilities": {
+        "title": "User Responsibilities",
+        "description": "Obligations of platform users",
+        "points": {
+          "0": "Users must provide accurate and complete information when posting transportation requests.",
+          "1": "Transporters must maintain valid licenses, insurance, and meet all legal requirements.",
+          "2": "All users must communicate professionally and honestly through our platform.",
+          "3": "You must not use our services for illegal activities or fraudulent purposes."
+        }
+      },
+      "paymentTerms": {
+        "title": "Payment Terms",
+        "description": "Financial arrangements and processing",
+        "points": {
+          "0": "All payments are processed through our secure payment system with escrow protection.",
+          "1": "Transporters receive payment within 24-48 hours after delivery completion.",
+          "2": "BID4TOW charges a commission fee on successful transactions, detailed in our fee schedule.",
+          "3": "Refunds are subject to our refund policy and the specific terms agreed between parties."
+        }
+      },
+      "prohibitedActivities": {
+        "title": "Prohibited Activities",
+        "description": "Actions not allowed on our platform",
+        "points": {
+          "0": "Posting false or misleading information about vehicles or transportation requests.",
+          "1": "Attempting to circumvent our payment system or avoid commission fees.",
+          "2": "Using the platform for illegal transportation of stolen vehicles or contraband.",
+          "3": "Creating multiple accounts or attempting to manipulate the bidding system."
+        }
+      },
+      "intellectualProperty": {
+        "title": "Intellectual Property",
+        "description": "Ownership of platform content",
+        "points": {
+          "0": "All content on BID4TOW, including text, graphics, logos, and software, is owned by BID4TOW.",
+          "1": "Users may not copy, modify, distribute, or create derivative works without permission.",
+          "2": "User-generated content remains the property of the respective users.",
+          "3": "BID4TOW name and logos are trademarks and may not be used without permission."
+        }
+      },
+      "privacyData": {
+        "title": "Privacy and Data Protection",
+        "description": "How we handle your information",
+        "points": {
+          "0": "We collect and process personal information as described in our Privacy Policy.",
+          "1": "User data is protected using industry-standard encryption and security measures.",
+          "2": "We may share information with transporters when necessary to complete transactions.",
+          "3": "We comply with applicable data protection laws and regulations.",
+          "4": "Users have rights to access, correct, or delete their personal information."
+        }
+      },
+      "limitationLiability": {
+        "title": "Limitation of Liability",
+        "description": "Our responsibility boundaries",
+        "points": {
+          "0": "BID4TOW is not responsible for the actions of transporters or vehicle owners.",
+          "1": "We do not guarantee the quality, safety, or legality of transportation services.",
+          "2": "Our liability is limited to the commission fees paid for our platform services.",
+          "3": "We are not liable for indirect, incidental, or consequential damages.",
+          "4": "Users use our services at their own risk and assume all responsibility."
+        }
+      },
+      "termination": {
+        "title": "Termination",
+        "description": "Ending service agreements",
+        "points": {
+          "0": "Users may terminate their account at any time by contacting customer support.",
+          "1": "BID4TOW may suspend or terminate accounts for violations of these terms.",
+          "2": "Upon termination, all rights and licenses granted to users are immediately revoked.",
+          "3": "Users remain responsible for all obligations incurred before termination.",
+          "4": "We may discontinue services with or without notice at our discretion."
+        }
+      },
+      "generalProvisions": {
+        "title": "General Provisions",
+        "description": "Additional legal terms",
+        "points": {
+          "0": "These terms constitute the entire agreement between users and BID4TOW.",
+          "1": "If any provision is found invalid, remaining terms remain in full effect.",
+          "2": "Our failure to enforce any provision does not waive our right to enforce it later.",
+          "3": "These terms are governed by the laws of the jurisdiction where BID4TOW operates.",
+          "4": "Users waive any right to participate in class action lawsuits against BID4TOW."
+        }
+      }
+    },
+    "contact": {
+      "title": "Questions About These Terms?",
+      "description": "If you have any questions about our Terms of Service, our legal team is here to help.",
+      "cards": {
+        "legal": {
+          "title": "Legal Support",
+          "description": "Get help understanding these terms",
+          "button": "Contact Legal"
+        },
+        "support": {
+          "title": "Customer Support",
+          "description": "General questions and assistance",
+          "button": "Get Help"
+        }
+      }
+    },
+    "lastUpdated": "Last updated",
+    "actions": {
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    }
+  },
+  "privacy": {
+    "backToHome": "Back to Home",
+    "title": "Privacy Policy",
+    "subtitle": "How we collect, use, and protect your personal information",
+    "sections": {
+      "dataCollection": {
+        "title": "Information We Collect",
+        "description": "Types of data we gather from users",
+        "points": {
+          "0": "Personal information: name, email, phone number, and address when you create an account.",
+          "1": "Vehicle details: make, model, year, VIN, and photos when posting transportation requests.",
+          "2": "Payment information: billing details processed securely through our payment partners.",
+          "3": "Usage data: how you interact with our platform, including pages visited and features used."
+        }
+      },
+      "dataUsage": {
+        "title": "How We Use Your Information",
+        "description": "Purposes for processing your data",
+        "points": {
+          "0": "To provide and maintain our vehicle transportation platform services.",
+          "1": "To connect vehicle owners with verified transporters for transportation services.",
+          "2": "To process payments and facilitate secure transactions between parties.",
+          "3": "To communicate with you about your requests, bids, and account activities."
+        }
+      },
+      "dataProtection": {
+        "title": "Data Security Measures",
+        "description": "How we protect your information",
+        "points": {
+          "0": "All data is encrypted using industry-standard SSL/TLS protocols.",
+          "1": "We implement strict access controls and authentication systems.",
+          "2": "Regular security audits and vulnerability assessments are conducted.",
+          "3": "We comply with GDPR and other applicable data protection regulations."
+        }
+      },
+      "userRights": {
+        "title": "Your Data Rights",
+        "description": "Control over your personal information",
+        "points": {
+          "0": "Access: Request a copy of your personal data we hold about you.",
+          "1": "Correction: Update or correct inaccurate personal information.",
+          "2": "Deletion: Request removal of your personal data when no longer needed.",
+          "3": "Portability: Request transfer of your data to another service provider."
+        }
+      },
+      "dataSharing": {
+        "title": "Information Sharing",
+        "description": "When and how we share your data",
+        "points": {
+          "0": "With transporters when you accept their bid for vehicle transportation.",
+          "1": "With payment processors to facilitate secure transactions.",
+          "2": "With legal authorities when required by law or court order.",
+          "3": "We never sell your personal information to third parties for marketing."
+        }
+      },
+      "international": {
+        "title": "International Data Transfers",
+        "description": "Cross-border data handling",
+        "points": {
+          "0": "Your data may be processed and stored in secure servers outside your country.",
+          "1": "We ensure appropriate safeguards are in place for international transfers.",
+          "2": "All international transfers comply with applicable data protection laws."
+        }
+      },
+      "retention": {
+        "title": "Data Retention",
+        "description": "How long we keep your information",
+        "points": {
+          "0": "We retain personal data only as long as necessary for our services.",
+          "1": "Account data is kept for legal compliance and dispute resolution purposes.",
+          "2": "You can request deletion of your account and associated personal data at any time."
+        }
+      },
+      "children": {
+        "title": "Children's Privacy",
+        "description": "Protection of minors' data",
+        "points": {
+          "0": "Our services are not intended for children under 18 years of age.",
+          "1": "We do not knowingly collect personal information from children under 18.",
+          "2": "If we learn we have collected such information, we will delete it promptly."
+        }
+      },
+      "changes": {
+        "title": "Policy Changes",
+        "description": "Updates to our privacy practices",
+        "points": {
+          "0": "We may update this privacy policy from time to time to reflect our practices.",
+          "1": "Significant changes will be communicated through email or platform notifications.",
+          "2": "Your continued use of our services constitutes acceptance of any changes."
+        }
+      },
+      "contact": {
+        "title": "Contact Information",
+        "description": "How to reach us about privacy matters",
+        "points": {
+          "0": "Email: privacy@bid4tow.com for privacy-related inquiries.",
+          "1": "Address: Our legal address is available in the Terms of Service.",
+          "2": "Response time: We typically respond to privacy inquiries within 30 days.",
+          "3": "Complaints: You have the right to file complaints with data protection authorities."
+        }
+      }
+    },
+    "contact": {
+      "title": "Questions About Your Privacy?",
+      "description": "If you have questions about our privacy practices, we're here to help.",
+      "cards": {
+        "privacy": {
+          "title": "Privacy Team",
+          "description": "Get help with data protection and privacy rights",
+          "button": "Contact Privacy"
+        },
+        "support": {
+          "title": "Customer Support",
+          "description": "General questions and account assistance",
+          "button": "Get Help"
+        }
+      }
+    },
+    "lastUpdated": "Last updated",
+    "actions": {
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    }
   }
 }

@@ -1118,5 +1118,393 @@
       "signIn": "Se Connecter",
       "getStarted": "Commencer"
     }
+  },
+  "faq": {
+    "backToHome": "Retour à l'accueil",
+    "title": "Questions Fréquemment Posées",
+    "subtitle": "Trouvez des réponses aux questions courantes sur BID4TOW",
+    "categories": {
+      "gettingStarted": {
+        "title": "Premiers Pas",
+        "description": "Questions sur l'utilisation de BID4TOW pour la première fois",
+        "questions": {
+          "createAccount": {
+            "question": "Comment créer un compte ?",
+            "answer": "Créer un compte est simple ! Cliquez sur le bouton 'S'inscrire' sur notre page d'accueil, renseignez vos informations, vérifiez votre adresse e-mail, puis vous pouvez commencer à utiliser BID4TOW."
+          },
+          "freeToUse": {
+            "question": "BID4TOW est-il gratuit ?",
+            "answer": "Oui, la création d'un compte et la navigation sur les demandes sont gratuites. Nous facturons uniquement une petite commission lorsqu'une transaction est complétée avec succès."
+          },
+          "vehicleTypes": {
+            "question": "Quels types de véhicules peuvent être transportés ?",
+            "answer": "BID4TOW prend en charge les voitures, camions, motos, SUV, fourgonnettes et véhicules spécialisés."
+          },
+          "biddingProcess": {
+            "question": "Comment fonctionne le processus d'enchères ?",
+            "answer": "Après avoir publié une demande de transport, des transporteurs vérifiés feront des offres avec leurs prix. Vous pouvez consulter toutes les offres, puis choisir la meilleure option pour vous, sinon l'offre la plus basse sera sélectionnée."
+          }
+        }
+      },
+      "vehicleOwners": {
+        "title": "Pour les Propriétaires",
+        "description": "Tout ce que vous devez savoir pour expédier votre véhicule",
+        "questions": {
+          "postRequest": {
+            "question": "Comment publier une demande de transport ?",
+            "answer": "Connectez-vous, cliquez sur 'Publier une demande', renseignez les informations du véhicule, les lieux de départ et d'arrivée, les dates souhaitées, puis soumettez la demande."
+          },
+          "requiredInfo": {
+            "question": "Quelles informations dois-je fournir ?",
+            "answer": "Fournissez les détails du véhicule, les adresses de collecte et de livraison, la période souhaitée, l'état du véhicule et les exigences particulières."
+          },
+          "chooseTransporter": {
+            "question": "Comment choisir un transporteur ?",
+            "answer": "Consultez les offres et choisissez le transporteur qui correspond le mieux à votre budget."
+          },
+          "damageDuringTransport": {
+            "question": "Et si mon véhicule est endommagé pendant le transport ?",
+            "answer": "Tous les transporteurs vérifiés disposent d'une assurance. En cas de dommage, documentez immédiatement avec des photos, contactez le transporteur et déposez une réclamation via son assurance."
+          }
+        }
+      },
+      "transporters": {
+        "title": "Pour les Transporteurs",
+        "description": "Informations pour les transporteurs souhaitant rejoindre la plateforme",
+        "questions": {
+          "becomeVerified": {
+            "question": "Comment devenir un transporteur vérifié ?",
+            "answer": "Créez un compte transporteur, complétez votre profil, soumettez les documents requis, puis passez la vérification. Une fois approuvé, vous pourrez enchérir sur les demandes."
+          },
+          "findAndBid": {
+            "question": "Comment trouver des demandes et faire une offre ?",
+            "answer": "Parcourez les demandes disponibles dans votre zone, consultez les détails et soumettez des offres compétitives avec vos prix."
+          },
+          "getPaid": {
+            "question": "Quand et comment suis-je payé ?",
+            "answer": "Le paiement est généralement libéré 24 à 48 heures après la livraison et la confirmation du propriétaire. Les fonds sont conservés en séquestre pendant le transport."
+          }
+        }
+      },
+      "safetyInsurance": {
+        "title": "Sécurité et Assurance",
+        "description": "Informations importantes sur la sécurité et la couverture",
+        "questions": {
+          "insured": {
+            "question": "Les transporteurs sont-ils assurés ?",
+            "answer": "Oui, tous les transporteurs vérifiés doivent maintenir une assurance commerciale valide répondant aux normes du secteur."
+          },
+          "coverage": {
+            "question": "Que couvre l'assurance ?",
+            "answer": "L'assurance couvre généralement les dommages pendant le transport, le vol et la responsabilité."
+          },
+          "fileClaim": {
+            "question": "Comment déposer une réclamation d'assurance ?",
+            "answer": "Documentez les dommages avec des photos/vidéos, contactez immédiatement le transporteur et soumettez une réclamation à sa compagnie d'assurance."
+          },
+          "safetyMeasures": {
+            "question": "Quelles mesures de sécurité sont en place ?",
+            "answer": "Nous mettons en place la vérification d'identité, la vérification d'assurance, les paiements sécurisés, la résolution de litiges et la documentation des transactions."
+          }
+        }
+      },
+      "technicalSupport": {
+        "title": "Support Technique",
+        "description": "Aide pour les problèmes techniques et la gestion du compte",
+        "questions": {
+          "resetPassword": {
+            "question": "J'ai oublié mon mot de passe. Comment le réinitialiser ?",
+            "answer": "Cliquez sur 'Mot de passe oublié' sur la page de connexion, saisissez votre e-mail et nous vous enverrons un lien de réinitialisation."
+          },
+          "updateProfile": {
+            "question": "Comment mettre à jour mes informations de profil ?",
+            "answer": "Connectez-vous, allez dans 'Profil', mettez à jour vos informations et enregistrez les modifications."
+          },
+          "cantLogin": {
+            "question": "Pourquoi je n'arrive pas à me connecter ?",
+            "answer": "Vérifiez votre e-mail et mot de passe, assurez-vous que votre compte est vérifié, puis réessayez. Si le problème persiste, contactez le support."
+          },
+          "contactSupport": {
+            "question": "Comment contacter le support client ?",
+            "answer": "Vous pouvez contacter le support via le Centre d'Aide ou par e-mail à support@bid4tow.com. Nous répondons généralement sous 24 heures."
+          }
+        }
+      }
+    },
+    "contact": {
+      "title": "Vous avez encore des questions ?",
+      "description": "Vous ne trouvez pas ce que vous cherchez ? Notre équipe est là pour vous aider.",
+      "cards": {
+        "helpCenter": {
+          "title": "Centre d'Aide",
+          "description": "Consultez nos articles d'assistance",
+          "button": "Aller au Centre d'Aide"
+        },
+        "support": {
+          "title": "Contacter le Support",
+          "description": "Obtenez une aide personnalisée",
+          "button": "Nous Contacter"
+        }
+      },
+      "ready": "Prêt à commencer ?",
+      "signIn": "Se Connecter",
+      "getStarted": "Commencer"
+    }
+  },
+  "terms": {
+    "backToHome": "Retour à l'accueil",
+    "title": "Conditions d'Utilisation",
+    "subtitle": "Veuillez lire attentivement ces conditions avant d'utiliser BID4TOW",
+    "sections": {
+      "acceptance": {
+        "title": "Acceptation des Conditions",
+        "description": "Accord d'utilisation des services BID4TOW",
+        "points": {
+          "0": "En accédant à BID4TOW et en l'utilisant, vous acceptez d'être lié par ces Conditions d'utilisation et notre Politique de confidentialité.",
+          "1": "Si vous n'acceptez pas ces conditions, vous ne devez pas accéder à nos services ni les utiliser.",
+          "2": "Ces conditions s'appliquent à tous les utilisateurs, y compris les propriétaires, les transporteurs et les visiteurs.",
+          "3": "Nous nous réservons le droit de modifier ces conditions à tout moment, avec ou sans préavis."
+        }
+      },
+      "services": {
+        "title": "Description des Services",
+        "description": "Ce que BID4TOW fournit",
+        "points": {
+          "0": "BID4TOW est une plateforme qui met en relation des propriétaires de véhicules avec des transporteurs vérifiés.",
+          "1": "Nous facilitons le processus d'enchères, le traitement des paiements et la communication entre les parties.",
+          "2": "Nous ne fournissons pas de services de transport directement ; nous agissons comme plateforme intermédiaire.",
+          "3": "Nos services incluent la vérification des utilisateurs et le traitement sécurisé des paiements."
+        }
+      },
+      "userResponsibilities": {
+        "title": "Responsabilités des Utilisateurs",
+        "description": "Obligations des utilisateurs de la plateforme",
+        "points": {
+          "0": "Les utilisateurs doivent fournir des informations exactes et complètes lors de la publication d'une demande de transport.",
+          "1": "Les transporteurs doivent disposer de licences et d'assurances valides et respecter toutes les exigences légales.",
+          "2": "Tous les utilisateurs doivent communiquer de manière professionnelle et honnête via la plateforme.",
+          "3": "Vous ne devez pas utiliser nos services à des fins illégales ou frauduleuses."
+        }
+      },
+      "paymentTerms": {
+        "title": "Conditions de Paiement",
+        "description": "Modalités financières et traitement",
+        "points": {
+          "0": "Tous les paiements sont traités via notre système de paiement sécurisé avec protection par séquestre.",
+          "1": "Les transporteurs reçoivent le paiement dans les 24 à 48 heures après la fin de la livraison.",
+          "2": "BID4TOW prélève une commission sur les transactions réussies, comme indiqué dans notre barème de frais.",
+          "3": "Les remboursements sont soumis à notre politique de remboursement et aux conditions convenues entre les parties."
+        }
+      },
+      "prohibitedActivities": {
+        "title": "Activités Interdites",
+        "description": "Actions non autorisées sur la plateforme",
+        "points": {
+          "0": "Publier des informations fausses ou trompeuses sur les véhicules ou les demandes de transport.",
+          "1": "Tenter de contourner notre système de paiement ou d'éviter les frais de commission.",
+          "2": "Utiliser la plateforme pour le transport illégal de véhicules volés ou de marchandises interdites.",
+          "3": "Créer plusieurs comptes ou tenter de manipuler le système d'enchères."
+        }
+      },
+      "intellectualProperty": {
+        "title": "Propriété Intellectuelle",
+        "description": "Propriété du contenu de la plateforme",
+        "points": {
+          "0": "Tout le contenu de BID4TOW (textes, graphiques, logos et logiciels) appartient à BID4TOW.",
+          "1": "Les utilisateurs ne peuvent pas copier, modifier, distribuer ou créer des œuvres dérivées sans autorisation.",
+          "2": "Le contenu généré par l'utilisateur reste la propriété de l'utilisateur concerné.",
+          "3": "Le nom et les logos BID4TOW sont des marques et ne peuvent pas être utilisés sans autorisation."
+        }
+      },
+      "privacyData": {
+        "title": "Confidentialité et Protection des Données",
+        "description": "Comment nous traitons vos informations",
+        "points": {
+          "0": "Nous collectons et traitons les informations personnelles comme décrit dans notre Politique de confidentialité.",
+          "1": "Les données des utilisateurs sont protégées par des mesures de sécurité et un chiffrement conformes aux standards.",
+          "2": "Nous pouvons partager des informations avec les transporteurs lorsque cela est nécessaire pour finaliser les transactions.",
+          "3": "Nous respectons les lois et réglementations applicables en matière de protection des données.",
+          "4": "Les utilisateurs ont le droit d'accéder à leurs données, de les corriger ou de les supprimer."
+        }
+      },
+      "limitationLiability": {
+        "title": "Limitation de Responsabilité",
+        "description": "Limites de notre responsabilité",
+        "points": {
+          "0": "BID4TOW n'est pas responsable des actions des transporteurs ou des propriétaires de véhicules.",
+          "1": "Nous ne garantissons pas la qualité, la sécurité ou la légalité des services de transport.",
+          "2": "Notre responsabilité est limitée aux frais de commission payés pour les services de la plateforme.",
+          "3": "Nous ne sommes pas responsables des dommages indirects, accessoires ou consécutifs.",
+          "4": "Les utilisateurs utilisent nos services à leurs propres risques et assument toutes les responsabilités."
+        }
+      },
+      "termination": {
+        "title": "Résiliation",
+        "description": "Fin des accords de service",
+        "points": {
+          "0": "Les utilisateurs peuvent fermer leur compte à tout moment en contactant le support.",
+          "1": "BID4TOW peut suspendre ou résilier des comptes en cas de violation de ces conditions.",
+          "2": "En cas de résiliation, tous les droits et licences accordés aux utilisateurs sont immédiatement révoqués.",
+          "3": "Les utilisateurs restent responsables de toutes les obligations contractées avant la résiliation.",
+          "4": "Nous pouvons interrompre les services avec ou sans préavis, à notre discrétion."
+        }
+      },
+      "generalProvisions": {
+        "title": "Dispositions Générales",
+        "description": "Conditions juridiques supplémentaires",
+        "points": {
+          "0": "Ces conditions constituent l'intégralité de l'accord entre les utilisateurs et BID4TOW.",
+          "1": "Si une disposition est jugée invalide, les autres dispositions restent pleinement en vigueur.",
+          "2": "Le fait de ne pas appliquer une disposition ne constitue pas une renonciation à son application ultérieure.",
+          "3": "Ces conditions sont régies par les lois de la juridiction dans laquelle BID4TOW opère.",
+          "4": "Les utilisateurs renoncent à tout droit de participer à des actions collectives contre BID4TOW."
+        }
+      }
+    },
+    "contact": {
+      "title": "Des questions sur ces conditions ?",
+      "description": "Si vous avez des questions sur nos Conditions d'utilisation, notre équipe est là pour vous aider.",
+      "cards": {
+        "legal": {
+          "title": "Support Juridique",
+          "description": "Aide pour comprendre ces conditions",
+          "button": "Contacter le Juridique"
+        },
+        "support": {
+          "title": "Support Client",
+          "description": "Questions générales et assistance",
+          "button": "Obtenir de l'aide"
+        }
+      }
+    },
+    "lastUpdated": "Dernière mise à jour",
+    "actions": {
+      "signIn": "Se Connecter",
+      "getStarted": "Commencer"
+    }
+  },
+  "privacy": {
+    "backToHome": "Retour à l'accueil",
+    "title": "Politique de Confidentialité",
+    "subtitle": "Comment nous collectons, utilisons et protégeons vos informations personnelles",
+    "sections": {
+      "dataCollection": {
+        "title": "Informations que nous collectons",
+        "description": "Types de données que nous recueillons des utilisateurs",
+        "points": {
+          "0": "Informations personnelles : nom, email, numéro de téléphone et adresse lors de la création d'un compte.",
+          "1": "Détails du véhicule : marque, modèle, année, VIN et photos lors de la publication de demandes de transport.",
+          "2": "Informations de paiement : détails de facturation traités en toute sécurité via nos partenaires de paiement.",
+          "3": "Données d'utilisation : comment vous interagissez avec notre plateforme, pages visitées et fonctionnalités utilisées."
+        }
+      },
+      "dataUsage": {
+        "title": "Comment nous utilisons vos informations",
+        "description": "Objectifs du traitement de vos données",
+        "points": {
+          "0": "Pour fournir et maintenir nos services de plateforme de transport de véhicules.",
+          "1": "Pour mettre en relation les propriétaires de véhicules avec des transporteurs vérifiés.",
+          "2": "Pour traiter les paiements et faciliter les transactions sécurisées entre les parties.",
+          "3": "Pour communiquer avec vous concernant vos demandes, offres et activités de compte."
+        }
+      },
+      "dataProtection": {
+        "title": "Mesures de sécurité des données",
+        "description": "Comment nous protégeons vos informations",
+        "points": {
+          "0": "Toutes les données sont cryptées avec les protocoles SSL/TLS standard de l'industrie.",
+          "1": "Nous mettons en œuvre des contrôles d'accès stricts et des systèmes d'authentification.",
+          "2": "Des audits de sécurité réguliers et des évaluations de vulnérabilité sont menés.",
+          "3": "Nous nous conformons au RGPD et autres réglementations applicables en matière de protection des données."
+        }
+      },
+      "userRights": {
+        "title": "Vos droits sur les données",
+        "description": "Contrôle de vos informations personnelles",
+        "points": {
+          "0": "Accès : Demander une copie de vos données personnelles que nous détenons.",
+          "1": "Correction : Mettre à jour ou corriger des informations personnelles inexactes.",
+          "2": "Suppression : Demander le retrait de vos données personnelles lorsqu'elles ne sont plus nécessaires.",
+          "3": "Portabilité : Demander le transfert de vos données vers un autre fournisseur de services."
+        }
+      },
+      "dataSharing": {
+        "title": "Partage d'informations",
+        "description": "Quand et comment nous partageons vos données",
+        "points": {
+          "0": "Avec les transporteurs lorsque vous acceptez leur offre pour le transport de véhicule.",
+          "1": "Avec les processeurs de paiement pour faciliter les transactions sécurisées.",
+          "2": "Avec les autorités légales lorsque requis par la loi ou une ordonnance judiciaire.",
+          "3": "Nous ne vendons jamais vos informations personnelles à des tiers à des fins marketing."
+        }
+      },
+      "international": {
+        "title": "Transferts internationaux de données",
+        "description": "Gestion des données transfrontalières",
+        "points": {
+          "0": "Vos données peuvent être traitées et stockées sur des serveurs sécurisés hors de votre pays.",
+          "1": "Nous nous assurons que des garanties appropriées sont en place pour les transferts internationaux.",
+          "2": "Tous les transferts internationaux respectent les lois applicables en matière de protection des données."
+        }
+      },
+      "retention": {
+        "title": "Conservation des données",
+        "description": "Combien de temps nous gardons vos informations",
+        "points": {
+          "0": "Nous ne conservons les données personnelles que tant que nécessaire pour nos services.",
+          "1": "Les données de compte sont conservées à des fins de conformité légale et de résolution de litiges.",
+          "2": "Vous pouvez demander la suppression de votre compte et des données personnelles associées à tout moment."
+        }
+      },
+      "children": {
+        "title": "Confidentialité des enfants",
+        "description": "Protection des données des mineurs",
+        "points": {
+          "0": "Nos services ne sont pas destinés aux enfants de moins de 18 ans.",
+          "1": "Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 18 ans.",
+          "2": "Si nous apprenons que nous avons collecté de telles informations, nous les supprimerons rapidement."
+        }
+      },
+      "changes": {
+        "title": "Modifications de la politique",
+        "description": "Mises à jour de nos pratiques de confidentialité",
+        "points": {
+          "0": "Nous pouvons mettre à jour cette politique de confidentialité de temps en temps pour refléter nos pratiques.",
+          "1": "Les modifications importantes seront communiquées par email ou notifications de plateforme.",
+          "2": "Votre utilisation continue de nos services constitue l'acceptation de toute modification."
+        }
+      },
+      "contact": {
+        "title": "Coordonnées",
+        "description": "Comment nous contacter concernant les questions de confidentialité",
+        "points": {
+          "0": "Email : privacy@bid4tow.com pour les questions relatives à la confidentialité.",
+          "1": "Adresse : Notre adresse légale est disponible dans les Conditions d'utilisation.",
+          "2": "Délai de réponse : Nous répondons généralement aux questions de confidentialité dans les 30 jours.",
+          "3": "Plaintes : Vous avez le droit de déposer des plaintes auprès des autorités de protection des données."
+        }
+      }
+    },
+    "contact": {
+      "title": "Questions sur votre confidentialité ?",
+      "description": "Si vous avez des questions sur nos pratiques de confidentialité, nous sommes là pour vous aider.",
+      "cards": {
+        "privacy": {
+          "title": "Équipe Confidentialité",
+          "description": "Obtenez de l'aide pour la protection des données et les droits de confidentialité",
+          "button": "Contacter la Confidentialité"
+        },
+        "support": {
+          "title": "Support Client",
+          "description": "Questions générales et assistance de compte",
+          "button": "Obtenir de l'aide"
+        }
+      }
+    },
+    "lastUpdated": "Dernière mise à jour",
+    "actions": {
+      "signIn": "Se Connecter",
+      "getStarted": "Commencer"
+    }
   }
 }

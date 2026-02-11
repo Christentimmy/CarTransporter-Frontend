@@ -20,12 +20,12 @@ export const Footer = () => {
       { name: t("landing.footer.links.helpCenter"), href: "/help-center" },
       // { name: t("landing.footer.links.contactUs"), href: "#" },
       { name: t("landing.footer.links.safety"), href: "/safety" },
-      { name: t("landing.footer.links.faqs"), href: "#" },
+      { name: t("landing.footer.links.faqs"), href: "/faq" },
     ],
     [t("landing.footer.legal")]: [
-      { name: t("landing.footer.links.terms"), href: "#" },
-      { name: t("landing.footer.links.privacy"), href: "#" },
-      { name: t("landing.footer.links.cookie"), href: "#" },
+      { name: t("landing.footer.links.terms"), href: "/terms" },
+      { name: t("landing.footer.links.privacy"), href: "/privacy" },
+      // { name: t("landing.footer.links.cookie"), href: "#" },
     ],
   };
 

@@ -26,6 +26,9 @@ import NotFound from "./pages/NotFound";
 import AboutUs from "./pages/footer/AboutUs";
 import HelpCenter from "./pages/footer/HelpCenter";
 import Safety from "./pages/footer/Safety";
+import FAQ from "./pages/footer/FAQ";
+import TermsOfService from "./pages/footer/TermsOfService";
+import PrivacyPolicy from "./pages/footer/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +46,9 @@ const App = () => (
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/help-center" element={<HelpCenter />} />
           <Route path="/safety" element={<Safety />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           {/* User Module Routes */}
           <Route path="/user" element={<UserLayout />}>
             <Route index element={<Navigate to="/user/dashboard" replace />} />
