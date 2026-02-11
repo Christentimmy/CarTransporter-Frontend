@@ -50,6 +50,11 @@ export interface ResendOtpPayload {
   email: string;
 }
 
+export interface ForgotPasswordPayload {
+  email: string;
+  password: string;
+}
+
 class AuthService {
   private static instance: AuthService;
 
@@ -221,6 +226,33 @@ class AuthService {
       return await response.json();
     } catch (error) {
       console.error("Send OTP error:", error);
+      throw error;
+    }
+  }
+
+  public async forgotPassword(
+    data: ForgotPasswordPayload,
+  ): Promise<{ message: string }> {
+    try {
+      const response = await fetch(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to reset password");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Forgot password error:", error);
       throw error;
     }
   }

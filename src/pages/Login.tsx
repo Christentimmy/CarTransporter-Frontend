@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Truck, ArrowLeft, Loader2, Globe } from "lucide-react";
+import { Truck, ArrowLeft, Loader2, Globe, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { authService } from "@/services/auth_services";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotEmail, setShowForgotEmail] = useState(false);
+  const [showForgotOtp, setShowForgotOtp] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotOtp, setForgotOtp] = useState("");
+  const [forgotPassword, setForgotPassword] = useState("");
+  const [forgotError, setForgotError] = useState("");
+  const [isForgotLoading, setIsForgotLoading] = useState(false);
 
   const nextLanguage = i18n.language?.startsWith("fr") ? "en" : "fr";
   const languageToggleLabel = i18n.language?.startsWith("fr") ? "EN" : "FR";
@@ -33,6 +42,60 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setForgotError("");
+    setIsForgotLoading(true);
+    try {
+      await authService.forgotPassword({ email: forgotEmail, password: forgotPassword });
+      setShowForgotPassword(false);
+      setForgotEmail("");
+      setForgotPassword("");
+      // Optionally show success message
+    } catch (err) {
+      setForgotError(err instanceof Error ? err.message : "Failed to reset password");
+    } finally {
+      setIsForgotLoading(false);
+    }
+  };
+
+  const handleForgotEmail = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setForgotError("");
+    setIsForgotLoading(true);
+    try {
+      // First send OTP to the email
+      await authService.resendOtp({ email: forgotEmail });
+      setShowForgotEmail(false);
+      setShowForgotOtp(true);
+    } catch (err) {
+      setForgotError(err instanceof Error ? err.message : "Failed to send OTP");
+    } finally {
+      setIsForgotLoading(false);
+    }
+  };
+
+  const handleForgotOtp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setForgotError("");
+    setIsForgotLoading(true);
+    try {
+      // Verify the OTP
+      await authService.verifyOtp({ email: forgotEmail, otp: forgotOtp });
+      setShowForgotOtp(false);
+      setShowForgotPassword(true);
+    } catch (err) {
+      setForgotError(err instanceof Error ? err.message : "Invalid OTP");
+    } finally {
+      setIsForgotLoading(false);
+    }
+  };
+
+  const openForgotPassword = () => {
+    setForgotEmail(email);
+    setShowForgotEmail(true);
   };
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
@@ -110,12 +173,13 @@ const Login = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">{t("auth.login.password")}</Label>
-                  <Link
-                    to="/forgot-password"
+                  <button
+                    type="button"
+                    onClick={openForgotPassword}
                     className="text-sm text-primary hover:text-primary/90 transition-colors"
                   >
                     {t("auth.login.forgotPassword")}
-                  </Link>
+                  </button>
                 </div>
                 <Input
                   id="password"
@@ -157,6 +221,139 @@ const Login = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Forgot Email Modal */}
+      <Dialog open={showForgotEmail} onOpenChange={setShowForgotEmail}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Forgot Password</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleForgotEmail} className="space-y-4">
+            {forgotError && (
+              <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
+                {forgotError}
+              </p>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email">Email</Label>
+              <Input
+                id="forgot-email"
+                type="email"
+                placeholder="Enter your email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                required
+                disabled={isForgotLoading}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isForgotLoading}>
+              {isForgotLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending OTP...
+                </>
+              ) : (
+                "Send OTP"
+              )}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Forgot OTP Modal */}
+      <Dialog open={showForgotOtp} onOpenChange={setShowForgotOtp}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Verify OTP</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleForgotOtp} className="space-y-4">
+            {forgotError && (
+              <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
+                {forgotError}
+              </p>
+            )}
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input
+                type="email"
+                value={forgotEmail}
+                disabled
+                className="bg-muted"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="forgot-otp">OTP Code</Label>
+              <Input
+                id="forgot-otp"
+                type="text"
+                placeholder="Enter OTP code"
+                value={forgotOtp}
+                onChange={(e) => setForgotOtp(e.target.value)}
+                required
+                disabled={isForgotLoading}
+                maxLength={6}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isForgotLoading}>
+              {isForgotLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                "Verify OTP"
+              )}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Forgot Password Modal */}
+      <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            {forgotError && (
+              <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
+                {forgotError}
+              </p>
+            )}
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input
+                type="email"
+                value={forgotEmail}
+                disabled
+                className="bg-muted"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="forgot-password">New Password</Label>
+              <Input
+                id="forgot-password"
+                type="password"
+                placeholder="Enter new password"
+                value={forgotPassword}
+                onChange={(e) => setForgotPassword(e.target.value)}
+                required
+                disabled={isForgotLoading}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isForgotLoading}>
+              {isForgotLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Resetting Password...
+                </>
+              ) : (
+                "Reset Password"
+              )}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
