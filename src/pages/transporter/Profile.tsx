@@ -219,7 +219,9 @@ const TransporterProfile = () => {
       payload.insurance = {
         name: newInsurance.name,
         policyNumber: newInsurance.policyNumber,
-        expiryDate: new Date(newInsurance.expiryDate),
+        ...(newInsurance.expiryDate
+          ? { expiryDate: newInsurance.expiryDate }
+          : {}),
       };
     }
 
@@ -335,6 +337,13 @@ const TransporterProfile = () => {
         country: user?.region?.country || "",
         state: user?.region?.state || "",
         postalCode: user?.region?.postalCode || "",
+      },
+      insurance: {
+        name: user?.insurance?.name || "",
+        policyNumber: user?.insurance?.policyNumber || "",
+        expiryDate: user?.insurance?.expiryDate
+          ? new Date(user.insurance.expiryDate).toISOString().split("T")[0]
+          : "",
       },
     });
     setIsEditing(false);

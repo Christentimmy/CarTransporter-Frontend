@@ -129,14 +129,14 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
-            <SidebarMenuItem>
+            {/* <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={t("user.layout.backToHome")}>
                 <Link to="/" onClick={handleLinkClick}>
                   <Home />
                   <span>{t("user.layout.backToHome")}</span>
                 </Link>
               </SidebarMenuButton>
-            </SidebarMenuItem>
+            </SidebarMenuItem> */}
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={t("user.layout.logout")}>
                 <Link to="/login" onClick={handleLinkClick}>

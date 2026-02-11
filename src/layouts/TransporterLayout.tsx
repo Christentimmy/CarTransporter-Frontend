@@ -138,14 +138,14 @@ const TransporterLayoutContent = () => {
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
-            <SidebarMenuItem>
+            {/* <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={t("transporterSidebar.footer.backToHome")}>
                 <Link to="/">
                   <Home />
                   <span>{t("transporterSidebar.footer.backToHome")}</span>
                 </Link>
               </SidebarMenuButton>
-            </SidebarMenuItem>
+            </SidebarMenuItem> */}
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={t("transporterSidebar.footer.logout")}>
                 <Link to="/login">

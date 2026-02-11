@@ -32,6 +32,7 @@ import {
 } from "@/services/auctionSocket";
 import { getProfile } from "@/services/profileService";
 import type { ListShipmentItem } from "@/types/shipment";
+import { AuctionMap } from "@/components/AuctionMap";
 
 // Mock data - replace with API call
 const mockAuctionData = {
@@ -171,6 +172,7 @@ const Auction = () => {
   const [timeRemaining, setTimeRemaining] = useState("");
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isAuctionEnded, setIsAuctionEnded] = useState(false);
+  const [isEndingSoon, setIsEndingSoon] = useState(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const socketRef = useRef<any>(null);
   const queryClient = useQueryClient();
@@ -301,12 +303,15 @@ const Auction = () => {
   useEffect(() => {
     if (isAuctionEnded) {
       setTimeRemaining("Auction Ended");
+      setIsEndingSoon(false);
       return;
     }
     const updateTimer = () => {
       const now = new Date();
       const end = auctionEndTime;
       const diff = end.getTime() - now.getTime();
+
+      setIsEndingSoon(diff > 0 && diff <= 5 * 60 * 1000);
 
       if (diff <= 0) {
         setTimeRemaining("Auction Ended");
@@ -633,9 +638,9 @@ const Auction = () => {
                             <p className="font-semibold">
                               ${bid.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </p>
-                            <p className="text-sm text-muted-foreground">
-                              {bid.bidder.company_name}
-                            </p>
+                              {/* <p className="text-sm text-muted-foreground">
+                                {bid.bidder.company_name}
+                              </p> */}
                             <p className="text-xs text-muted-foreground">
                               {formatDistanceToNow(bid.placedAt, { addSuffix: true })}
                             </p>
@@ -659,7 +664,13 @@ const Auction = () => {
         {/* Right Column - Bidding Panel */}
         <div className="space-y-6">
           {/* Auction Timer */}
-          <Card className="border-primary/30 bg-primary/5">
+          <Card
+            className={
+              isEndingSoon
+                ? "border-red-500/60 bg-red-500/10 animate-pulse"
+                : "border-primary/30 bg-primary/5"
+            }
+          >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
@@ -668,7 +679,15 @@ const Auction = () => {
             </CardHeader>
             <CardContent>
               <div className="text-center">
-                <p className="text-3xl font-bold mb-2">{timeRemaining}</p>
+                <p
+                  className={
+                    isEndingSoon
+                      ? "text-3xl font-bold mb-2 text-red-600 animate-pulse"
+                      : "text-3xl font-bold mb-2"
+                  }
+                >
+                  {timeRemaining}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   Auction ends: {format(auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
                 </p>
@@ -745,6 +764,25 @@ const Auction = () => {
                   </p>
                 )}
               </form>
+            </CardContent>
+          </Card>
+
+          {/* Route Map */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Route Map
+              </CardTitle>
+              <CardDescription>
+                Pickup and delivery locations for this shipment
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AuctionMap
+                pickupLocation={auctionData.pickupLocation}
+                deliveryLocation={auctionData.deliveryLocation}
+              />
             </CardContent>
           </Card>
         </div>

@@ -10,11 +10,18 @@ export interface Region {
   postalCode: string;
 }
 
+export interface Insurance {
+  name: string;
+  policyNumber: string;
+  expiryDate: string;
+}
+
 export interface UserProfile {
   _id: string;
   email: string;
   phone_number: string;
   region?: Region | null;
+  insurance?: Insurance | null;
   status: UserStatus;
   is_email_verified: boolean;
   is_phone_verified: boolean;
@@ -56,6 +63,7 @@ export type UpdateProfilePayload = {
   business_address?: string;
   tax_number?: string;
   region?: Region;
+  insurance?: Partial<Insurance>;
 };
 
 export interface UpdateProfileResponse {
