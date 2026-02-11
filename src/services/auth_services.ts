@@ -131,6 +131,20 @@ class AuthService {
     removeAuthRole();
   }
 
+  public async logoutWithServer(): Promise<void> {
+    try {
+      await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeader(),
+        },
+      });
+    } finally {
+      this.logout();
+    }
+  }
+
   public isAuthenticated(): boolean {
     return !!getAuthHeader();
   }

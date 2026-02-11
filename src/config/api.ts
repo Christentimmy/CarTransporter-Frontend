@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: `${API_BASE_URL}/auth/change-password`,
     GENERATE_BEAMS_AUTH: `${API_BASE_URL}/auth/generate-beams-auth`,
     VALIDATE_TOKEN: `${API_BASE_URL}/auth/validate-token`,
+    LOGOUT: `${API_BASE_URL}/auth/logout`,
   },
   USER: {
     DASHBOARD: `${API_BASE_URL}/user/get-user-dashboard`,

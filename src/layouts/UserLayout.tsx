@@ -1,4 +1,4 @@
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { authService } from "@/services/auth_services";
 
 const menuItems = [
   {
@@ -69,6 +70,7 @@ export const UserLayout = () => {
 const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLocation> }) => {
   const { setOpenMobile, isMobile } = useSidebar();
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
 
   const nextLanguage = i18n.language?.startsWith("fr") ? "en" : "fr";
   const languageToggleLabel = i18n.language?.startsWith("fr") ? "EN" : "FR";
@@ -77,6 +79,11 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
     if (isMobile) {
       setOpenMobile(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await authService.logoutWithServer();
+    navigate("/login");
   };
 
   return (
@@ -138,11 +145,9 @@ const SidebarContentWrapper = ({ location }: { location: ReturnType<typeof useLo
               </SidebarMenuButton>
             </SidebarMenuItem> */}
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={t("user.layout.logout")}>
-                <Link to="/login" onClick={handleLinkClick}>
-                  <LogOut />
-                  <span>{t("user.layout.logout")}</span>
-                </Link>
+              <SidebarMenuButton tooltip={t("user.layout.logout")} onClick={handleLogout}>
+                <LogOut />
+                <span>{t("user.layout.logout")}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

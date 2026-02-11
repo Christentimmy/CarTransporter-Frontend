@@ -1,4 +1,4 @@
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import {
   Sidebar,
@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { authService } from "@/services/auth_services";
 
 export const TransporterLayout = () => {
   return (
@@ -42,6 +43,7 @@ export const TransporterLayout = () => {
 
 const TransporterLayoutContent = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isMobile, setOpenMobile } = useSidebar();
   const { i18n, t } = useTranslation();
 
@@ -87,6 +89,11 @@ const TransporterLayoutContent = () => {
     const newLang = i18n.language === "en" ? "fr" : "en";
     i18n.changeLanguage(newLang);
     localStorage.setItem("language", newLang);
+  };
+
+  const handleLogout = async () => {
+    await authService.logoutWithServer();
+    navigate("/login");
   };
 
   useEffect(() => {
@@ -147,11 +154,9 @@ const TransporterLayoutContent = () => {
               </SidebarMenuButton>
             </SidebarMenuItem> */}
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={t("transporterSidebar.footer.logout")}>
-                <Link to="/login">
-                  <LogOut />
-                  <span>{t("transporterSidebar.footer.logout")}</span>
-                </Link>
+              <SidebarMenuButton tooltip={t("transporterSidebar.footer.logout")} onClick={handleLogout}>
+                <LogOut />
+                <span>{t("transporterSidebar.footer.logout")}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
