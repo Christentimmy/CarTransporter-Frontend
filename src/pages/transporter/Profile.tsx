@@ -15,6 +15,7 @@ import {
   Save,
   Edit,
   Lock,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,11 @@ const TransporterProfile = () => {
       state: "",
       postalCode: "",
     },
+    insurance: {
+      name: "",
+      policyNumber: "",
+      expiryDate: "",
+    },
   });
 
   const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
@@ -89,6 +95,13 @@ const TransporterProfile = () => {
           country: user.region?.country || "",
           state: user.region?.state || "",
           postalCode: user.region?.postalCode || "",
+        },
+        insurance: {
+          name: user.insurance?.name || "",
+          policyNumber: user.insurance?.policyNumber || "",
+          expiryDate: user.insurance?.expiryDate 
+            ? new Date(user.insurance.expiryDate).toISOString().split('T')[0] 
+            : "",
         },
       }));
     }
@@ -184,6 +197,29 @@ const TransporterProfile = () => {
         country: newRegion.country,
         state: newRegion.state,
         postalCode: newRegion.postalCode,
+      };
+    }
+
+    // Check if insurance data changed
+    const currentInsurance = {
+      name: user.insurance?.name || "",
+      policyNumber: user.insurance?.policyNumber || "",
+      expiryDate: user.insurance?.expiryDate 
+        ? new Date(user.insurance.expiryDate).toISOString().split('T')[0] 
+        : "",
+    };
+    const newInsurance = formData.insurance;
+
+    const insuranceChanged =
+      currentInsurance.name !== newInsurance.name ||
+      currentInsurance.policyNumber !== newInsurance.policyNumber ||
+      currentInsurance.expiryDate !== newInsurance.expiryDate;
+
+    if (insuranceChanged) {
+      payload.insurance = {
+        name: newInsurance.name,
+        policyNumber: newInsurance.policyNumber,
+        expiryDate: new Date(newInsurance.expiryDate),
       };
     }
 
@@ -630,6 +666,53 @@ const TransporterProfile = () => {
                   />
                 </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Insurance Information */}
+        <Card>
+          <CardHeader className="p-4 sm:p-6">
+            <div className="flex items-center gap-2">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+              <CardTitle className="text-lg sm:text-xl">Insurance Information</CardTitle>
+            </div>
+            <CardDescription className="text-sm">
+              Manage your insurance policy details
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
+            <div className="space-y-2">
+              <Label htmlFor="insurance_name">Insurance Company Name</Label>
+              <Input
+                id="insurance_name"
+                value={formData.insurance.name}
+                onChange={(e) => setFormData({ ...formData, insurance: { ...formData.insurance, name: e.target.value } })}
+                disabled={!isEditing}
+                placeholder="Enter insurance company name"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="insurance_policy">Policy Number</Label>
+              <Input
+                id="insurance_policy"
+                value={formData.insurance.policyNumber}
+                onChange={(e) => setFormData({ ...formData, insurance: { ...formData.insurance, policyNumber: e.target.value } })}
+                disabled={!isEditing}
+                placeholder="Enter policy number"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="insurance_expiry">Expiry Date</Label>
+              <Input
+                id="insurance_expiry"
+                type="date"
+                value={formData.insurance.expiryDate}
+                onChange={(e) => setFormData({ ...formData, insurance: { ...formData.insurance, expiryDate: e.target.value } })}
+                disabled={!isEditing}
+              />
             </div>
           </CardContent>
         </Card>
