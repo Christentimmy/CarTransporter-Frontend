@@ -18,8 +18,14 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
   useEffect(() => {
     const token = getAuthToken();
     const role = getAuthRole();
+    const currentPath = window.location.pathname;
 
-    // If no token, redirect to login
+    // Allow access to landing page without authentication
+    if (currentPath === "/") {
+      return;
+    }
+
+    // If no token and not on landing page, redirect to login
     if (!token) {
       navigate("/login");
       return;
@@ -30,7 +36,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
       if (!isValid) {
         authService.logout();
         navigate("/login");
-      } else if (role && window.location.pathname === "/") {
+      } else if (role && currentPath === "/") {
         // Token is valid and we're on root, redirect to correct dashboard
         navigate(role === "transporter" ? "/transporter/dashboard" : "/user/dashboard");
       }
