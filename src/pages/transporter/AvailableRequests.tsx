@@ -312,6 +312,13 @@ const AvailableRequests = () => {
                                 {request.vehicleDetails.color && (
                                   <Badge variant="outline">{request.vehicleDetails.color}</Badge>
                                 )}
+                                {request.vehicleDetails.note && (
+                                  <Badge variant="secondary" className="max-w-full">
+                                    <span className="truncate" title={request.vehicleDetails.note}>
+                                      Note: {request.vehicleDetails.note}
+                                    </span>
+                                  </Badge>
+                                )}
                                 {request.vehicleDetails.drivetrain && (
                                   <Badge variant="outline">{request.vehicleDetails.drivetrain}</Badge>
                                 )}

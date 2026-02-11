@@ -298,6 +298,8 @@
         "yearPlaceholder": "e.g., 2024",
         "colorLabel": "Color",
         "colorPlaceholder": "e.g., Black",
+        "noteLabel": "Note (Optional)",
+        "notePlaceholder": "e.g., Modifications, special handling instructions",
         "drivetrainLabel": "Drivetrain",
         "drivetrainPlaceholder": "e.g., FWD / RWD / AWD",
         "serialNumberLabel": "Serial Number",

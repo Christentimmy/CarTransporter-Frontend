@@ -45,6 +45,7 @@ const PostRequest = () => {
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
   const [color, setColor] = useState("");
+  const [vehicleNote, setVehicleNote] = useState("");
   const [drivetrain, setDrivetrain] = useState("");
   const [serialNumber, setSerialNumber] = useState("");
   const [isRunning, setIsRunning] = useState(true);
@@ -147,6 +148,7 @@ const PostRequest = () => {
         model,
         year: parseInt(year, 10),
         color,
+        note: vehicleNote || undefined,
         drivetrain,
         serialNumber,
         isRunning,
@@ -340,6 +342,18 @@ const PostRequest = () => {
                   required
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="vehicle-note">{t("postRequest.sections.vehicle.noteLabel")}</Label>
+                <Input
+                  id="vehicle-note"
+                  value={vehicleNote}
+                  onChange={(e) => setVehicleNote(e.target.value)}
+                  placeholder={t("postRequest.sections.vehicle.notePlaceholder")}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="drivetrain">{t("postRequest.sections.vehicle.drivetrainLabel")}</Label>
                 <Input

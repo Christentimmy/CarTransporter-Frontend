@@ -298,6 +298,8 @@
         "yearPlaceholder": "ex: 2024",
         "colorLabel": "Couleur",
         "colorPlaceholder": "ex: Noir",
+        "noteLabel": "Note (Optionnel)",
+        "notePlaceholder": "ex: Modifications, instructions spéciales",
         "drivetrainLabel": "Transmission",
         "drivetrainPlaceholder": "ex: AV / AR / 4X4",
         "serialNumberLabel": "Numéro de série",

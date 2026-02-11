@@ -531,10 +531,18 @@ const MyRequests = () => {
                                 request.vehicleDetails.size?.width != null ||
                                 request.vehicleDetails.size?.height != null ||
                                 request.vehicleDetails.isAccidented != null ||
-                                request.vehicleDetails.keysAvailable != null) && (
+                                request.vehicleDetails.keysAvailable != null ||
+                                request.vehicleDetails.note) && (
                                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
                                   {request.vehicleDetails.color && (
                                     <Badge variant="outline">{request.vehicleDetails.color}</Badge>
+                                  )}
+                                  {request.vehicleDetails.note && (
+                                    <Badge variant="secondary" className="max-w-full">
+                                      <span className="truncate" title={request.vehicleDetails.note}>
+                                        Note: {request.vehicleDetails.note}
+                                      </span>
+                                    </Badge>
                                   )}
                                   {request.vehicleDetails.drivetrain && (
                                     <Badge variant="outline">

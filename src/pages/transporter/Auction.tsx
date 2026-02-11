@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Truck,
   MapPin,
@@ -13,6 +13,8 @@ import {
   ArrowLeft,
   TrendingDown,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -167,8 +169,11 @@ const Auction = () => {
   const [bidAmount, setBidAmount] = useState("");
   const [bids, setBids] = useState(mockBids);
   const [timeRemaining, setTimeRemaining] = useState("");
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isAuctionEnded, setIsAuctionEnded] = useState(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const socketRef = useRef<any>(null);
+  const queryClient = useQueryClient();
   const socketJoinedRef = useRef(false);
 
   const { data: profileData } = useQuery({
@@ -399,6 +404,62 @@ const Auction = () => {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column - Request Details */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Photos Section - Full-width carousel */}
+          {auctionData.photos && auctionData.photos.length > 0 && (
+            <Card className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="relative">
+                  <div className="aspect-video w-full">
+                    <img
+                      src={auctionData.photos[currentPhotoIndex]}
+                      alt={`Vehicle photo ${currentPhotoIndex + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  {auctionData.photos.length > 1 && (
+                    <>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white border-0"
+                        onClick={() => setCurrentPhotoIndex((prev) => (prev === 0 ? auctionData.photos.length - 1 : prev - 1))}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white border-0"
+                        onClick={() => setCurrentPhotoIndex((prev) => (prev === auctionData.photos.length - 1 ? 0 : prev + 1))}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                        {auctionData.photos.map((_, index) => (
+                          <button
+                            key={index}
+                            className={`w-2 h-2 rounded-full transition-colors ${
+                              index === currentPhotoIndex ? "bg-white" : "bg-white/50"
+                            }`}
+                            onClick={() => setCurrentPhotoIndex(index)}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white border-0"
+                    onClick={() => window.open(auctionData.photos[currentPhotoIndex], '_blank')}
+                  >
+                    View Full Size
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Vehicle Info Card */}
           <Card>
             <CardHeader>
@@ -459,7 +520,8 @@ const Auction = () => {
                 auctionData.vehicleDetails.size?.width != null ||
                 auctionData.vehicleDetails.size?.height != null ||
                 auctionData.vehicleDetails.isAccidented != null ||
-                auctionData.vehicleDetails.keysAvailable != null) && (
+                auctionData.vehicleDetails.keysAvailable != null ||
+                auctionData.vehicleDetails.note) && (
                 <div className="flex flex-wrap items-center gap-2">
                   {auctionData.vehicleDetails.isAccidented === true && (
                     <Badge variant="secondary">Accidented</Badge>
@@ -473,6 +535,13 @@ const Auction = () => {
                   )}
                   {auctionData.vehicleDetails.color && (
                     <Badge variant="outline">{auctionData.vehicleDetails.color}</Badge>
+                  )}
+                  {auctionData.vehicleDetails.note && (
+                    <Badge variant="secondary" className="max-w-full">
+                      <span className="truncate" title={auctionData.vehicleDetails.note}>
+                        Note: {auctionData.vehicleDetails.note}
+                      </span>
+                    </Badge>
                   )}
                   {auctionData.vehicleDetails.drivetrain && (
                     <Badge variant="outline">{auctionData.vehicleDetails.drivetrain}</Badge>
