@@ -5,6 +5,7 @@ import {
   removeAuthToken,
   removeAuthRole,
   getAuthHeader,
+  getAuthToken,
   type AuthRole,
 } from "@/config/api";
 import type { Region } from "@/services/profileService";
@@ -132,6 +133,26 @@ class AuthService {
 
   public isAuthenticated(): boolean {
     return !!getAuthHeader();
+  }
+
+  public async validateToken(): Promise<boolean> {
+    try {
+      const response = await fetch(API_ENDPOINTS.AUTH.VALIDATE_TOKEN, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeader(),
+        },
+      });
+
+      if (response.ok) {
+        return true; // token is valid
+      } else {
+        return false; // token invalid/expired
+      }
+    } catch {
+      return false; // network error, treat as invalid
+    }
   }
 
   public async verifyOtp(data: VerifyOtpPayload): Promise<{ message: string }> {
