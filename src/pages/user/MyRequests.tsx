@@ -57,7 +57,11 @@ declare global {
 
 const statusConfig: Record<
   string,
-  { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: typeof Clock }
+  {
+    label: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+    icon: typeof Clock;
+  }
 > = {
   DRAFT: { label: "Draft", variant: "outline", icon: Clock },
   LIVE: { label: "Live", variant: "default", icon: Clock },
@@ -97,14 +101,15 @@ const MyRequests = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [isPayDialogOpen, setIsPayDialogOpen] = useState(false);
-  const [selectedShipmentForPayment, setSelectedShipmentForPayment] = useState<MyShipment | null>(null);
+  const [selectedShipmentForPayment, setSelectedShipmentForPayment] =
+    useState<MyShipment | null>(null);
   const [isPaymentReady, setIsPaymentReady] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const queryClient = useQueryClient();
   const limit = 10;
 
   // Tax constants
-  const gstTaxPercent = 10;
+  const gstTaxPercent = 5;
   const qstTaxPercent = 9.975;
 
   const squareCardRef = useRef<unknown>(null);
@@ -124,9 +129,14 @@ const MyRequests = () => {
       `${request.vehicleDetails.make} ${request.vehicleDetails.model}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      formatLocation(request.pickupLocation).toLowerCase().includes(searchQuery.toLowerCase()) ||
-      formatLocation(request.deliveryLocation).toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || request.status === statusFilter;
+      formatLocation(request.pickupLocation)
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      formatLocation(request.deliveryLocation)
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || request.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -161,7 +171,7 @@ const MyRequests = () => {
       if (!v) return "";
       const trimmed = v.trim();
       if (
-        (trimmed.startsWith("\"") && trimmed.endsWith("\"")) ||
+        (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
         (trimmed.startsWith("'") && trimmed.endsWith("'"))
       ) {
         return trimmed.slice(1, -1).trim();
@@ -169,8 +179,12 @@ const MyRequests = () => {
       return trimmed;
     };
 
-    const appId = sanitizeEnv(import.meta.env.VITE_SQUARE_APP_ID as string | undefined);
-    const locationId = sanitizeEnv(import.meta.env.VITE_SQUARE_LOCATION_ID as string | undefined);
+    const appId = sanitizeEnv(
+      import.meta.env.VITE_SQUARE_APP_ID as string | undefined,
+    );
+    const locationId = sanitizeEnv(
+      import.meta.env.VITE_SQUARE_LOCATION_ID as string | undefined,
+    );
 
     const isAppIdValid = /^(sandbox-sq0idb-|sq0idp-)/.test(appId);
     const isLocationIdValid = /^L[A-Z0-9]+$/.test(locationId);
@@ -185,7 +199,8 @@ const MyRequests = () => {
 
     if (!isAppIdValid) {
       toast.error("Square applicationId is invalid", {
-        description: "Expected something like sandbox-sq0idb-... (sandbox) or sq0idp-... (production).",
+        description:
+          "Expected something like sandbox-sq0idb-... (sandbox) or sq0idp-... (production).",
         style: { background: "#ef4444", color: "#fff" },
       });
       setIsPayDialogOpen(false);
@@ -249,7 +264,8 @@ const MyRequests = () => {
         if (cancelled) return;
 
         const SquareAny = window.Square as any;
-        if (!SquareAny?.payments) throw new Error("Square payments SDK not available");
+        if (!SquareAny?.payments)
+          throw new Error("Square payments SDK not available");
 
         const payments = await SquareAny.payments(appId, locationId);
         if (cancelled) return;
@@ -267,9 +283,12 @@ const MyRequests = () => {
         squareCardRef.current = card;
         setIsPaymentReady(true);
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Failed to initialize payment", {
-          style: { background: "#ef4444", color: "#fff" },
-        });
+        toast.error(
+          e instanceof Error ? e.message : "Failed to initialize payment",
+          {
+            style: { background: "#ef4444", color: "#fff" },
+          },
+        );
         setIsPayDialogOpen(false);
       }
     };
@@ -308,11 +327,13 @@ const MyRequests = () => {
       setIsProcessingPayment(true);
       const result = await card.tokenize();
       if (result?.status !== "OK" || !result?.token) {
-        throw new Error(result?.errors?.[0]?.message ?? "Failed to tokenize card");
+        throw new Error(
+          result?.errors?.[0]?.message ?? "Failed to tokenize card",
+        );
       }
 
       const sourceId = result.token as string;
-      
+
       // Process the payment with the shipmentId and sourceId
       await processPayment({
         shipmentId: selectedShipmentForPayment._id,
@@ -331,9 +352,12 @@ const MyRequests = () => {
       await queryClient.invalidateQueries({ queryKey: ["my-shipments"] });
     } catch (e) {
       console.error("Payment error:", e);
-      toast.error(e instanceof Error ? e.message : "Payment processing failed", {
-        style: { background: "#ef4444", color: "#fff" },
-      });
+      toast.error(
+        e instanceof Error ? e.message : "Payment processing failed",
+        {
+          style: { background: "#ef4444", color: "#fff" },
+        },
+      );
     } finally {
       setIsProcessingPayment(false);
     }
@@ -353,14 +377,15 @@ const MyRequests = () => {
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
           <XCircle className="h-12 w-12 text-destructive mb-4" />
-          <h3 className="text-lg font-semibold mb-2">{t("myRequests.error.title")}</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            {t("myRequests.error.title")}
+          </h3>
           <p className="text-muted-foreground text-center mb-4">
-            {error instanceof Error ? error.message : t("myRequests.error.somethingWrong")}
+            {error instanceof Error
+              ? error.message
+              : t("myRequests.error.somethingWrong")}
           </p>
-          <Button
-            variant="outline"
-            onClick={() => window.location.reload()}
-          >
+          <Button variant="outline" onClick={() => window.location.reload()}>
             {t("myRequests.error.retry")}
           </Button>
         </CardContent>
@@ -378,7 +403,9 @@ const MyRequests = () => {
         className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
       >
         <div className="min-w-0">
-          <h1 className="text-xl font-bold tracking-tight sm:text-3xl">{t("myRequests.title")}</h1>
+          <h1 className="text-xl font-bold tracking-tight sm:text-3xl">
+            {t("myRequests.title")}
+          </h1>
           <p className="text-xs text-muted-foreground sm:text-base">
             {t("myRequests.subtitle")}
           </p>
@@ -410,19 +437,39 @@ const MyRequests = () => {
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="h-9 w-full sm:h-10 sm:w-[180px]">
             <Filter className="mr-2 h-4 w-4 shrink-0" />
-            <SelectValue placeholder={t("myRequests.filters.statusPlaceholder")} />
+            <SelectValue
+              placeholder={t("myRequests.filters.statusPlaceholder")}
+            />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("myRequests.filters.allStatus")}</SelectItem>
-            <SelectItem value="DRAFT">{t("myRequests.filters.draft")}</SelectItem>
+            <SelectItem value="all">
+              {t("myRequests.filters.allStatus")}
+            </SelectItem>
+            <SelectItem value="DRAFT">
+              {t("myRequests.filters.draft")}
+            </SelectItem>
             <SelectItem value="LIVE">{t("myRequests.filters.live")}</SelectItem>
-            <SelectItem value="ENDED">{t("myRequests.filters.ended")}</SelectItem>
-            <SelectItem value="ASSIGNED">{t("myRequests.filters.assigned")}</SelectItem>
-            <SelectItem value="IN_TRANSIT">{t("myRequests.filters.inTransit")}</SelectItem>
-            <SelectItem value="DELIVERED">{t("myRequests.filters.delivered")}</SelectItem>
-            <SelectItem value="COMPLETED">{t("myRequests.filters.completed")}</SelectItem>
-            <SelectItem value="DISPUTED">{t("myRequests.filters.disputed")}</SelectItem>
-            <SelectItem value="CANCELLED">{t("myRequests.filters.cancelled")}</SelectItem>
+            <SelectItem value="ENDED">
+              {t("myRequests.filters.ended")}
+            </SelectItem>
+            <SelectItem value="ASSIGNED">
+              {t("myRequests.filters.assigned")}
+            </SelectItem>
+            <SelectItem value="IN_TRANSIT">
+              {t("myRequests.filters.inTransit")}
+            </SelectItem>
+            <SelectItem value="DELIVERED">
+              {t("myRequests.filters.delivered")}
+            </SelectItem>
+            <SelectItem value="COMPLETED">
+              {t("myRequests.filters.completed")}
+            </SelectItem>
+            <SelectItem value="DISPUTED">
+              {t("myRequests.filters.disputed")}
+            </SelectItem>
+            <SelectItem value="CANCELLED">
+              {t("myRequests.filters.cancelled")}
+            </SelectItem>
           </SelectContent>
         </Select>
       </motion.div>
@@ -432,7 +479,9 @@ const MyRequests = () => {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Truck className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">{t("myRequests.empty.title")}</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {t("myRequests.empty.title")}
+            </h3>
             <p className="text-muted-foreground text-center mb-4">
               {searchQuery || statusFilter !== "all"
                 ? t("myRequests.empty.noResults")
@@ -478,14 +527,16 @@ const MyRequests = () => {
                           <div className="flex-1 min-w-0 overflow-hidden">
                             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1.5">
                               <CardTitle className="text-base sm:text-xl truncate">
-                                {request.vehicleDetails.year} {request.vehicleDetails.make}{" "}
+                                {request.vehicleDetails.year}{" "}
+                                {request.vehicleDetails.make}{" "}
                                 {request.vehicleDetails.model}
                               </CardTitle>
                               {getStatusBadge(request.status)}
                             </div>
                             {request.status === "ASSIGNED" && (
                               <p className="text-xs text-muted-foreground mb-1">
-                                Payment status: {getEscrowStatusLabel(request.escrowStatus)}
+                                Payment status:{" "}
+                                {getEscrowStatusLabel(request.escrowStatus)}
                               </p>
                             )}
                             {/* Mobile: stack pickup → delivery on two lines */}
@@ -493,7 +544,9 @@ const MyRequests = () => {
                               <div className="flex gap-2 min-w-0">
                                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5" />
                                 <span className="break-words line-clamp-2 min-w-0">
-                                  <span className="text-muted-foreground/80">{t("myRequests.card.from")} </span>
+                                  <span className="text-muted-foreground/80">
+                                    {t("myRequests.card.from")}{" "}
+                                  </span>
                                   {formatLocation(request.pickupLocation)}
                                 </span>
                               </div>
@@ -505,7 +558,9 @@ const MyRequests = () => {
                               <div className="flex gap-2 min-w-0">
                                 <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 opacity-60" />
                                 <span className="break-words line-clamp-2 min-w-0">
-                                  <span className="text-muted-foreground/80">{t("myRequests.card.to")} </span>
+                                  <span className="text-muted-foreground/80">
+                                    {t("myRequests.card.to")}{" "}
+                                  </span>
                                   {formatLocation(request.deliveryLocation)}
                                 </span>
                               </div>
@@ -519,11 +574,17 @@ const MyRequests = () => {
                                 <span>
                                   {t("myRequests.card.pickup")}{" "}
                                   {parseDate(request.pickupWindow.start)
-                                    ? format(parseDate(request.pickupWindow.start)!, "MMM d")
+                                    ? format(
+                                        parseDate(request.pickupWindow.start)!,
+                                        "MMM d",
+                                      )
                                     : "—"}{" "}
                                   –{" "}
                                   {parseDate(request.pickupWindow.end)
-                                    ? format(parseDate(request.pickupWindow.end)!, "MMM d, yyyy")
+                                    ? format(
+                                        parseDate(request.pickupWindow.end)!,
+                                        "MMM d, yyyy",
+                                      )
                                     : "—"}
                                 </span>
                               </div>
@@ -539,11 +600,19 @@ const MyRequests = () => {
                                 request.vehicleDetails.note) && (
                                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
                                   {request.vehicleDetails.color && (
-                                    <Badge variant="outline">{request.vehicleDetails.color}</Badge>
+                                    <Badge variant="outline">
+                                      {request.vehicleDetails.color}
+                                    </Badge>
                                   )}
                                   {request.vehicleDetails.note && (
-                                    <Badge variant="secondary" className="max-w-full">
-                                      <span className="truncate" title={request.vehicleDetails.note}>
+                                    <Badge
+                                      variant="secondary"
+                                      className="max-w-full"
+                                    >
+                                      <span
+                                        className="truncate"
+                                        title={request.vehicleDetails.note}
+                                      >
                                         Note: {request.vehicleDetails.note}
                                       </span>
                                     </Badge>
@@ -558,24 +627,38 @@ const MyRequests = () => {
                                       {request.vehicleDetails.weight} kg
                                     </Badge>
                                   )}
-                                  {(request.vehicleDetails.size?.length != null ||
-                                    request.vehicleDetails.size?.width != null ||
-                                    request.vehicleDetails.size?.height != null) && (
+                                  {(request.vehicleDetails.size?.length !=
+                                    null ||
+                                    request.vehicleDetails.size?.width !=
+                                      null ||
+                                    request.vehicleDetails.size?.height !=
+                                      null) && (
                                     <Badge variant="outline">
-                                      {(request.vehicleDetails.size?.length ?? "-")}
+                                      {request.vehicleDetails.size?.length ??
+                                        "-"}
                                       x
-                                      {(request.vehicleDetails.size?.width ?? "-")}
+                                      {request.vehicleDetails.size?.width ??
+                                        "-"}
                                       x
-                                      {(request.vehicleDetails.size?.height ?? "-")}{" "}
+                                      {request.vehicleDetails.size?.height ??
+                                        "-"}{" "}
                                       {t("myRequests.card.dimensions")}
                                     </Badge>
                                   )}
-                                  {request.vehicleDetails.isAccidented === true && (
-                                    <Badge variant="secondary">{t("myRequests.card.accidented")}</Badge>
+                                  {request.vehicleDetails.isAccidented ===
+                                    true && (
+                                    <Badge variant="secondary">
+                                      {t("myRequests.card.accidented")}
+                                    </Badge>
                                   )}
-                                  {request.vehicleDetails.keysAvailable != null && (
+                                  {request.vehicleDetails.keysAvailable !=
+                                    null && (
                                     <Badge
-                                      variant={request.vehicleDetails.keysAvailable ? "default" : "secondary"}
+                                      variant={
+                                        request.vehicleDetails.keysAvailable
+                                          ? "default"
+                                          : "secondary"
+                                      }
                                     >
                                       {request.vehicleDetails.keysAvailable
                                         ? t("myRequests.card.keysAvailable")
@@ -594,42 +677,64 @@ const MyRequests = () => {
                           state={{ shipment: request }}
                           className="w-full sm:w-auto shrink-0"
                         >
-                          <Button variant="hero" size="sm" className="w-full sm:w-auto">
+                          <Button
+                            variant="hero"
+                            size="sm"
+                            className="w-full sm:w-auto"
+                          >
                             <Gavel className="mr-2 h-4 w-4 shrink-0" />
                             {t("myRequests.card.viewLiveAuction")}
                           </Button>
                         </Link>
                       )}
 
-                      {request.status === "ASSIGNED" && request.escrowStatus !== "PAID_IN_ESCROW" && (
-                        <Button
-                          type="button"
-                          variant="hero"
-                          size="sm"
-                          className="w-full sm:w-auto shrink-0"
-                          onClick={() => {
-                            setSelectedShipmentForPayment(request);
-                            setIsPayDialogOpen(true);
-                          }}
-                        >
-                          {t("myRequests.card.payNow")}
-                        </Button>
-                      )}
+                      {request.status === "ASSIGNED" &&
+                        request.escrowStatus !== "PAID_IN_ESCROW" && (
+                          <Button
+                            type="button"
+                            variant="hero"
+                            size="sm"
+                            className="w-full sm:w-auto shrink-0"
+                            onClick={() => {
+                              setSelectedShipmentForPayment(request);
+                              setIsPayDialogOpen(true);
+                            }}
+                          >
+                            {t("myRequests.card.payNow")}
+                          </Button>
+                        )}
                     </div>
                   </CardHeader>
                   <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-2 sm:gap-4 pt-3 sm:pt-4 border-t">
                       <div className="min-w-0">
-                        <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.deliveryDeadline")}</p>
-                        <p className="text-xs sm:text-sm font-medium truncate" title={parseDate(request.deliveryDeadline) ? format(parseDate(request.deliveryDeadline)!, "MMM d, yyyy") : undefined}>
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
+                          {t("myRequests.card.deliveryDeadline")}
+                        </p>
+                        <p
+                          className="text-xs sm:text-sm font-medium truncate"
+                          title={
+                            parseDate(request.deliveryDeadline)
+                              ? format(
+                                  parseDate(request.deliveryDeadline)!,
+                                  "MMM d, yyyy",
+                                )
+                              : undefined
+                          }
+                        >
                           {parseDate(request.deliveryDeadline)
-                            ? format(parseDate(request.deliveryDeadline)!, "MMM d, yyyy")
+                            ? format(
+                                parseDate(request.deliveryDeadline)!,
+                                "MMM d, yyyy",
+                              )
                             : "—"}
                         </p>
                       </div>
                       {request.distance != null && (
                         <div className="min-w-0">
-                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.distance")}</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
+                            {t("myRequests.card.distance")}
+                          </p>
                           <p className="text-xs sm:text-sm font-medium">
                             {request.distance.toLocaleString()} km
                           </p>
@@ -637,28 +742,41 @@ const MyRequests = () => {
                       )}
                       {request.estimatedTime != null && (
                         <div className="min-w-0">
-                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.estTime")}</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
+                            {t("myRequests.card.estTime")}
+                          </p>
                           <p className="text-xs sm:text-sm font-medium">
                             ~{Math.round(request.estimatedTime / 60)} hrs
                           </p>
                         </div>
                       )}
-                      {request.status === "DRAFT" && request.auctionStartTime && (
-                        <div className="min-w-0 col-span-2 md:col-span-1">
-                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.auctionStarts")}</p>
-                          <p className="text-xs sm:text-sm font-medium break-words">
-                            {parseDate(request.auctionStartTime)
-                              ? format(parseDate(request.auctionStartTime)!, "MMM d, h:mm a")
-                              : "—"}
-                          </p>
-                        </div>
-                      )}
+                      {request.status === "DRAFT" &&
+                        request.auctionStartTime && (
+                          <div className="min-w-0 col-span-2 md:col-span-1">
+                            <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
+                              {t("myRequests.card.auctionStarts")}
+                            </p>
+                            <p className="text-xs sm:text-sm font-medium break-words">
+                              {parseDate(request.auctionStartTime)
+                                ? format(
+                                    parseDate(request.auctionStartTime)!,
+                                    "MMM d, h:mm a",
+                                  )
+                                : "—"}
+                            </p>
+                          </div>
+                        )}
                       {request.status === "LIVE" && request.auctionEndTime && (
                         <div className="min-w-0 col-span-2 md:col-span-1">
-                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">{t("myRequests.card.auctionEnds")}</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
+                            {t("myRequests.card.auctionEnds")}
+                          </p>
                           <p className="text-xs sm:text-sm font-medium break-words">
                             {parseDate(request.auctionEndTime)
-                              ? format(parseDate(request.auctionEndTime)!, "MMM d, h:mm a")
+                              ? format(
+                                  parseDate(request.auctionEndTime)!,
+                                  "MMM d, h:mm a",
+                                )
                               : "—"}
                           </p>
                         </div>
@@ -687,11 +805,16 @@ const MyRequests = () => {
                         if (pagination.hasPrevPage) setPage((p) => p - 1);
                       }}
                       className={
-                        !pagination.hasPrevPage ? "pointer-events-none opacity-50" : ""
+                        !pagination.hasPrevPage
+                          ? "pointer-events-none opacity-50"
+                          : ""
                       }
                     />
                   </PaginationItem>
-                  {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((p) => (
+                  {Array.from(
+                    { length: pagination.pages },
+                    (_, i) => i + 1,
+                  ).map((p) => (
                     <PaginationItem key={p}>
                       <PaginationLink
                         href="#"
@@ -714,7 +837,9 @@ const MyRequests = () => {
                         if (pagination.hasNextPage) setPage((p) => p + 1);
                       }}
                       className={
-                        !pagination.hasNextPage ? "pointer-events-none opacity-50" : ""
+                        !pagination.hasNextPage
+                          ? "pointer-events-none opacity-50"
+                          : ""
                       }
                     />
                   </PaginationItem>
@@ -743,7 +868,9 @@ const MyRequests = () => {
           <div className="space-y-3">
             {selectedShipmentForPayment && (
               <div className="rounded-md border p-3 text-sm">
-                <p className="font-medium mb-1">{t("myRequests.payment.summary")}</p>
+                <p className="font-medium mb-1">
+                  {t("myRequests.payment.summary")}
+                </p>
                 <div className="flex items-center justify-between text-muted-foreground">
                   <span>{t("myRequests.payment.shipmentAmount")}</span>
                   <span>
@@ -777,13 +904,17 @@ const MyRequests = () => {
                   </span>
                 </div>
                 <div className="mt-2 border-t pt-2 flex items-center justify-between">
-                  <span className="font-semibold">{t("myRequests.payment.totalToPay")}</span>
+                  <span className="font-semibold">
+                    {t("myRequests.payment.totalToPay")}
+                  </span>
                   <span className="font-semibold">
                     {selectedShipmentForPayment.currentBid?.amount != null
                       ? `$${(
                           selectedShipmentForPayment.currentBid.amount * 1.1 +
-                          selectedShipmentForPayment.currentBid.amount * (gstTaxPercent / 100) +
-                          selectedShipmentForPayment.currentBid.amount * (qstTaxPercent / 100)
+                          selectedShipmentForPayment.currentBid.amount *
+                            (gstTaxPercent / 100) +
+                          selectedShipmentForPayment.currentBid.amount *
+                            (qstTaxPercent / 100)
                         ).toFixed(2)}`
                       : "—"}
                   </span>
@@ -795,7 +926,9 @@ const MyRequests = () => {
             </div>
 
             {!isPaymentReady && (
-              <p className="text-sm text-muted-foreground">{t("myRequests.payment.loadingForm")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("myRequests.payment.loadingForm")}
+              </p>
             )}
           </div>
 
@@ -806,7 +939,9 @@ const MyRequests = () => {
               onClick={handlePayNow}
               disabled={!isPaymentReady || isProcessingPayment}
             >
-              {isProcessingPayment ? t("myRequests.payment.processing") : t("myRequests.payment.payNow")}
+              {isProcessingPayment
+                ? t("myRequests.payment.processing")
+                : t("myRequests.payment.payNow")}
             </Button>
           </DialogFooter>
         </DialogContent>

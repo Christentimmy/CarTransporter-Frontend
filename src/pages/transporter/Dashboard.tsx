@@ -89,34 +89,37 @@ const Dashboard = () => {
 
     return (
       <div className="space-y-3">
-        {requests.slice(0, 5).map((request) => (
+        {requests.map((request) => (
           <div 
             key={request._id} 
-            className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors group"
+            className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/30 transition-colors group cursor-pointer"
+            onClick={() => window.location.href = `/transporter/auction/${request._id}`}
           >
             <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary" />
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-medium truncate">
-                  {request.vehicleDetails.make} {request.vehicleDetails.model}
-                </p>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                  {request.status}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                <span>
-                  {request.distance.toLocaleString()} mi
-                </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium truncate">
+                    {request.vehicleDetails.make} {request.vehicleDetails.model}
+                  </p>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                    {request.status}
+                  </span>
+                </div>
                 {request.currentBid && (
-                  <span className="font-medium text-foreground">
+                  <span className="font-medium text-foreground text-sm">
                     ${request.currentBid.amount.toLocaleString()}
                   </span>
                 )}
               </div>
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {formatDate(request.updatedAt)}
+              <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
+                <span>
+                  {request.distance.toLocaleString()} mi
+                </span>
+                <span>
+                  {formatDate(request.updatedAt)}
+                </span>
+              </div>
             </div>
           </div>
         ))}
@@ -175,63 +178,24 @@ const Dashboard = () => {
             })}
           </div>
 
-          {/* Recent Activity */}
-          <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">{t("transporterDashboard.recentRequests.title")}</CardTitle>
-                  <CardDescription>
-                    {t("transporterDashboard.recentRequests.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {renderRecentRequests()}
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-            >
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>{t("transporterDashboard.quickActions.title")}</CardTitle>
-                  <CardDescription>
-                    {t("transporterDashboard.quickActions.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <Link to="/transporter/available-requests">
-                      <Button variant="outline" className="w-full justify-start">
-                        <Search className="mr-2 h-4 w-4" />
-                        {t("transporterDashboard.quickActions.browseRequests")}
-                      </Button>
-                    </Link>
-                    <Link to="/transporter/my-bids">
-                      <Button variant="outline" className="w-full justify-start">
-                        <Gavel className="mr-2 h-4 w-4" />
-                        {t("transporterDashboard.quickActions.viewBids")}
-                      </Button>
-                    </Link>
-                    <Link to="/transporter/my-shipments">
-                      <Button variant="outline" className="w-full justify-start">
-                        <Package className="mr-2 h-4 w-4" />
-                        {t("transporterDashboard.quickActions.trackShipments")}
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+          {/* Extended Recent Requests */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">{t("transporterDashboard.recentRequests.title")}</CardTitle>
+                <CardDescription>
+                  {t("transporterDashboard.recentRequests.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {renderRecentRequests()}
+              </CardContent>
+            </Card>
+          </motion.div>
         </>
       )}
     </div>

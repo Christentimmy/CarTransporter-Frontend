@@ -53,11 +53,11 @@ const TransporterLayoutContent = () => {
       icon: LayoutDashboard,
       url: "/transporter/dashboard",
     },
-    {
-      title: t("transporterSidebar.menu.postRequest"),
-      icon: Plus,
-      url: "/transporter/post-request",
-    },
+    // {
+    //   title: t("transporterSidebar.menu.postRequest"),
+    //   icon: Plus,
+    //   url: "/transporter/post-request",
+    // },
     {
       title: t("transporterSidebar.menu.availableRequests"),
       icon: Search,
