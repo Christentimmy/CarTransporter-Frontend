@@ -30,6 +30,9 @@ import Safety from "./pages/footer/Safety";
 import FAQ from "./pages/footer/FAQ";
 import TermsOfService from "./pages/footer/TermsOfService";
 import PrivacyPolicy from "./pages/footer/PrivacyPolicy";
+import AuctionAsUser from "./pages/transporter/AuctionAsUser";
+import TransporterMyRequests from "./pages/transporter/MyRequests";
+
 
 const queryClient = new QueryClient();
 
@@ -70,6 +73,8 @@ const App = () => (
               <Route path="available-requests" element={<AvailableRequests />} />
               <Route path="auction/:id" element={<Auction />} />
               <Route path="my-shipments" element={<MyShipments />} />
+              <Route path="auctionasuser/:id" element={<AuctionAsUser />} />
+              <Route path="my-post-requests" element={<TransporterMyRequests />} />
               <Route path="withdrawals" element={<Withdrawals />} />
               <Route path="notifications" element={<TransporterNotifications />} />
               <Route path="profile" element={<TransporterProfile />} />

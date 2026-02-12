@@ -29,7 +29,7 @@ const PostRequest = () => {
 
   // Determine if we're in transporter module based on current path
   const isTransporterModule = location.pathname.startsWith('/transporter');
-  const redirectPath = isTransporterModule ? '/transporter/my-shipments' : '/user/my-requests';
+  const redirectPath = isTransporterModule ? '/transporter/my-requests' : '/user/my-requests';
 
   // Pickup: address string for input + full location from Places (with coordinates)
   const [pickupAddress, setPickupAddress] = useState("");

@@ -21,6 +21,7 @@ import {
   Truck,
   Search,
   Package,
+  FileText,
   User,
   Bell,
   LogOut,
@@ -53,11 +54,11 @@ const TransporterLayoutContent = () => {
       icon: LayoutDashboard,
       url: "/transporter/dashboard",
     },
-    // {
-    //   title: t("transporterSidebar.menu.postRequest"),
-    //   icon: Plus,
-    //   url: "/transporter/post-request",
-    // },
+    {
+      title: t("transporterSidebar.menu.postRequest"),
+      icon: Plus,
+      url: "/transporter/post-request",
+    },
     {
       title: t("transporterSidebar.menu.availableRequests"),
       icon: Search,
@@ -67,6 +68,11 @@ const TransporterLayoutContent = () => {
       title: t("transporterSidebar.menu.myShipments"),
       icon: Package,
       url: "/transporter/my-shipments",
+    },
+    {
+      title: t("user.layout.menu.myRequests"),
+      icon: FileText,
+      url: "/transporter/my-post-requests",
     },
     {
       title: t("transporterSidebar.menu.withdrawals"),
