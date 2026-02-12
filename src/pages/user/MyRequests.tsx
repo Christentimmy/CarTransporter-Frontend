@@ -103,6 +103,10 @@ const MyRequests = () => {
   const queryClient = useQueryClient();
   const limit = 10;
 
+  // Tax constants
+  const gstTaxPercent = 10;
+  const qstTaxPercent = 9.975;
+
   const squareCardRef = useRef<unknown>(null);
   const squarePaymentsRef = useRef<unknown>(null);
 
@@ -756,11 +760,31 @@ const MyRequests = () => {
                       : "—"}
                   </span>
                 </div>
+                <div className="flex items-center justify-between text-muted-foreground mt-1">
+                  <span>GST ({gstTaxPercent}%)</span>
+                  <span>
+                    {selectedShipmentForPayment.currentBid?.amount != null
+                      ? `$${(selectedShipmentForPayment.currentBid.amount * (gstTaxPercent / 100)).toFixed(2)}`
+                      : "—"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-muted-foreground mt-1">
+                  <span>QST ({qstTaxPercent}%)</span>
+                  <span>
+                    {selectedShipmentForPayment.currentBid?.amount != null
+                      ? `$${(selectedShipmentForPayment.currentBid.amount * (qstTaxPercent / 100)).toFixed(2)}`
+                      : "—"}
+                  </span>
+                </div>
                 <div className="mt-2 border-t pt-2 flex items-center justify-between">
                   <span className="font-semibold">{t("myRequests.payment.totalToPay")}</span>
                   <span className="font-semibold">
                     {selectedShipmentForPayment.currentBid?.amount != null
-                      ? `$${(selectedShipmentForPayment.currentBid.amount * 1.1).toFixed(2)}`
+                      ? `$${(
+                          selectedShipmentForPayment.currentBid.amount * 1.1 +
+                          selectedShipmentForPayment.currentBid.amount * (gstTaxPercent / 100) +
+                          selectedShipmentForPayment.currentBid.amount * (qstTaxPercent / 100)
+                        ).toFixed(2)}`
                       : "—"}
                   </span>
                 </div>
