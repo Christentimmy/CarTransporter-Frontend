@@ -751,30 +751,30 @@ const MyRequests = () => {
                         </div>
                       )}
                       {request.status === "DRAFT" &&
-                        request.auctionStartTime && (
+                        request.auctionStartedAt && (
                           <div className="min-w-0 col-span-2 md:col-span-1">
                             <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
                               {t("myRequests.card.auctionStarts")}
                             </p>
                             <p className="text-xs sm:text-sm font-medium break-words">
-                              {parseDate(request.auctionStartTime)
+                              {parseDate(request.auctionStartedAt)
                                 ? format(
-                                    parseDate(request.auctionStartTime)!,
+                                    parseDate(request.auctionStartedAt)!,
                                     "MMM d, h:mm a",
                                   )
                                 : "—"}
                             </p>
                           </div>
                         )}
-                      {request.status === "LIVE" && request.auctionEndTime && (
+                      {request.status === "LIVE" && request.auctionEndsAt && (
                         <div className="min-w-0 col-span-2 md:col-span-1">
                           <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
                             {t("myRequests.card.auctionEnds")}
                           </p>
                           <p className="text-xs sm:text-sm font-medium break-words">
-                            {parseDate(request.auctionEndTime)
+                            {parseDate(request.auctionEndsAt)
                               ? format(
-                                  parseDate(request.auctionEndTime)!,
+                                  parseDate(request.auctionEndsAt)!,
                                   "MMM d, h:mm a",
                                 )
                               : "—"}

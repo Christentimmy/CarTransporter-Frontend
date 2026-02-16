@@ -368,23 +368,23 @@ const MyShipments = () => {
 
                               {(shipment.vehicleDetails.color ||
                                 shipment.vehicleDetails.drivetrain ||
-                                shipment.vehicleDetails.weight != null ||
-                                shipment.vehicleDetails.size?.length != null ||
-                                shipment.vehicleDetails.size?.width != null ||
-                                shipment.vehicleDetails.size?.height != null ||
-                                shipment.vehicleDetails.isAccidented != null ||
-                                shipment.vehicleDetails.keysAvailable != null ||
-                                shipment.vehicleDetails.isRunning != null) && (
+                                shipment.vehicleDetails.weight ||
+                                shipment.vehicleDetails.size?.length ||
+                                shipment.vehicleDetails.size?.width ||
+                                shipment.vehicleDetails.size?.height ||
+                                shipment.vehicleDetails.isAccidented ||
+                                shipment.vehicleDetails.keysAvailable !== undefined ||
+                                shipment.vehicleDetails.isRunning !== undefined) && (
                                 <div className="flex flex-wrap items-center gap-1.5 pt-1 md:col-span-2">
                                   <Badge
-                                    variant={(shipment.vehicleDetails.isRunning ?? true) ? "default" : "secondary"}
+                                    variant={shipment.vehicleDetails.isRunning ? "default" : "secondary"}
                                   >
-                                    {(shipment.vehicleDetails.isRunning ?? true) ? t("myShipments.card.running") : t("myShipments.card.notRunning")}
+                                    {shipment.vehicleDetails.isRunning ? t("myShipments.card.running") : t("myShipments.card.notRunning")}
                                   </Badge>
-                                  {shipment.vehicleDetails.isAccidented === true && (
+                                  {shipment.vehicleDetails.isAccidented && (
                                     <Badge variant="secondary">{t("myShipments.card.accidented")}</Badge>
                                   )}
-                                  {shipment.vehicleDetails.keysAvailable != null && (
+                                  {shipment.vehicleDetails.keysAvailable !== undefined && (
                                     <Badge
                                       variant={shipment.vehicleDetails.keysAvailable ? "default" : "secondary"}
                                     >
@@ -397,18 +397,18 @@ const MyShipments = () => {
                                   {shipment.vehicleDetails.drivetrain && (
                                     <Badge variant="outline">{shipment.vehicleDetails.drivetrain}</Badge>
                                   )}
-                                  {shipment.vehicleDetails.weight != null && (
+                                  {shipment.vehicleDetails.weight && (
                                     <Badge variant="outline">{shipment.vehicleDetails.weight} kg</Badge>
                                   )}
-                                  {(shipment.vehicleDetails.size?.length != null ||
-                                    shipment.vehicleDetails.size?.width != null ||
-                                    shipment.vehicleDetails.size?.height != null) && (
+                                  {(shipment.vehicleDetails.size?.length ||
+                                    shipment.vehicleDetails.size?.width ||
+                                    shipment.vehicleDetails.size?.height) && (
                                     <Badge variant="outline">
-                                      {(shipment.vehicleDetails.size?.length ?? "—")}
+                                      {shipment.vehicleDetails.size?.length ?? "—"}
                                       x
-                                      {(shipment.vehicleDetails.size?.width ?? "—")}
+                                      {shipment.vehicleDetails.size?.width ?? "—"}
                                       x
-                                      {(shipment.vehicleDetails.size?.height ?? "—")} m
+                                      {shipment.vehicleDetails.size?.height ?? "—"} m
                                     </Badge>
                                   )}
                                 </div>

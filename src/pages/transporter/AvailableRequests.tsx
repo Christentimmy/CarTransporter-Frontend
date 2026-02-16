@@ -228,10 +228,10 @@ const AvailableRequests = () => {
                                 {request.vehicleDetails.year} {request.vehicleDetails.make}{" "}
                                 {request.vehicleDetails.model}
                               </CardTitle>
-                              {request.auctionEndTime && request.status === "LIVE" && (
+                              {request.auctionEndsAt && request.status === "LIVE" && (
                                 <Badge variant="default" className="flex items-center gap-1 shrink-0">
                                   <Clock className="h-3 w-3" />
-                                  {getTimeRemaining(request.auctionEndTime, t)}
+                                  {getTimeRemaining(request.auctionEndsAt, t)}
                                 </Badge>
                               )}
                               {request.status === "DRAFT" && (
@@ -239,11 +239,11 @@ const AvailableRequests = () => {
                                   {t("availableRequests.card.draft")}
                                 </Badge>
                               )}
-                              {request.status === "DRAFT" && request.auctionStartTime && (
+                              {request.status === "DRAFT" && request.auctionStartedAt && (
                                 <Badge variant="outline" className="flex items-center gap-1 shrink-0">
                                   <Clock className="h-3 w-3" />
                                   <span className="truncate">
-                                    {t("availableRequests.card.starts")} {format(parseDate(request.auctionStartTime)!, "MMM d, yyyy h:mm a")}
+                                    {t("availableRequests.card.starts")} {format(parseDate(request.auctionStartedAt)!, "MMM d, yyyy h:mm a")}
                                   </span>
                                 </Badge>
                               )}

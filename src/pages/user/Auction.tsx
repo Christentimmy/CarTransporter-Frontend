@@ -66,8 +66,8 @@ const mockAuctionData = {
   },
   deliveryDeadline: new Date("2024-02-25"),
   status: "LIVE",
-  auctionStartTime: new Date("2024-02-10T10:00:00"),
-  auctionEndTime: new Date("2024-02-14T18:00:00"),
+  auctionStartedAt: new Date("2024-02-10T10:00:00"),
+  auctionEndsAt: new Date("2024-02-14T18:00:00"),
   instantAcceptPrice: 1200,
   photos: [],
 };
@@ -176,9 +176,9 @@ const Auction = () => {
   const auctionData = shipmentFromState;
 
   const auctionEndTime =
-    auctionData.auctionEndTime != null
-      ? new Date(auctionData.auctionEndTime)
-      : mockAuctionData.auctionEndTime;
+    auctionData.auctionEndsAt != null
+      ? new Date(auctionData.auctionEndsAt)
+      : mockAuctionData.auctionEndsAt;
 
   const instantAcceptPrice =
     typeof (auctionData as { instantAcceptPrice?: unknown }).instantAcceptPrice === "number"

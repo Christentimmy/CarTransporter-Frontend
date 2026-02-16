@@ -53,11 +53,11 @@ function suggestionToLocation(item: LocationIqSuggestion): CreateShipmentLocatio
   return {
     type: "Point",
     coordinates: [lon, lat],
-    address: address || undefined,
-    city: addr.city ?? undefined,
-    state: addr.state ?? undefined,
-    country: addr.country ?? undefined,
-    zipCode: addr.postcode ?? undefined,
+    address: address || "",
+    city: addr.city || "",
+    state: addr.state || "",
+    country: addr.country || "",
+    zipCode: addr.postcode || "",
   };
 }
 

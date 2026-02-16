@@ -52,8 +52,7 @@ export const shipmentFormSchema = z.object({
   // Step 4: Auction & Pricing
   auctionType: z.enum(["auction", "instant"]),
   instantAcceptPrice: z.number().optional(),
-  auctionStartTime: z.date().optional(),
-  auctionEndTime: z.date().optional(),
+  auctionDurationMinutes: z.enum(["30", "60", "180", "720", "1440"]),
 
   // Step 5: Photos
   photos: z
@@ -69,18 +68,18 @@ export type VehicleDetails = z.infer<typeof vehicleDetailsSchema>;
 /**
  * GeoJSON Point + address fields for API create-shipment.
  * Matches backend schema: type (enum 'Point'), coordinates [lng, lat] required;
- * address, city, state, country, zipCode optional.
+ * address, city, state, country, zipCode required.
  * Coordinates come from autocomplete (LocationIQ) and are required to submit.
  */
 export interface CreateShipmentLocation {
   type: "Point";
   coordinates: [number, number]; // [longitude, latitude] – required, from autocomplete
   note?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  zipCode?: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
 }
 
 /** Build payload for backend: only type + coordinates (required) and present address fields */
@@ -105,11 +104,11 @@ export interface MyShipmentLocation {
   type: "Point";
   coordinates: [number, number];
   note?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  zipCode?: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
 }
 
 /** Vehicle details returned by get-my-shipments API */
@@ -117,19 +116,19 @@ export interface MyShipmentVehicleDetails {
   make: string;
   model: string;
   year: number;
-  color?: string;
+  color: string;
   note?: string;
-  drivetrain?: string;
-  serialNumber?: string;
-  isRunning?: boolean;
-  isAccidented?: boolean;
+  drivetrain: string;
+  serialNumber: string;
+  isRunning: boolean;
+  isAccidented: boolean;
   runningNote?: string;
-  keysAvailable?: boolean;
-  weight?: number;
-  size?: {
-    length?: number;
-    width?: number;
-    height?: number;
+  keysAvailable: boolean;
+  weight: number;
+  size: {
+    length: number;
+    width: number;
+    height: number;
   };
 }
 
@@ -142,17 +141,21 @@ export interface MyShipment {
   vehicleDetails: MyShipmentVehicleDetails;
   pickupWindow: { start: string; end: string };
   deliveryDeadline: string;
-  distance?: number;
-  estimatedTime?: number;
+  distance: number;
+  estimatedTime: number;
   photos: string[];
-  auctionDuration?: number;
-  auctionStartTime?: string;
-  auctionEndTime?: string;
+  instantAcceptPrice: number;
+  auctionDurationMinutes: 30 | 60 | 180 | 720 | 1440;
+  auctionStartedAt: string;
+  auctionEndsAt: string;
   status: string;
   escrowStatus?: "NONE" | "PAID_IN_ESCROW" | "PAID_OUT" | "REFUNDED";
   createdAt: string;
   updatedAt: string;
   currentBid?: ListShipmentCurrentBid;
+  startedAt?: string;
+  completedAt?: string;
+  lastPayment?: string;
 }
 
 /** Pagination meta from get-my-shipments API */
@@ -187,19 +190,22 @@ export interface AssignedShipment {
   vehicleDetails: MyShipmentVehicleDetails;
   pickupWindow: { start: string; end: string };
   deliveryDeadline: string;
-  distance?: number;
-  estimatedTime?: number;
+  distance: number;
+  estimatedTime: number;
   photos: string[];
-  auctionDuration?: number;
-  auctionStartTime?: string;
-  auctionEndTime?: string;
-  instantAcceptPrice?: number;
+  instantAcceptPrice: number;
+  auctionDurationMinutes: 30 | 60 | 180 | 720 | 1440;
+  auctionStartedAt: string;
+  auctionEndsAt: string;
   currentBid?: AssignedShipmentCurrentBid;
   status: string;
   escrowStatus?: "NONE" | "PAID_IN_ESCROW" | "PAID_OUT" | "REFUNDED";
   createdAt: string;
   updatedAt: string;
   assignedTo?: string;
+  startedAt?: string;
+  completedAt?: string;
+  lastPayment?: string;
 }
 
 /** Response shape for GET /user/get-my-assigned-shipments */
@@ -239,12 +245,12 @@ export interface ListShipmentItem {
   pickupWindow: { start: string; end: string };
   deliveryDeadline: string;
   instantAcceptPrice: number;
-  distance?: number;
-  estimatedTime?: number;
+  distance: number;
+  estimatedTime: number;
   photos: string[];
-  auctionDuration?: number;
-  auctionStartTime?: string;
-  auctionEndTime?: string;
+  auctionDurationMinutes: 30 | 60 | 180 | 720 | 1440;
+  auctionStartedAt: string;
+  auctionEndsAt: string;
   currentBid?: ListShipmentCurrentBid;
   status: string;
   createdAt: string;

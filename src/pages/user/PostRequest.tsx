@@ -9,6 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -60,8 +67,6 @@ const PostRequest = () => {
   const [pickupWindowStart, setPickupWindowStart] = useState<Date>();
   const [pickupWindowEnd, setPickupWindowEnd] = useState<Date>();
   const [deliveryDeadline, setDeliveryDeadline] = useState<Date>();
-  const [auctionStartTime, setAuctionStartTime] = useState<Date>();
-  const [auctionEndTime, setAuctionEndTime] = useState<Date>();
 
   // Date popover open states
   const [isPickupStartOpen, setIsPickupStartOpen] = useState(false);
@@ -70,6 +75,7 @@ const PostRequest = () => {
 
   // Auction settings
   const [instantAcceptPrice, setInstantAcceptPrice] = useState("");
+  const [auctionDurationMinutes, setAuctionDurationMinutes] = useState<30 | 60 | 180 | 720 | 1440>(60);
 
   // Photos
   const [photos, setPhotos] = useState<File[]>([]);
@@ -104,22 +110,6 @@ const PostRequest = () => {
       toast.error(t("postRequest.errors.deliveryDeadline"));
       return;
     }
-    if (!auctionStartTime) {
-      toast.error(t("postRequest.errors.auctionStart"));
-      return;
-    }
-    if (!auctionEndTime) {
-      toast.error(t("postRequest.errors.auctionEnd"));
-      return;
-    }
-    if (auctionEndTime.getTime() <= auctionStartTime.getTime()) {
-      toast.error(t("postRequest.errors.auctionEndBeforeStart"));
-      return;
-    }
-
-    const durationHours = Math.round(
-      (auctionEndTime.getTime() - auctionStartTime.getTime()) / (60 * 60 * 1000)
-    );
 
     const form = new FormData();
 
@@ -170,9 +160,7 @@ const PostRequest = () => {
       })
     );
     form.append("deliveryDeadline", deliveryDeadline.toISOString());
-    form.append("auctionDuration", String(durationHours));
-    form.append("auctionStartTime", auctionStartTime.toISOString());
-    form.append("auctionEndTime", auctionEndTime.toISOString());
+    form.append("auctionDurationMinutes", String(auctionDurationMinutes));
     if (instantAcceptPrice) form.append("instantAcceptPrice", instantAcceptPrice);
 
     photos.forEach((file) => form.append("photos", file));
@@ -610,41 +598,21 @@ const PostRequest = () => {
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="auction-start">{t("postRequest.sections.auction.startTimeLabel")}</Label>
-                <Input
-                  id="auction-start"
-                  type="datetime-local"
-                  required
-                  value={auctionStartTime ? format(auctionStartTime, "yyyy-MM-dd'T'HH:mm") : ""}
-                  onChange={(e) =>
-                    setAuctionStartTime(e.target.value ? new Date(e.target.value) : undefined)
-                  }
-                  min={format(new Date(), "yyyy-MM-dd'T'HH:mm")}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="auction-end">{t("postRequest.sections.auction.endTimeLabel")}</Label>
-                <Input
-                  id="auction-end"
-                  type="datetime-local"
-                  required
-                  value={auctionEndTime ? format(auctionEndTime, "yyyy-MM-dd'T'HH:mm") : ""}
-                  onChange={(e) =>
-                    setAuctionEndTime(e.target.value ? new Date(e.target.value) : undefined)
-                  }
-                  min={
-                    auctionStartTime
-                      ? format(auctionStartTime, "yyyy-MM-dd'T'HH:mm")
-                      : format(new Date(), "yyyy-MM-dd'T'HH:mm")
-                  }
-                />
+                <Label htmlFor="auction-duration">{t("postRequest.sections.auction.durationLabel")}</Label>
+                <Select value={String(auctionDurationMinutes)} onValueChange={(value) => setAuctionDurationMinutes(Number(value) as 30 | 60 | 180 | 720 | 1440)}>
+                  <SelectTrigger id="auction-duration">
+                    <SelectValue placeholder={t("postRequest.sections.auction.durationPlaceholder")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="30">30 minutes</SelectItem>
+                    <SelectItem value="60">1 hour</SelectItem>
+                    <SelectItem value="180">3 hours</SelectItem>
+                    <SelectItem value="720">12 hours</SelectItem>
+                    <SelectItem value="1440">24 hours</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            {auctionStartTime && auctionEndTime && (
-              <p className="text-sm text-muted-foreground">
-                {t("postRequest.sections.auction.duration", { hours: Math.round((auctionEndTime.getTime() - auctionStartTime.getTime()) / (60 * 60 * 1000)) })}
-              </p>
-            )}
             <div className="space-y-2">
               <Label htmlFor="instant-accept">{t("postRequest.sections.auction.instantAcceptLabel")}</Label>
               <Input
