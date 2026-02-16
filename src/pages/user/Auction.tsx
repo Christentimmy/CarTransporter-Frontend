@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   Truck,
   MapPin,
@@ -159,6 +160,7 @@ function normalizeBid(payload: unknown) {
 }
 
 const Auction = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -192,7 +194,7 @@ const Auction = () => {
   // Calculate time remaining
   useEffect(() => {
     if (isAuctionEnded) {
-      setTimeRemaining("Auction Ended");
+      setTimeRemaining(t("auction.ended"));
       setIsEndingSoon(false);
       return;
     }
@@ -204,7 +206,7 @@ const Auction = () => {
       setIsEndingSoon(diff > 0 && diff <= 5 * 60 * 1000);
 
       if (diff <= 0) {
-        setTimeRemaining("Auction Ended");
+        setTimeRemaining(t("auction.ended"));
         return;
       }
 
@@ -296,7 +298,7 @@ const Auction = () => {
 
     const onAuctionEnded = () => {
       setIsAuctionEnded(true);
-      setTimeRemaining("Auction Ended");
+      setTimeRemaining(t("auction.ended"));
       toast("Auction ended", {
         description: "This auction is now closed.",
       });
@@ -354,11 +356,11 @@ const Auction = () => {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight">Live Auction</h1>
-          <p className="text-muted-foreground">View bids on your vehicle transport request</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("auction.title")}</h1>
+          <p className="text-muted-foreground">{t("auction.subtitle")}</p>
         </div>
         <Badge variant={isSocketConnected ? "default" : "secondary"}>
-          {isSocketConnected ? "Live" : "Offline"}
+          {isSocketConnected ? t("auction.status.live") : t("auction.status.offline")}
         </Badge>
       </div>
 
@@ -447,7 +449,7 @@ const Auction = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Pickup Location</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t("auction.pickupLocation")}</p>
                   <p className="text-sm font-medium">
                     {auctionData.pickupLocation.address}
                   </p>
@@ -456,11 +458,11 @@ const Auction = () => {
                     {auctionData.pickupLocation.zipCode}
                   </p>
                   {auctionData.pickupLocation.note && (
-                    <p className="text-sm text-muted-foreground">Note: {auctionData.pickupLocation.note}</p>
+                    <p className="text-sm text-muted-foreground">{t("auction.note")}: {auctionData.pickupLocation.note}</p>
                   )}
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Delivery Location</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t("auction.deliveryLocation")}</p>
                   <p className="text-sm font-medium">
                     {auctionData.deliveryLocation.address}
                   </p>
@@ -469,7 +471,7 @@ const Auction = () => {
                     {auctionData.deliveryLocation.zipCode}
                   </p>
                   {auctionData.deliveryLocation.note && (
-                    <p className="text-sm text-muted-foreground">Note: {auctionData.deliveryLocation.note}</p>
+                    <p className="text-sm text-muted-foreground">{t("auction.note")}: {auctionData.deliveryLocation.note}</p>
                   )}
                 </div>
               </div>
@@ -485,13 +487,13 @@ const Auction = () => {
                 auctionData.vehicleDetails.note) && (
                 <div className="flex flex-wrap items-center gap-2">
                   {auctionData.vehicleDetails.isAccidented === true && (
-                    <Badge variant="secondary">Accidented</Badge>
+                    <Badge variant="secondary">{t("auction.accidented")}</Badge>
                   )}
                   {auctionData.vehicleDetails.keysAvailable != null && (
                     <Badge
                       variant={auctionData.vehicleDetails.keysAvailable ? "default" : "secondary"}
                     >
-                      {auctionData.vehicleDetails.keysAvailable ? "Keys" : "No Keys"}
+                      {auctionData.vehicleDetails.keysAvailable ? t("auction.keys") : t("auction.noKeys")}
                     </Badge>
                   )}
                   {auctionData.vehicleDetails.color && (
@@ -500,7 +502,7 @@ const Auction = () => {
                   {auctionData.vehicleDetails.note && (
                     <Badge variant="secondary" className="max-w-full">
                       <span className="truncate" title={auctionData.vehicleDetails.note}>
-                        Note: {auctionData.vehicleDetails.note}
+                        {t("auction.note")}: {auctionData.vehicleDetails.note}
                       </span>
                     </Badge>
                   )}
@@ -527,17 +529,17 @@ const Auction = () => {
               <Separator />
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground mb-1">Distance</p>
+                  <p className="text-muted-foreground mb-1">{t("auction.distance")}</p>
                   <p className="font-medium">{auctionData.distance.toLocaleString()} km</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground mb-1">Pickup Window</p>
+                  <p className="text-muted-foreground mb-1">{t("auction.pickupWindow")}</p>
                   <p className="font-medium">
                     {format(pickupStart, "MMM d")} - {format(pickupEnd, "MMM d")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground mb-1">Delivery Deadline</p>
+                  <p className="text-muted-foreground mb-1">{t("auction.deliveryDeadline")}</p>
                   <p className="font-medium">
                     {format(deliveryDeadline, "MMM d, yyyy")}
                   </p>
@@ -551,10 +553,10 @@ const Auction = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Gavel className="h-5 w-5" />
-                Bid History
+                {t("auction.bidHistory")}
               </CardTitle>
               <CardDescription>
-                All bids placed on this request (lowest bid wins - sorted by amount)
+                {t("auction.bidDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -563,12 +565,12 @@ const Auction = () => {
                   {isBidsLoading ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <Gavel className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>Loading bids...</p>
+                      <p>{t("auction.loadingBids")}</p>
                     </div>
                   ) : bids.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <Gavel className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No bids yet. Waiting for transporters to place bids...</p>
+                      <p>{t("auction.noBids")}</p>
                     </div>
                   ) : (
                     bids.map((bid, index) => (
@@ -616,13 +618,13 @@ const Auction = () => {
                             className="ml-4"
                             disabled={acceptingBidId != null || isAuctionEnded}
                           >
-                            {acceptingBidId === bid._id ? "Selecting..." : "Select winner"}
+                            {acceptingBidId === bid._id ? t("auction.selecting") : t("auction.selectWinner")}
                           </Button>
                         )}
                         {index === 0 && (
                           <Badge variant="default" className="flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3" />
-                            Lowest
+                            {t("auction.lowest")}
                           </Badge>
                         )}
                       </motion.div>
@@ -647,7 +649,7 @@ const Auction = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                Time Remaining
+                {t("auction.timeRemaining")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -662,7 +664,7 @@ const Auction = () => {
                   {timeRemaining}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Auction ends: {format(auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
+                  {t("auction.auctionEnds")}: {format(auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
                 </p>
               </div>
             </CardContent>
@@ -674,7 +676,7 @@ const Auction = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5" />
-                  Instant Accept Price
+                  {t("auction.instantAcceptPrice")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -682,7 +684,7 @@ const Auction = () => {
                   ${instantAcceptPrice.toLocaleString()}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  If a transporter bids this amount, the auction will end immediately
+                  {t("auction.instantAcceptDescription")}
                 </p>
               </CardContent>
             </Card>
@@ -694,10 +696,10 @@ const Auction = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
-                  Route Map
+                  {t("auction.routeMap")}
                 </CardTitle>
                 <CardDescription>
-                  Pickup and delivery locations for this shipment
+                  {t("auction.routeMapDescription")}
                 </CardDescription>
               </CardHeader>
               <CardContent>

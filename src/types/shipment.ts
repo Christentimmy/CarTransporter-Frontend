@@ -57,8 +57,8 @@ export const shipmentFormSchema = z.object({
   // Step 5: Photos
   photos: z
     .array(z.instanceof(File))
-    .min(1, "At least one photo is required")
-    .max(10, "Maximum 10 photos allowed"),
+    .max(10, "Maximum 10 photos allowed")
+    .optional(),
 });
 
 export type ShipmentFormValues = z.infer<typeof shipmentFormSchema>;

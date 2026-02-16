@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Truck,
@@ -164,6 +165,7 @@ function normalizeBid(payload: unknown) {
 }
 
 const Auction = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -258,16 +260,16 @@ const Auction = () => {
     };
 
     const onBidError = (payload: BidErrorPayload) => {
-      toast.error(payload.message ?? "Bid failed", {
+      toast.error(payload.message ?? t("auction.toast.bidFailed"), {
         style: { background: "#ef4444", color: "#fff" },
       });
     };
 
     const onAuctionEnded = () => {
       setIsAuctionEnded(true);
-      setTimeRemaining("Auction Ended");
-      toast("Auction ended", {
-        description: "Bidding is now closed.",
+      setTimeRemaining(t("auction.ended"));
+      toast(t("auction.toast.endedTitle"), {
+        description: t("auction.toast.endedDescription"),
       });
     };
 
@@ -302,7 +304,7 @@ const Auction = () => {
   // Calculate time remaining
   useEffect(() => {
     if (isAuctionEnded) {
-      setTimeRemaining("Auction Ended");
+      setTimeRemaining(t("auction.ended"));
       setIsEndingSoon(false);
       return;
     }
@@ -314,7 +316,7 @@ const Auction = () => {
       setIsEndingSoon(diff > 0 && diff <= 5 * 60 * 1000);
 
       if (diff <= 0) {
-        setTimeRemaining("Auction Ended");
+        setTimeRemaining(t("auction.ended"));
         return;
       }
 
@@ -339,20 +341,20 @@ const Auction = () => {
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) {
-      toast.error("Missing shipment id");
+      toast.error(t("auction.toast.missingShipmentId"));
       return;
     }
     if (!bidAmount) return;
 
     const amount = Number(bidAmount);
     if (!Number.isFinite(amount) || amount <= 0) {
-      toast.error("Enter a valid bid amount");
+      toast.error(t("auction.toast.enterValidBid"));
       return;
     }
 
     const socket = getAuctionSocket();
     if (!socket) {
-      toast.error("Failed to connect to auction server");
+      toast.error(t("auction.toast.connectionFailed"));
       return;
     }
 
@@ -398,11 +400,11 @@ const Auction = () => {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight">Live Auction</h1>
-          <p className="text-muted-foreground">Bid on this vehicle transport request</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("auction.title")}</h1>
+          <p className="text-muted-foreground">{t("auction.subtitleTransporter")}</p>
         </div>
         <Badge variant={isSocketConnected ? "default" : "secondary"} className="shrink-0">
-          {isSocketConnected ? "Live" : "Connecting…"}
+          {isSocketConnected ? t("auction.status.live") : t("auction.status.connecting")}
         </Badge>
       </div>
 
@@ -417,7 +419,7 @@ const Auction = () => {
                   <div className="aspect-video w-full">
                     <img
                       src={auctionData.photos[currentPhotoIndex]}
-                      alt={`Vehicle photo ${currentPhotoIndex + 1}`}
+                      alt={t("auction.vehiclePhotoAlt", { index: currentPhotoIndex + 1 })}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -458,7 +460,7 @@ const Auction = () => {
                     className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white border-0"
                     onClick={() => window.open(auctionData.photos[currentPhotoIndex], '_blank')}
                   >
-                    View Full Size
+                    {t("auction.viewFullSize")}
                   </Button>
                 </div>
               </CardContent>
@@ -482,7 +484,7 @@ const Auction = () => {
                       variant={(auctionData.vehicleDetails.isRunning ?? true) ? "default" : "secondary"}
                       className="mt-2"
                     >
-                      {(auctionData.vehicleDetails.isRunning ?? true) ? "Running" : "Not Running"}
+                      {(auctionData.vehicleDetails.isRunning ?? true) ? t("auction.running") : t("auction.notRunning")}
                     </Badge>
                   </CardDescription>
                 </div>
@@ -491,7 +493,7 @@ const Auction = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Pickup Location</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t("auction.pickupLocation")}</p>
                   <p className="text-sm font-medium">
                     {auctionData.pickupLocation.address}
                   </p>
@@ -500,11 +502,11 @@ const Auction = () => {
                     {auctionData.pickupLocation.zipCode}
                   </p>
                   {auctionData.pickupLocation.note && (
-                    <p className="text-sm text-muted-foreground">Note: {auctionData.pickupLocation.note}</p>
+                    <p className="text-sm text-muted-foreground">{t("auction.note")}: {auctionData.pickupLocation.note}</p>
                   )}
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Delivery Location</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t("auction.deliveryLocation")}</p>
                   <p className="text-sm font-medium">
                     {auctionData.deliveryLocation.address}
                   </p>
@@ -513,7 +515,7 @@ const Auction = () => {
                     {auctionData.deliveryLocation.zipCode}
                   </p>
                   {auctionData.deliveryLocation.note && (
-                    <p className="text-sm text-muted-foreground">Note: {auctionData.deliveryLocation.note}</p>
+                    <p className="text-sm text-muted-foreground">{t("auction.note")}: {auctionData.deliveryLocation.note}</p>
                   )}
                 </div>
               </div>
@@ -529,13 +531,13 @@ const Auction = () => {
                 auctionData.vehicleDetails.note) && (
                 <div className="flex flex-wrap items-center gap-2">
                   {auctionData.vehicleDetails.isAccidented === true && (
-                    <Badge variant="secondary">Accidented</Badge>
+                    <Badge variant="secondary">{t("auction.accidented")}</Badge>
                   )}
                   {auctionData.vehicleDetails.keysAvailable != null && (
                     <Badge
                       variant={auctionData.vehicleDetails.keysAvailable ? "default" : "secondary"}
                     >
-                      {auctionData.vehicleDetails.keysAvailable ? "Keys" : "No Keys"}
+                      {auctionData.vehicleDetails.keysAvailable ? t("auction.keys") : t("auction.noKeys")}
                     </Badge>
                   )}
                   {auctionData.vehicleDetails.color && (
@@ -544,7 +546,7 @@ const Auction = () => {
                   {auctionData.vehicleDetails.note && (
                     <Badge variant="secondary" className="max-w-full">
                       <span className="truncate" title={auctionData.vehicleDetails.note}>
-                        Note: {auctionData.vehicleDetails.note}
+                        {t("auction.note")}: {auctionData.vehicleDetails.note}
                       </span>
                     </Badge>
                   )}
@@ -571,17 +573,17 @@ const Auction = () => {
               <Separator />
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground mb-1">Distance</p>
+                  <p className="text-muted-foreground mb-1">{t("auction.distance")}</p>
                   <p className="font-medium">{auctionData.distance.toLocaleString()} km</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground mb-1">Pickup Window</p>
+                  <p className="text-muted-foreground mb-1">{t("auction.pickupWindow")}</p>
                   <p className="font-medium">
                     {format(pickupStart, "MMM d")} - {format(pickupEnd, "MMM d")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground mb-1">Delivery Deadline</p>
+                  <p className="text-muted-foreground mb-1">{t("auction.deliveryDeadline")}</p>
                   <p className="font-medium">
                     {format(deliveryDeadline, "MMM d, yyyy")}
                   </p>
@@ -595,10 +597,10 @@ const Auction = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Gavel className="h-5 w-5" />
-                Bid History
+                {t("auction.bidHistory")}
               </CardTitle>
               <CardDescription>
-                All bids placed on this request (lowest bid wins - sorted by amount)
+                {t("auction.bidDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -607,7 +609,7 @@ const Auction = () => {
                   {bids.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <Gavel className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No bids yet. Be the first to bid!</p>
+                      <p>{t("auction.noBidsTransporter")}</p>
                     </div>
                   ) : (
                     bids.map((bid, index) => (
@@ -638,9 +640,6 @@ const Auction = () => {
                             <p className="font-semibold">
                               ${bid.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </p>
-                              {/* <p className="text-sm text-muted-foreground">
-                                {bid.bidder.company_name}
-                              </p> */}
                             <p className="text-xs text-muted-foreground">
                               {formatDistanceToNow(bid.placedAt, { addSuffix: true })}
                             </p>
@@ -649,7 +648,7 @@ const Auction = () => {
                         {index === 0 && (
                           <Badge variant="default" className="flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3" />
-                            Lowest
+                            {t("auction.lowest")}
                           </Badge>
                         )}
                       </motion.div>
@@ -674,7 +673,7 @@ const Auction = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                Time Remaining
+                {t("auction.timeRemaining")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -689,7 +688,7 @@ const Auction = () => {
                   {timeRemaining}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Auction ends: {format(auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
+                  {t("auction.auctionEnds")}: {format(auctionEndTime, "MMM d, yyyy 'at' h:mm a")}
                 </p>
               </div>
             </CardContent>
@@ -701,7 +700,7 @@ const Auction = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5" />
-                  Instant Accept Price
+                  {t("auction.instantAcceptPrice")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -709,7 +708,7 @@ const Auction = () => {
                   ${instantAcceptPrice.toLocaleString()}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Bid this amount to instantly win the request
+                  {t("auction.instantAcceptDescriptionTransporter")}
                 </p>
               </CardContent>
             </Card>
@@ -718,29 +717,30 @@ const Auction = () => {
           {/* Bid Form */}
           <Card>
             <CardHeader>
-              <CardTitle>Place Your Bid</CardTitle>
+              <CardTitle>{t("auction.placeYourBid")}</CardTitle>
               <CardDescription>
-                Enter your bid amount (must be higher than current highest bid)
+                {t("auction.placeYourBidDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleBidSubmit} className="space-y-4">
+              <form onSubmit={handleBidSubmit} className="space-y-4" autoComplete="off">
                 <div className="space-y-2">
-                  <Label htmlFor="bid-amount">Bid Amount ($)</Label>
+                  <Label htmlFor="bid-amount">{t("auction.bidAmount")}</Label>
                   <Input
                     id="bid-amount"
                     type="number"
                     value={bidAmount}
                     onChange={(e) => setBidAmount(e.target.value)}
-                    placeholder="Enter bid amount"
+                    placeholder={t("auction.bidPlaceholder")}
                     max={lowestBid > 0 ? lowestBid - 0.01 : undefined}
                     step="0.01"
+                    autoComplete="off"
                     required
                     disabled={!getTimeRemaining()}
                   />
                   {lowestBid > 0 && (
                     <p className="text-xs text-muted-foreground">
-                      Your bid must be lower than ${lowestBid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} to win
+                      {t("auction.bidMustBeLowerThan", { amount: lowestBid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) })}
                     </p>
                   )}
                 </div>
@@ -751,16 +751,16 @@ const Auction = () => {
                   disabled={isBidButtonDisabled}
                 >
                   <Gavel className="mr-2 h-4 w-4" />
-                  Submit Bid
+                  {t("auction.submitBid")}
                 </Button>
                 {isDuplicateBid && (
                   <p className="text-xs text-center text-muted-foreground">
-                    You already placed this exact bid amount.
+                    {t("auction.duplicateBid")}
                   </p>
                 )}
                 {!getTimeRemaining() && (
                   <p className="text-xs text-center text-muted-foreground">
-                    This auction has ended
+                    {t("auction.thisAuctionEnded")}
                   </p>
                 )}
               </form>
@@ -772,10 +772,10 @@ const Auction = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
-                Route Map
+                {t("auction.routeMap")}
               </CardTitle>
               <CardDescription>
-                Pickup and delivery locations for this shipment
+                {t("auction.routeMapDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
