@@ -48,6 +48,33 @@ export const getListShipments = async (
   return response.json();
 };
 
+export interface CancelShipmentResponse {
+  message?: string;
+  data?: unknown;
+}
+
+export const cancelShipment = async (
+  shipmentId: string,
+): Promise<CancelShipmentResponse> => {
+  const response = await fetch(
+    `${API_ENDPOINTS.USER.CANCEL_SHIPMENT}/${shipmentId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to cancel shipment");
+  }
+
+  return response.json().catch(() => ({}));
+};
+
 export interface UpdateShipmentStatusRequest {
   shipmentId: string;
   status: string;

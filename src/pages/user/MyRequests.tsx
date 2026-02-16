@@ -45,7 +45,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { getMyShipments, processPayment } from "@/services/shipmentService";
+import { cancelShipment, getMyShipments, processPayment } from "@/services/shipmentService";
 import type { MyShipment } from "@/types/shipment";
 import { useTranslation } from "react-i18next";
 
@@ -105,6 +105,7 @@ const MyRequests = () => {
     useState<MyShipment | null>(null);
   const [isPaymentReady, setIsPaymentReady] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [cancellingShipmentId, setCancellingShipmentId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const limit = 10;
 
@@ -360,6 +361,31 @@ const MyRequests = () => {
       );
     } finally {
       setIsProcessingPayment(false);
+    }
+  };
+
+  const handleCancelShipment = async (shipmentId: string) => {
+    if (cancellingShipmentId) return;
+
+    const confirmed = window.confirm("Cancel this shipment?");
+    if (!confirmed) return;
+
+    try {
+      setCancellingShipmentId(shipmentId);
+      const res = await cancelShipment(shipmentId);
+      toast.success(res.message ?? "Shipment cancelled", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["my-shipments"] });
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to cancel shipment",
+        {
+          style: { background: "#ef4444", color: "#fff" },
+        },
+      );
+    } finally {
+      setCancellingShipmentId(null);
     }
   };
 
@@ -690,18 +716,32 @@ const MyRequests = () => {
 
                       {request.status === "ASSIGNED" &&
                         request.escrowStatus !== "PAID_IN_ESCROW" && (
-                          <Button
-                            type="button"
-                            variant="hero"
-                            size="sm"
-                            className="w-full sm:w-auto shrink-0"
-                            onClick={() => {
-                              setSelectedShipmentForPayment(request);
-                              setIsPayDialogOpen(true);
-                            }}
-                          >
-                            {t("myRequests.card.payNow")}
-                          </Button>
+                          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                            <Button
+                              type="button"
+                              variant="hero"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => {
+                                setSelectedShipmentForPayment(request);
+                                setIsPayDialogOpen(true);
+                              }}
+                            >
+                              {t("myRequests.card.payNow")}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              disabled={cancellingShipmentId === request._id}
+                              onClick={() => handleCancelShipment(request._id)}
+                            >
+                              {cancellingShipmentId === request._id
+                                ? t("myRequests.card.cancelling")
+                                : t("myRequests.card.cancel")}
+                            </Button>
+                          </div>
                         )}
                     </div>
                   </CardHeader>

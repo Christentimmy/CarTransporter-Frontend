@@ -47,6 +47,8 @@
     "thisAuctionEnded": "This auction has ended",
     "toast": {
       "bidFailed": "Bid failed",
+      "bidAccepted": "Bid accepted",
+      "acceptFailed": "Failed to accept bid",
       "endedTitle": "Auction ended",
       "endedDescription": "Bidding is now closed.",
       "missingShipmentId": "Missing shipment id",
@@ -476,6 +478,8 @@
       "auctionEnds": "Auction Ends",
       "viewLiveAuction": "View Live Auction",
       "payNow": "Pay now",
+      "cancel": "Cancel",
+      "cancelling": "Cancelling...",
       "color": "Color",
       "drivetrain": "Drivetrain",
       "weight": "kg",

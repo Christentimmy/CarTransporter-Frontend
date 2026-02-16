@@ -47,6 +47,8 @@
     "thisAuctionEnded": "Cette enchère est terminée",
     "toast": {
       "bidFailed": "Échec de l'offre",
+      "bidAccepted": "Offre acceptée",
+      "acceptFailed": "Échec de l'acceptation de l'offre",
       "endedTitle": "Enchère terminée",
       "endedDescription": "Les enchères sont maintenant fermées.",
       "missingShipmentId": "Identifiant d'expédition manquant",
@@ -476,6 +478,8 @@
       "auctionEnds": "Fin de l'enchère",
       "viewLiveAuction": "Voir l'enchère en direct",
       "payNow": "Payer maintenant",
+      "cancel": "Annuler",
+      "cancelling": "Annulation...",
       "color": "Couleur",
       "drivetrain": "Transmission",
       "weight": "kg",
