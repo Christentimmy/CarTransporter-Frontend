@@ -613,24 +613,33 @@ const Auction = () => {
                     </div>
                   ) : (
                     bids.map((bid, index) => (
+                      (() => {
+                        const isLowest = index === 0;
+
+                        const rowClassName = isLowest
+                          ? "bg-blue-500/10 border-blue-500/30"
+                          : "bg-green-500/10 border-green-500/30";
+                        const iconClassName = isLowest
+                          ? "bg-blue-600 text-white"
+                          : "bg-green-600 text-white";
+
+                        return (
                       <motion.div
                         key={bid._id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.05 }}
                         className={`flex items-center justify-between p-4 rounded-lg border ${
-                          index === 0 ? "bg-primary/5 border-primary/30" : "bg-card"
+                          rowClassName
                         }`}
                       >
                         <div className="flex items-center gap-4">
                           <div
                             className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                              index === 0
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted text-muted-foreground"
+                              iconClassName
                             }`}
                           >
-                            {index === 0 ? (
+                            {isLowest ? (
                               <TrendingDown className="h-5 w-5" />
                             ) : (
                               <span className="text-sm font-bold">#{index + 1}</span>
@@ -645,13 +654,15 @@ const Auction = () => {
                             </p>
                           </div>
                         </div>
-                        {index === 0 && (
+                        {isLowest && (
                           <Badge variant="default" className="flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3" />
                             {t("auction.lowest")}
                           </Badge>
                         )}
                       </motion.div>
+                        );
+                      })()
                     ))
                   )}
                 </div>
