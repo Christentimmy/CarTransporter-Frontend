@@ -577,12 +577,8 @@ const Auction = () => {
                       (() => {
                         const isLowest = index === 0;
 
-                        const rowClassName = isLowest
-                          ? "bg-blue-500/10 border-blue-500/30"
-                          : "bg-green-500/10 border-green-500/30";
-                        const iconClassName = isLowest
-                          ? "bg-blue-600 text-white"
-                          : "bg-green-600 text-white";
+                        const rowClassName = "bg-green-500/10 border-green-500/30";
+                        const iconClassName = "bg-green-600 text-white";
 
                         return (
                       <motion.div

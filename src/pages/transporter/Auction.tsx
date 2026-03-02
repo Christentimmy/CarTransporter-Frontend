@@ -615,11 +615,13 @@ const Auction = () => {
                     bids.map((bid, index) => (
                       (() => {
                         const isLowest = index === 0;
+                        const isMyLowestBid =
+                          isLowest && myUserId != null && bid.bidder?._id === myUserId;
 
-                        const rowClassName = isLowest
+                        const rowClassName = isMyLowestBid
                           ? "bg-blue-500/10 border-blue-500/30"
                           : "bg-green-500/10 border-green-500/30";
-                        const iconClassName = isLowest
+                        const iconClassName = isMyLowestBid
                           ? "bg-blue-600 text-white"
                           : "bg-green-600 text-white";
 
