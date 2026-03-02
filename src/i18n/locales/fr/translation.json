@@ -467,8 +467,6 @@
       "somethingWrong": "Une erreur s'est produite"
     },
     "card": {
-      "from": "De",
-      "to": "À",
       "note": "Note : ",
       "pickup": "Prise en charge :",
       "deliveryDeadline": "Date limite de livraison",
@@ -480,10 +478,11 @@
       "payNow": "Payer maintenant",
       "cancel": "Annuler",
       "cancelling": "Annulation...",
-      "color": "Couleur",
-      "drivetrain": "Transmission",
-      "weight": "kg",
-      "dimensions": "m",
+      "currentWinningBid": "Offre actuellement gagnante",
+      "winningBid": "Offre gagnante",
+      "from": "De :",
+      "to": "À :",
+      "dimensions": "dimensions",
       "accidented": "Accidenté",
       "keysAvailable": "Clés disponibles",
       "noKeys": "Pas de clés"

@@ -480,10 +480,12 @@
       "payNow": "Pay now",
       "cancel": "Cancel",
       "cancelling": "Cancelling...",
+      "currentWinningBid": "Current winning bid",
+      "winningBid": "Winning bid",
       "color": "Color",
       "drivetrain": "Drivetrain",
       "weight": "kg",
-      "dimensions": "m",
+      "dimensions": "dimensions",
       "accidented": "Accidented",
       "keysAvailable": "Keys Available",
       "noKeys": "No Keys"

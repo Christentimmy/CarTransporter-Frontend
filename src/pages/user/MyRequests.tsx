@@ -790,6 +790,18 @@ const MyRequests = () => {
                           </p>
                         </div>
                       )}
+                      {request.currentBid?.amount != null && (
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">
+                            {request.status === "LIVE"
+                              ? t("myRequests.card.currentWinningBid")
+                              : t("myRequests.card.winningBid")}
+                          </p>
+                          <p className="text-xs sm:text-sm font-medium">
+                            ${request.currentBid.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </p>
+                        </div>
+                      )}
                       {request.status === "DRAFT" &&
                         request.auctionStartedAt && (
                           <div className="min-w-0 col-span-2 md:col-span-1">
