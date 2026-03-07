@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Truck, ArrowLeft, Loader2, Globe } from "lucide-react";
+import { ArrowLeft, Loader2, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -120,9 +120,12 @@ const Register = () => {
           <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-8 shadow-2xl">
             {/* Logo */}
             <div className="flex items-center justify-center gap-2 mb-8">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center">
-                <Truck className="w-6 h-6 text-primary" />
-              </div>
+              <img
+                src="/logo.png"
+                alt="BID4TOW"
+                className="w-12 h-12 object-contain"
+                draggable={false}
+              />
               <span className="font-display text-2xl font-bold">
                 BID<span className="text-primary">4</span>TOW
               </span>

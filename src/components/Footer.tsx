@@ -1,4 +1,4 @@
-import { Truck, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export const Footer = () => {
@@ -36,9 +36,12 @@ export const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <a href="#" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center">
-                <Truck className="w-5 h-5 text-primary" />
-              </div>
+              <img
+                src="/logo.png"
+                alt="BID4TOW"
+                className="w-11 h-11 object-contain"
+                draggable={false}
+              />
               <span className="font-display text-xl font-bold">
                 BID<span className="text-primary">4</span>TOW
               </span>

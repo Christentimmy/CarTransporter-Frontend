@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Truck } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
@@ -30,9 +30,12 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-              <Truck className="w-5 h-5 text-primary" />
-            </div>
+            <img
+              src="/logo.png"
+              alt="BID4TOW"
+              className="w-11 h-11 object-contain"
+              draggable={false}
+            />
             <span className="font-display text-xl font-bold">
                 BID<span className="text-primary">4</span>TOW
               </span>
