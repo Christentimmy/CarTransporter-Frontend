@@ -410,7 +410,7 @@ const TransporterMyRequests = () => {
             {t("myRequests.subtitle")}
           </p>
         </div>
-        <Link to="/user/post-request" className="w-full sm:w-auto shrink-0">
+        <Link to="/transporter/post-request" className="w-full sm:w-auto shrink-0">
           <Button variant="hero" className="w-full sm:w-auto" size="sm">
             <Plus className="mr-2 h-4 w-4 shrink-0" />
             {t("myRequests.newRequest")}
@@ -488,7 +488,7 @@ const TransporterMyRequests = () => {
                 : t("myRequests.empty.noRequests")}
             </p>
             {!searchQuery && statusFilter === "all" && (
-              <Link to="/user/post-request">
+              <Link to="/transporter/post-request">
                 <Button variant="hero">
                   <Plus className="mr-2 h-4 w-4" />
                   {t("myRequests.empty.createRequest")}
