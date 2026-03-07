@@ -2,62 +2,141 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import type { CreateShipmentLocation } from "@/types/shipment";
 
-const LOCATIONIQ_AUTOCOMPLETE_URL = "https://api.locationiq.com/v1/autocomplete";
-
-/** LocationIQ autocomplete result item (see https://docs.locationiq.com/docs/autocomplete) */
 interface LocationIqSuggestion {
   place_id: string;
-  lat: string;
-  lon: string;
   display_name: string;
-  display_place?: string;
-  display_address?: string;
-  address?: {
-    name?: string;
-    house_number?: string;
-    road?: string;
-    city?: string;
-    state?: string;
-    postcode?: string;
-    country?: string;
-  };
 }
 
-function suggestionToLocation(item: LocationIqSuggestion): CreateShipmentLocation {
-  const lat = parseFloat(item.lat);
-  const lon = parseFloat(item.lon);
-  const addr = item.address ?? {};
-  const countryNormalized = (addr.country ?? "").trim().toLowerCase();
-  const isNorthAmerica =
-    countryNormalized === "canada" ||
-    countryNormalized === "united states" ||
-    countryNormalized === "united states of america" ||
-    countryNormalized === "usa" ||
-    countryNormalized === "us";
+type GoogleMapsLike = {
+  maps: {
+    places: {
+      AutocompleteService: new () => {
+        getPlacePredictions: (
+          request: { input: string },
+          callback: (
+            predictions: Array<{ place_id: string; description: string }> | null,
+            status: unknown,
+          ) => void,
+        ) => void;
+      };
+      PlacesService: new (container: HTMLElement) => {
+        getDetails: (
+          request: {
+            placeId: string;
+            fields: string[];
+          },
+          callback: (
+            place: {
+              formatted_address?: string;
+              address_components?: Array<{
+                long_name: string;
+                short_name: string;
+                types: string[];
+              }>;
+              geometry?: { location?: { lat: () => number; lng: () => number } };
+            } | null,
+            status: unknown,
+          ) => void,
+        ) => void;
+      };
+      PlacesServiceStatus: Record<string, unknown>;
+    };
+  };
+};
 
-  const northAmericaAddress = isNorthAmerica
-    ? [addr.house_number, addr.road, addr.city, addr.state, addr.postcode]
-        .filter(Boolean)
-        .join(" ")
-        .replace(/\s+/g, " ")
-        .trim()
-    : "";
+declare global {
+  interface Window {
+    google?: GoogleMapsLike;
+  }
+}
 
-  const address =
-    northAmericaAddress ||
-    item.display_name ||
-    [addr.house_number, addr.road, addr.city, addr.state, addr.postcode, addr.country]
-      .filter(Boolean)
-      .join(", ");
+let googlePlacesScriptPromise: Promise<void> | null = null;
+
+function loadGooglePlacesScript(): Promise<void> {
+  if (typeof window === "undefined") return Promise.resolve();
+  if (window.google?.maps?.places) return Promise.resolve();
+  if (googlePlacesScriptPromise) return googlePlacesScriptPromise;
+
+  const apiKey =
+    (import.meta.env.VITE_GOOGLE_API_KEY as string | undefined) ||
+    (import.meta.env.GOOGLE_API_KEY as string | undefined);
+
+  if (!apiKey) {
+    googlePlacesScriptPromise = Promise.reject(
+      new Error("Missing Google Maps API key"),
+    );
+    return googlePlacesScriptPromise;
+  }
+
+  googlePlacesScriptPromise = new Promise<void>((resolve, reject) => {
+    const existing = document.querySelector(
+      'script[data-google-maps="places"]',
+    ) as HTMLScriptElement | null;
+
+    if (existing) {
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () =>
+        reject(new Error("Failed to load Google Maps script")),
+      );
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.dataset.googleMaps = "places";
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load Google Maps script"));
+    document.head.appendChild(script);
+  });
+
+  return googlePlacesScriptPromise;
+}
+
+function placeToLocation(place: {
+  formatted_address?: string;
+  address_components?: Array<{
+    long_name: string;
+    short_name: string;
+    types: string[];
+  }>;
+  geometry?: { location?: { lat: () => number; lng: () => number } };
+}): CreateShipmentLocation {
+  const components = place.address_components ?? [];
+
+  const getComponent = (type: string) =>
+    components.find((c) => c.types.includes(type));
+
+  const streetNumber = getComponent("street_number")?.long_name;
+  const route = getComponent("route")?.long_name;
+  const postalCode = getComponent("postal_code")?.long_name;
+  const locality =
+    getComponent("locality")?.long_name ||
+    getComponent("postal_town")?.long_name ||
+    getComponent("sublocality")?.long_name;
+  const admin1 =
+    getComponent("administrative_area_level_1")?.short_name ||
+    getComponent("administrative_area_level_1")?.long_name;
+  const country = getComponent("country")?.long_name;
+
+  const lat = place.geometry?.location?.lat?.() ?? 0;
+  const lng = place.geometry?.location?.lng?.() ?? 0;
+
+  const fallbackAddressParts = [streetNumber, route, locality, admin1, postalCode, country]
+    .filter(Boolean)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
 
   return {
     type: "Point",
-    coordinates: [lon, lat],
-    address: address || "",
-    city: addr.city || "",
-    state: addr.state || "",
-    country: addr.country || "",
-    zipCode: addr.postcode || "",
+    coordinates: [lng, lat],
+    address: (place.formatted_address || fallbackAddressParts || "").trim(),
+    city: (locality || "").trim(),
+    state: (admin1 || "").trim(),
+    country: (country || "").trim(),
+    zipCode: (postalCode || "").trim(),
   };
 }
 
@@ -93,32 +172,56 @@ export function PlacesAutocomplete({
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const detachedPlacesContainerRef = useRef<HTMLElement | null>(null);
+  const servicesRef = useRef<{
+    autocomplete: InstanceType<GoogleMapsLike["maps"]["places"]["AutocompleteService"]>;
+    places: InstanceType<GoogleMapsLike["maps"]["places"]["PlacesService"]>;
+  } | null>(null);
   /** Skip opening dropdown on the next fetch result (user just selected an option) */
   const skipNextOpenRef = useRef(false);
 
-  const token = import.meta.env.VITE_LOCATIONIQ_ACCESS_TOKEN as string | undefined;
   const debouncedQuery = useDebounce(value.trim(), 300);
 
   const fetchSuggestions = useCallback(
     async (q: string) => {
-      if (!token || !q || q.length < 2) {
+      if (!q || q.length < 2) {
         setSuggestions([]);
         return;
       }
+
       setLoading(true);
       try {
-        const params = new URLSearchParams({
-          key: token,
-          q,
-          limit: "10",
-        });
-        const res = await fetch(`${LOCATIONIQ_AUTOCOMPLETE_URL}?${params}`);
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error ?? "Autocomplete failed");
+        await loadGooglePlacesScript();
+        if (!window.google?.maps?.places) throw new Error("Google Places not available");
+
+        if (!detachedPlacesContainerRef.current) {
+          detachedPlacesContainerRef.current = document.createElement("div");
         }
-        const data: LocationIqSuggestion[] = await res.json();
-        setSuggestions(Array.isArray(data) ? data : []);
+
+        if (!servicesRef.current) {
+          servicesRef.current = {
+            autocomplete: new window.google.maps.places.AutocompleteService(),
+            places: new window.google.maps.places.PlacesService(
+              detachedPlacesContainerRef.current,
+            ),
+          };
+        }
+
+        const predictions = await new Promise<
+          Array<{ place_id: string; description: string }>
+        >((resolve) => {
+          servicesRef.current?.autocomplete.getPlacePredictions(
+            { input: q },
+            (p) => resolve(Array.isArray(p) ? p : []),
+          );
+        });
+
+        setSuggestions(
+          predictions.slice(0, 10).map((p) => ({
+            place_id: p.place_id,
+            display_name: p.description,
+          })),
+        );
         if (!skipNextOpenRef.current) {
           setIsOpen(true);
         } else {
@@ -130,7 +233,7 @@ export function PlacesAutocomplete({
         setLoading(false);
       }
     },
-    [token]
+    []
   );
 
   useEffect(() => {
@@ -147,13 +250,57 @@ export function PlacesAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelect = (item: LocationIqSuggestion) => {
+  const handleSelect = async (item: LocationIqSuggestion) => {
     skipNextOpenRef.current = true;
-    const location = suggestionToLocation(item);
-    onChange(location.address ?? item.display_name);
-    onPlaceSelect(location);
-    setSuggestions([]);
     setIsOpen(false);
+    setSuggestions([]);
+    onChange(item.display_name);
+
+    try {
+      setLoading(true);
+      await loadGooglePlacesScript();
+      if (!window.google?.maps?.places) throw new Error("Google Places not available");
+
+      if (!detachedPlacesContainerRef.current) {
+        detachedPlacesContainerRef.current = document.createElement("div");
+      }
+
+      if (!servicesRef.current) {
+        servicesRef.current = {
+          autocomplete: new window.google.maps.places.AutocompleteService(),
+          places: new window.google.maps.places.PlacesService(
+            detachedPlacesContainerRef.current,
+          ),
+        };
+      }
+
+      const place = await new Promise<any>((resolve, reject) => {
+        servicesRef.current?.places.getDetails(
+          {
+            placeId: item.place_id,
+            fields: ["formatted_address", "address_components", "geometry"],
+          },
+          (p, status) => {
+            const ok = status === "OK" || status === 0;
+
+            if (!ok || !p) {
+              reject(new Error("Place details not available"));
+              return;
+            }
+            resolve(p as any);
+          },
+        );
+      });
+
+      const location = placeToLocation(place as any);
+      if (!location.address) location.address = item.display_name;
+      onChange(location.address);
+      onPlaceSelect(location);
+    } catch {
+      // Ignore; user still has typed value
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -186,7 +333,9 @@ export function PlacesAutocomplete({
               key={item.place_id}
               role="option"
               className="cursor-pointer px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none"
-              onMouseDown={() => handleSelect(item)}
+              onMouseDown={() => {
+                void handleSelect(item);
+              }}
             >
               {item.display_name}
             </li>

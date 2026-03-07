@@ -389,6 +389,8 @@
         "description": "Configurez le fonctionnement des enchères. Choisissez la date et l'heure de début et de fin.",
         "startTimeLabel": "Heure de début de l'enchère (date & heure) *",
         "endTimeLabel": "Heure de fin de l'enchère (date & heure) *",
+        "durationLabel": "Durée de l'enchère",
+        "durationPlaceholder": "Choisissez la durée de l'enchère",
         "duration": "Durée : {{hours}} heures",
         "instantAcceptLabel": "Prix d'acceptation immédiate ($) - Optionnel",
         "instantAcceptPlaceholder": "Prix d'achat immédiat"

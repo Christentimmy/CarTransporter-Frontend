@@ -389,6 +389,8 @@
         "description": "Configure how the bidding will work. Pick date and time for start and end.",
         "startTimeLabel": "Auction Start Time (date & time) *",
         "endTimeLabel": "Auction End Time (date & time) *",
+        "durationLabel": "Auction duration",
+        "durationPlaceholder": "Select how long the auction should run",
         "duration": "Duration: {{hours}} hours",
         "instantAcceptLabel": "Instant Accept Price ($) - Optional",
         "instantAcceptPlaceholder": "Buy it now price"
