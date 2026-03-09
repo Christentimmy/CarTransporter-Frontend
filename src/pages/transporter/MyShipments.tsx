@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  Truck,
   MapPin,
   Calendar,
   Package,
@@ -301,7 +300,12 @@ const MyShipments = () => {
                       <div className="flex-1">
                         <div className="flex items-start gap-4 mb-4">
                           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                            <Truck className="h-6 w-6 text-primary" />
+                            <img
+                              src="/logo.png"
+                              alt="BID4TOW"
+                              className="h-10 w-10 object-contain"
+                              draggable={false}
+                            />
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
