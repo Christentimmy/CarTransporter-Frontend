@@ -714,7 +714,8 @@
       "noKeys": "No Keys",
       "assignedDate": "Assigned Date",
       "deliveryDeadline": "Delivery Deadline",
-      "waitingPayment": "Waiting for client payment before you can update this shipment's status."
+      "waitingPayment": "Waiting for client payment before you can update this shipment's status.",
+      "updateStatus": "Update Status"
     },
     "statusDialog": {
       "title": "Update Shipment Status",

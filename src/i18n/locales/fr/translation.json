@@ -711,7 +711,8 @@
       "noKeys": "Pas de clés",
       "assignedDate": "Date d'assignation",
       "deliveryDeadline": "Date limite de livraison",
-      "waitingPayment": "En attente du paiement du client avant de pouvoir mettre à jour le statut de cette expédition."
+      "waitingPayment": "En attente du paiement du client avant de pouvoir mettre à jour le statut de cette expédition.",
+      "updateStatus": "Mettre à jour le statut"
     },
     "statusDialog": {
       "title": "Mettre à jour le statut de l'expédition",
