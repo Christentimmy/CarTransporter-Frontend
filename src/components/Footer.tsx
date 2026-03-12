@@ -51,22 +51,22 @@ export const Footer = () => {
             </p>
             <div className="space-y-2">
               <a
-                href="mailto:hello@bid4tow.com"
+                href="mailto:info@bid4tow.com"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Mail className="w-4 h-4" />
-                waiting@bid4tow.com
+                info@bid4tow.com
               </a>
-              <a
+              {/* <a
                 href="tel:+1234567890"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Phone className="w-4 h-4" />
                 +1 (234) coming soon
-              </a>
+              </a> */}
               <p className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4" />
-                Coming soon
+                Canada / USA
               </p>
             </div>
           </div>
