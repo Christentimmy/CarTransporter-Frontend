@@ -324,8 +324,8 @@ const Safety = () => {
                   <p className="text-sm text-muted-foreground mb-4">
                     {t("safety.contact.support.description")}
                   </p>
-                  <a href="mailto:safety@bid4tow.com" className="text-primary hover:underline">
-                    safety@bid4tow.com
+                  <a href="mailto:info@bid4tow.com" className="text-primary hover:underline">
+                    info@bid4tow.com
                   </a>
                 </CardContent>
               </Card>
