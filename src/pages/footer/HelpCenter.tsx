@@ -51,19 +51,6 @@ const HelpCenter = () => {
         t("helpCenter.categories.transporterGuide.articles.withdrawals")
       ],
       color: "bg-purple-500"
-    },
-    {
-      id: "support",
-      icon: Phone,
-      title: t("helpCenter.categories.support.title"),
-      description: t("helpCenter.categories.support.description"),
-      articles: [
-        t("helpCenter.categories.support.articles.contactSupport"),
-        t("helpCenter.categories.support.articles.reportIssue"),
-        t("helpCenter.categories.support.articles.disputeResolution"),
-        t("helpCenter.categories.support.articles.emergencyHelp")
-      ],
-      color: "bg-orange-500"
     }
   ];
 
@@ -126,7 +113,7 @@ const HelpCenter = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.map((category, index) => (
               <motion.div
                 key={index}
@@ -227,8 +214,8 @@ const HelpCenter = () => {
                   <p className="text-sm text-muted-foreground mb-4">
                     {t("helpCenter.contactSupport.email.description")}
                   </p>
-                  <a href="mailto:support@bid4tow.com" className="text-primary hover:underline">
-                    support@bid4tow.com
+                  <a href="mailto:info@bid4tow.com" className="text-primary hover:underline">
+                    info@bid4tow.com
                   </a>
                 </CardContent>
               </Card>
@@ -240,8 +227,8 @@ const HelpCenter = () => {
                   <p className="text-sm text-muted-foreground mb-4">
                     {t("helpCenter.contactSupport.phone.description")}
                   </p>
-                  <a href="tel:+1234567890" className="text-primary hover:underline">
-                    +1 (234) 000-0000
+                  <a href="tel:+1-514-616-9889" className="text-primary hover:underline">
+                    +1-514-616-9889
                   </a>
                 </CardContent>
               </Card>

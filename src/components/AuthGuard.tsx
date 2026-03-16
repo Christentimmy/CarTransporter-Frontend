@@ -20,12 +20,26 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
     const role = getAuthRole();
     const currentPath = window.location.pathname;
 
-    // Allow access to landing page without authentication
-    if (currentPath === "/") {
+    // Public routes that don't require authentication
+    const publicRoutes = [
+      "/",
+      "/login",
+      "/register",
+      "/verify-otp",
+      "/about-us",
+      "/help-center",
+      "/safety",
+      "/faq",
+      "/terms",
+      "/privacy"
+    ];
+
+    // Allow access to public routes without authentication
+    if (publicRoutes.includes(currentPath)) {
       return;
     }
 
-    // If no token and not on landing page, redirect to login
+    // If no token and not on public route, redirect to login
     if (!token) {
       navigate("/login");
       return;
