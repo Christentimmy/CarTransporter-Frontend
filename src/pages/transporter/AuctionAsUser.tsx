@@ -25,7 +25,10 @@ import {
   getAuctionSocket,
   joinAuction,
   disconnectAuctionSocket,
+  cancelShipment,
   type BidErrorPayload,
+  type CancelSuccessPayload,
+  type CancelErrorPayload,
 } from "@/services/auctionSocket";
 import type { ListShipmentItem } from "@/types/shipment";
 import { AuctionMap } from "@/components/AuctionMap";
@@ -172,6 +175,7 @@ const Auction = () => {
   const [acceptingBidId, setAcceptingBidId] = useState<string | null>(null);
   const [isAuctionEnded, setIsAuctionEnded] = useState(false);
   const [isEndingSoon, setIsEndingSoon] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const socketJoinedRef = useRef(false);
 
   const shipmentFromState = (location.state as { shipment?: ListShipmentItem } | null)?.shipment;
@@ -234,6 +238,12 @@ const Auction = () => {
     const end = auctionEndTime;
     const diff = end.getTime() - now.getTime();
     return diff > 0;
+  };
+
+  const handleCancelShipment = () => {
+    if (!id) return;
+    setIsCancelling(true);
+    cancelShipment(id);
   };
 
   useEffect(() => {
@@ -304,14 +314,33 @@ const Auction = () => {
       });
     };
 
+    const onCancelSuccess = (payload: CancelSuccessPayload) => {
+      setIsCancelling(false);
+      setIsAuctionEnded(true);
+      toast.success(payload.message ?? "Auction cancelled successfully", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+    };
+
+    const onCancelError = (payload: CancelErrorPayload) => {
+      setIsCancelling(false);
+      toast.error(payload.message ?? "Failed to cancel auction", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    };
+
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.off("new-bid");
     socket.off("bid-error");
     socket.off("auction-ended");
+    socket.off("cancel-success");
+    socket.off("cancel-error");
     socket.on("new-bid", onNewBid);
     socket.on("bid-error", onBidError);
     socket.on("auction-ended", onAuctionEnded);
+    socket.on("cancel-success", onCancelSuccess);
+    socket.on("cancel-error", onCancelError);
 
     if (!socketJoinedRef.current) {
       joinAuction(id);
@@ -324,6 +353,8 @@ const Auction = () => {
       socket.off("new-bid", onNewBid);
       socket.off("bid-error", onBidError);
       socket.off("auction-ended", onAuctionEnded);
+      socket.off("cancel-success", onCancelSuccess);
+      socket.off("cancel-error", onCancelError);
       disconnectAuctionSocket();
       socketJoinedRef.current = false;
     };
@@ -351,17 +382,30 @@ const Auction = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/transporter/my-post-requests")}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight">{t("auction.title")}</h1>
-          <p className="text-muted-foreground">{t("auction.subtitle")}</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/transporter/my-post-requests")}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">{t("auction.title")}</h1>
+            <p className="text-muted-foreground">{t("auction.subtitle")}</p>
+          </div>
         </div>
-        <Badge variant={isSocketConnected ? "default" : "secondary"}>
-          {isSocketConnected ? t("auction.status.live") : t("auction.status.offline")}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge variant={isSocketConnected ? "default" : "secondary"}>
+            {isSocketConnected ? t("auction.status.live") : t("auction.status.offline")}
+          </Badge>
+          {!isAuctionEnded && getTimeRemaining() && (
+            <Button 
+              variant="destructive" 
+              onClick={handleCancelShipment}
+              disabled={isCancelling}
+            >
+              {isCancelling ? t("auction.cancelling") : t("auction.cancel")}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

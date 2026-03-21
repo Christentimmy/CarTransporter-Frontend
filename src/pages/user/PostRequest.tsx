@@ -36,7 +36,7 @@ const PostRequest = () => {
 
   // Determine if we're in transporter module based on current path
   const isTransporterModule = location.pathname.startsWith('/transporter');
-  const redirectPath = isTransporterModule ? '/transporter/my-requests' : '/user/my-requests';
+  const redirectPath = isTransporterModule ? '/transporter/my-post-requests' : '/user/my-requests';
 
   // Pickup: address string for input + full location from Places (with coordinates)
   const [pickupAddress, setPickupAddress] = useState("");
@@ -682,7 +682,7 @@ const PostRequest = () => {
           <Button
             type="button"
             variant="outline"
-            onClick={() => navigate("/user/dashboard")}
+            onClick={() => navigate(redirectPath)}
             className="w-full sm:w-auto"
           >
             {t("postRequest.actions.cancel")}
