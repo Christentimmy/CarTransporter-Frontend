@@ -1018,9 +1018,13 @@
         "description": "New to BID4TOW? Start here",
         "articles": {
           "howToRegister": "How to Register an Account",
+          "howToRegisterContent": "Creating an account is simple! Click the 'Sign Up' button on our homepage, fill in your personal information, verify your email address, and you're ready to start using BID4TOW. The whole process takes less than 5 minutes.",
           "howToPostRequest": "How to Post a Transportation Request",
+          "howToPostRequestContent": "Log into your account, click 'Post Request', fill in details about your vehicle, pickup and delivery locations, preferred dates, and any special requirements. Then submit your request and wait for transporters to bid.",
           "howToBid": "How to Bid on Requests",
-          "accountVerification": "Account Verification Process"
+          "howToBidContent": "As a transporter, browse available requests in your service area, review request details, and submit competitive bids with your pricing. The lowest bid typically wins when the auction ends.",
+          "accountVerification": "Account Verification Process",
+          "accountVerificationContent": "Account verification ensures trust on our platform. Vehicle owners and transporters must verify their email and phone number. Transporters also need to submit business documents and insurance for full access."
         }
       },
       "userGuide": {
@@ -1028,9 +1032,13 @@
         "description": "Learn how to use our platform effectively",
         "articles": {
           "postingRequests": "Posting Transportation Requests",
+          "postingRequestsContent": "When posting a transportation request, provide detailed information about your vehicle (make, model, year), pickup and delivery locations, preferred timeline, and any special requirements like enclosed transport or insurance needs.",
           "managingBids": "Managing and Accepting Bids",
+          "managingBidsContent": "Review all bids from verified transporters, compare prices, and select the best offer for your needs.",
           "paymentProcess": "Payment Process and Methods",
-          "trackingShipments": "Tracking Your Shipments"
+          "paymentProcessContent": "Once you accept a bid, payment is held in escrow until the vehicle is successfully delivered. You can make payment through our secure platform using credit card.",
+          "trackingShipments": "Tracking Your Shipments",
+          "trackingShipmentsContent": "Track your shipment through the platform. Transporters update status as they progress through pickup, in-transit, and delivery phases."
         }
       },
       "transporterGuide": {

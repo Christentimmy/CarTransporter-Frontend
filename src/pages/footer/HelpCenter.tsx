@@ -181,62 +181,62 @@ const HelpCenter = () => {
                       <p className="text-muted-foreground">
                         {article === t("helpCenter.categories.gettingStarted.articles.howToRegister") && (
                           <>
-                            Creating an account is simple! Click the 'Sign Up' button on our homepage, fill in your personal information, verify your email address, and you're ready to start using BID4TOW. The whole process takes less than 5 minutes.
+                            {t("helpCenter.categories.gettingStarted.articles.howToRegisterContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.gettingStarted.articles.howToPostRequest") && (
                           <>
-                            Log into your account, click 'Post Request', fill in details about your vehicle, pickup and delivery locations, preferred dates, and any special requirements. Then submit your request and wait for transporters to bid.
+                            {t("helpCenter.categories.gettingStarted.articles.howToPostRequestContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.gettingStarted.articles.howToBid") && (
                           <>
-                            As a transporter, browse available requests in your service area, review request details, and submit competitive bids with your pricing. The lowest bid typically wins when the auction ends.
+                            {t("helpCenter.categories.gettingStarted.articles.howToBidContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.gettingStarted.articles.accountVerification") && (
                           <>
-                            Account verification ensures trust on our platform. Vehicle owners and transporters must verify their email and phone number. Transporters also need to submit business documents and insurance for full access.
+                            {t("helpCenter.categories.gettingStarted.articles.accountVerificationContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.userGuide.articles.postingRequests") && (
                           <>
-                            When posting a transportation request, provide detailed information about your vehicle (make, model, year), pickup and delivery locations, preferred timeline, and any special requirements like enclosed transport or insurance needs.
+                            {t("helpCenter.categories.userGuide.articles.postingRequestsContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.userGuide.articles.managingBids") && (
                           <>
-                            Review all bids from verified transporters, compare prices, and select the best offer for your needs.         
+                            {t("helpCenter.categories.userGuide.articles.managingBidsContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.userGuide.articles.paymentProcess") && (
                           <>
-                            Once you accept a bid, payment is held in escrow until the vehicle is successfully delivered. You can make payment through our secure platform using credit card.
+                            {t("helpCenter.categories.userGuide.articles.paymentProcessContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.userGuide.articles.trackingShipments") && (
                           <>
-                            Track your shipment through the platform. Transporters update status as they progress through pickup, in-transit, and delivery phases.
+                            {t("helpCenter.categories.userGuide.articles.trackingShipmentsContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.transporterGuide.articles.becomingTransporter") && (
                           <>
-                            Sign up for a transporter account, complete your profile with business information, submit required documents (business license, insurance, etc.), undergo background verification, and once approved, you can start bidding on transportation requests.
+                            {t("helpCenter.categories.transporterGuide.articles.becomingTransporterContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.transporterGuide.articles.findingRequests") && (
                           <>
-                            Browse available transportation requests in your service area. Use filters to find requests that match your vehicle capacity, distance and preferences.
+                            {t("helpCenter.categories.transporterGuide.articles.findingRequestsContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.transporterGuide.articles.winningBids") && (
                           <>
-                            Submit competitive bids that reflect your costs while remaining profitable. Consider factors like fuel, tolls, insurance, and labor. Building a good rating through reliable service will help you win more bids over time.
+                            {t("helpCenter.categories.transporterGuide.articles.winningBidsContent")}
                           </>
                         )}
                         {article === t("helpCenter.categories.transporterGuide.articles.withdrawals") && (
                           <>
-                            Funds from completed shipments are held in escrow until delivery confirmation. Once released, you can request withdrawals through your dashboard. Choose from available payment methods.
+                            {t("helpCenter.categories.transporterGuide.articles.withdrawalsContent")}
                           </>
                         )}
                       </p>

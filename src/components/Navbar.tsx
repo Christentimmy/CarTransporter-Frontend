@@ -41,18 +41,20 @@ export const Navbar = () => {
               </span>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.nameKey}
-                href={link.href}
-                className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium relative group"
-              >
-                {t(link.nameKey)}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
+          {/* Desktop Nav - Centered */}
+          <div className="hidden md:flex items-center absolute left-1/2 transform -translate-x-1/2">
+            <div className="flex items-center gap-8">
+              {navLinks.map((link) => (
+                <a
+                  key={link.nameKey}
+                  href={link.href}
+                  className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium relative group"
+                >
+                  {t(link.nameKey)}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Desktop CTAs */}

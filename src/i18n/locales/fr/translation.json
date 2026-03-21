@@ -1015,9 +1015,13 @@
         "description": "Nouveau sur BID4TOW ? Commencez ici",
         "articles": {
           "howToRegister": "Comment Créer un Compte",
+          "howToRegisterContent": "Créer un compte est simple ! Cliquez sur le bouton 'S'inscrire' sur notre page d'accueil, remplissez vos informations personnelles, vérifiez votre adresse email, et vous êtes prêt à commencer à utiliser BID4TOW. Tout le processus prend moins de 5 minutes.",
           "howToPostRequest": "Comment Publier une Demande de Transport",
+          "howToPostRequestContent": "Connectez-vous à votre compte, cliquez sur 'Publier une demande', remplissez les détails sur votre véhicule, les lieux de prise en charge et de livraison, les dates préférées, et toutes les exigences spéciales. Soumettez ensuite votre demande et attendez que les transporteurs fassent des offres.",
           "howToBid": "Comment Faire une Offre sur les Demandes",
-          "accountVerification": "Processus de Vérification du Compte"
+          "howToBidContent": "En tant que transporteur, parcourez les demandes disponibles dans votre zone de service, examinez les détails des demandes, et soumettez des offres compétitives avec vos prix. L'offre la plus basse gagne généralement lorsque l'enchère se termine.",
+          "accountVerification": "Processus de Vérification du Compte",
+          "accountVerificationContent": "La vérification du compte garantit la confiance sur notre plateforme. Les propriétaires de véhicules et les transporteurs doivent vérifier leur email et numéro de téléphone. Les transporteurs doivent également soumettre des documents d'affaires et d'assurance pour un accès complet."
         }
       },
       "userGuide": {
@@ -1025,9 +1029,13 @@
         "description": "Apprenez à utiliser notre plateforme efficacement",
         "articles": {
           "postingRequests": "Publier des Demandes de Transport",
+          "postingRequestsContent": "Lorsque vous publiez une demande de transport, fournissez des informations détaillées sur votre véhicule (marque, modèle, année), les lieux de prise en charge et de livraison, la période préférée, et toutes les exigences spéciales comme le transport fermé ou les besoins d'assurance.",
           "managingBids": "Gérer et Accepter les Offres",
+          "managingBidsContent": "Examinez toutes les offres des transporteurs vérifiés, comparez les prix, et sélectionnez la meilleure offre pour vos besoins.",
           "paymentProcess": "Processus et Méthodes de Paiement",
-          "trackingShipments": "Suivre Vos Expéditions"
+          "paymentProcessContent": "Une fois que vous acceptez une offre, le paiement est retenu en séquestre jusqu'à ce que le véhicule soit livré avec succès. Vous pouvez effectuer le paiement via notre plateforme sécurisée en utilisant une carte de crédit.",
+          "trackingShipments": "Suivre Vos Expéditions",
+          "trackingShipmentsContent": "Suivez votre expédition via la plateforme. Les transporteurs mettent à jour le statut au fur et à mesure qu'ils progressent dans les phases de prise en charge, en transit et de livraison."
         }
       },
       "transporterGuide": {
@@ -1035,9 +1043,13 @@
         "description": "Tout ce que les transporteurs doivent savoir",
         "articles": {
           "becomingTransporter": "Devenir un Transporteur Vérifié",
+          "becomingTransporterContent": "Inscrivez-vous pour un compte transporteur, complétez votre profil avec les informations d'affaires, soumettez les documents requis (licence d'affaires, assurance, etc.), subissez une vérification de background, et une fois approuvé, vous pouvez commencer à faire des offres sur les demandes de transport.",
           "findingRequests": "Trouver et Filtrer les Demandes",
+          "findingRequestsContent": "Parcourez les demandes de transport disponibles dans votre zone de service. Utilisez des filtres pour trouver les demandes qui correspondent à votre capacité de véhicule, distance et préférences.",
           "winningBids": "Conseils pour Gagner des Offres",
-          "withdrawals": "Retraits et Paiements"
+          "winningBidsContent": "Soumettez des offres compétitives qui reflètent vos coûts tout en restant rentables. Considérez des facteurs comme le carburant, les péages, l'assurance et le travail. Construire une bonne évaluation grâce à un service fiable vous aidera à gagner plus d'offres avec le temps.",
+          "withdrawals": "Retraits et Paiements",
+          "withdrawalsContent": "Les fonds des expéditions terminées sont retenus en séquestre jusqu'à la confirmation de livraison. Une fois libérés, vous pouvez demander des retraits via votre tableau de bord. Choisissez parmi les méthodes de paiement disponibles."
         }
       },
       "support": {
