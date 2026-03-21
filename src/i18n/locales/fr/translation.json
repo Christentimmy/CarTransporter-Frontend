@@ -33,8 +33,10 @@
     "instantAcceptDescriptionTransporter": "Enchérissez ce montant pour gagner instantanément la demande",
     "routeMap": "Carte de Route",
     "routeMapDescription": "Lieux de prise en charge et de livraison pour cette expédition",
-    "viewFullSize": "Voir en grand",
+    "viewFullSize": "Voir en Plein Écran",
     "vehiclePhotoAlt": "Photo du véhicule {{index}}",
+    "cancel": "Annuler l'enchère",
+    "cancelling": "Annulation...",
     "running": "En marche",
     "notRunning": "Ne marche pas",
     "placeYourBid": "Placer votre offre",
@@ -317,10 +319,11 @@
       "recent": {
         "title": "Demandes récentes",
         "description": "Vos dernières demandes de transport",
-        "empty": "Aucune demande récente trouvée",
-        "fallbackVehicle": "Transport de véhicule",
-        "fallbackStatus": "En attente",
-        "fallbackAmount": "N/A"
+        "empty": "Aucune demande récente",
+        "fallbackVehicle": "Véhicule inconnu",
+        "fallbackStatus": "Statut inconnu",
+        "fallbackAmount": "N/D",
+        "unknownLocation": "Lieu inconnu"
       }
     }
   },
@@ -366,7 +369,7 @@
         "keysAvailable": "Clés disponibles",
         "weightLabel": "Poids (kg)",
         "weightPlaceholder": "Optionnel",
-        "dimensionsLabel": "Dimensions du véhicule (mètres) - Optionnel",
+        "dimensionsLabel": "Dimensions du véhicule (inch) - Optionnel",
         "lengthLabel": "Longueur",
         "widthLabel": "Largeur",
         "heightLabel": "Hauteur"
@@ -434,6 +437,7 @@
       "ended": "Terminé",
       "assigned": "Assigné",
       "inTransit": "En transit",
+      "enRoute": "En route",
       "delivered": "Livré",
       "completed": "Terminé",
       "disputed": "Contesté",
@@ -445,6 +449,7 @@
       "ended": "Terminé",
       "assigned": "Assigné",
       "inTransit": "En transit",
+      "enRoute": "En route",
       "delivered": "Livré",
       "completed": "Terminé",
       "disputed": "Contesté",
@@ -487,7 +492,9 @@
       "dimensions": "dimensions",
       "accidented": "Accidenté",
       "keysAvailable": "Clés disponibles",
-      "noKeys": "Pas de clés"
+      "noKeys": "Pas de clés",
+      "viewDelivery": "Voir la livraison",
+      "raiseDispute": "Soumettre un litige"
     },
     "payment": {
       "title": "Payer pour l'expédition",
@@ -499,6 +506,25 @@
       "loadingForm": "Chargement du formulaire de paiement...",
       "processing": "Traitement...",
       "payNow": "Payer maintenant"
+    },
+    "delivery": {
+      "title": "Informations de livraison",
+      "description": "Voir les détails de livraison pour cette expédition",
+      "keysGivenTo": "Clés remises à",
+      "vehicleDroppedAt": "Véhicule déposé à",
+      "deliveryPhotos": "Photos de livraison",
+      "notProvided": "Non fourni",
+      "close": "Fermer"
+    },
+    "dispute": {
+      "title": "Soumettre un litige",
+      "description": "Décrivez le problème et téléchargez des photos justificatives",
+      "issue": "Description du problème",
+      "issuePlaceholder": "Veuillez décrire le problème avec cette livraison...",
+      "photos": "Photos du litige",
+      "cancel": "Annuler",
+      "submit": "Soumettre le litige",
+      "submitting": "Soumission..."
     }
   },
   "profile": {
@@ -680,6 +706,7 @@
       "all": "Tous les statuts",
       "assigned": "Assigné",
       "inTransit": "En transit",
+      "enRoute": "En route",
       "delivered": "Livré",
       "completed": "Terminé",
       "disputed": "Disputé",
@@ -724,6 +751,7 @@
       "update": "Mettre à jour le statut",
       "updating": "Mise à jour...",
       "inTransitInfo": "Marquer comme \"En transit\" signifie que vous avez commencé le processus de prise en charge et que le véhicule est maintenant en cours de transport.",
+      "enRouteInfo": "Marquer comme \"En route\" signifie que vous êtes en chemin pour récupérer le véhicule.",
       "deliveredInfo": "Marquer comme \"Livré\" signifie que le véhicule a été livré avec succès à la destination.",
       "disputedInfo": "Marquer comme \"Disputé\" indique qu'il y a un problème avec cette expédition qui doit être résolu."
     },
@@ -731,6 +759,7 @@
       "assigned": "Assigné",
       "ended": "Terminé",
       "inTransit": "En transit",
+      "enRoute": "En route",
       "delivered": "Livré",
       "completed": "Terminé",
       "disputed": "Disputé",

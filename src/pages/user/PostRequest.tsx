@@ -499,6 +499,7 @@ const PostRequest = () => {
                           setIsPickupStartOpen(false);
                         }
                       }}
+                      disabled={{ before: new Date(new Date().setHours(0, 0, 0, 0)) }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -533,6 +534,7 @@ const PostRequest = () => {
                           setIsPickupEndOpen(false);
                         }
                       }}
+                      disabled={{ before: new Date(new Date().setHours(0, 0, 0, 0)) }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -581,6 +583,7 @@ const PostRequest = () => {
                         setIsDeliveryDeadlineOpen(false);
                       }
                     }}
+                    disabled={{ before: new Date(new Date().setHours(0, 0, 0, 0)) }}
                     initialFocus
                   />
                 </PopoverContent>

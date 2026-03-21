@@ -78,6 +78,11 @@ export const cancelShipment = async (
 export interface UpdateShipmentStatusRequest {
   shipmentId: string;
   status: string;
+  keysGivenTo?: string;
+  vehicleDroppedAt?: string;
+  photos?: File[];
+  issue?: string;
+  disputePhotos?: File[];
 }
 
 export interface UpdateShipmentStatusResponse {
@@ -88,7 +93,53 @@ export interface UpdateShipmentStatusResponse {
 export const updateShipmentStatus = async (
   shipmentId: string,
   status: string,
+  keysGivenTo?: string,
+  vehicleDroppedAt?: string,
+  photos?: File[],
+  issue?: string,
+  disputePhotos?: File[],
 ): Promise<UpdateShipmentStatusResponse> => {
+  // If photos are included (delivery or dispute), use FormData
+  if (
+    (photos && photos.length > 0) ||
+    (disputePhotos && disputePhotos.length > 0)
+  ) {
+    const formData = new FormData();
+    formData.append("shipmentId", shipmentId);
+    formData.append("status", status);
+
+    if (keysGivenTo) {
+      formData.append("keysGivenTo", keysGivenTo);
+    }
+
+    if (vehicleDroppedAt) {
+      formData.append("vehicleDroppedAt", vehicleDroppedAt);
+    }
+
+    if (issue) {
+      formData.append("issue", issue);
+    }
+
+    photos?.forEach((file) => formData.append("photos", file));
+    disputePhotos?.forEach((file) => formData.append("photos", file));
+
+    const response = await fetch(API_ENDPOINTS.USER.UPDATE_SHIPMENT_STATUS, {
+      method: "POST",
+      headers: {
+        ...getAuthHeader(),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to update shipment status");
+    }
+
+    return response.json().catch(() => ({}));
+  }
+
+  // For regular status updates without photos, use JSON
   const response = await fetch(API_ENDPOINTS.USER.UPDATE_SHIPMENT_STATUS, {
     method: "POST",
     headers: {
@@ -98,6 +149,9 @@ export const updateShipmentStatus = async (
     body: JSON.stringify({
       shipmentId,
       status,
+      ...(keysGivenTo && { keysGivenTo }),
+      ...(vehicleDroppedAt && { vehicleDroppedAt }),
+      ...(issue && { issue }),
     } satisfies UpdateShipmentStatusRequest),
   });
 

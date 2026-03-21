@@ -156,6 +156,17 @@ export interface MyShipment {
   startedAt?: string;
   completedAt?: string;
   lastPayment?: string;
+
+  deliveryInfo?: {
+    keysGivenTo?: string;
+    vehicleDroppedAt?: string;
+    deliveryPhotos?: string[];
+  };
+
+  disputeInfo?: {
+    issue?: string;
+    disputePhotos?: string[];
+  };
 }
 
 /** Pagination meta from get-my-shipments API */
@@ -206,6 +217,18 @@ export interface AssignedShipment {
   startedAt?: string;
   completedAt?: string;
   lastPayment?: string;
+
+    deliveryInfo?: {
+    keysGivenTo?: string;
+    vehicleDroppedAt?: string;
+    deliveryPhotos?: string[];
+  };
+
+  // Dispute information (filled when status becomes DISPUTED)
+  disputeInfo?: {
+    issue?: string;
+    disputePhotos?: string[];
+  };
 }
 
 /** Response shape for GET /user/get-my-assigned-shipments */

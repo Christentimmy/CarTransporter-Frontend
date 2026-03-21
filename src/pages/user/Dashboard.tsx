@@ -94,7 +94,7 @@ const Dashboard = () => {
   const renderRecentRequests = () => {
     if (isLoading) return null;
     
-    const requests: RecentRequest[] = dashboardData?.recentRequests || [];
+    const requests: any[] = dashboardData?.recentRequests || [];
     
     if (requests.length === 0) {
       return (
@@ -106,29 +106,91 @@ const Dashboard = () => {
 
     return (
       <div className="space-y-4">
-        {requests.map((request, index) => (
-          <div key={index} className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-              <Truck className="h-5 w-5 text-primary" />
+        {requests.map((request, index) => {
+          const vehicleName = request.vehicleDetails 
+            ? `${request.vehicleDetails.year} ${request.vehicleDetails.make} ${request.vehicleDetails.model}`
+            : t("user.dashboard.recent.fallbackVehicle");
+          
+          const fromLocation = request.pickupLocation?.address || 
+            `${request.pickupLocation?.city || ''}, ${request.pickupLocation?.state || ''}`.trim() || 
+            t("user.dashboard.recent.unknownLocation");
+          
+          const toLocation = request.deliveryLocation?.address || 
+            `${request.deliveryLocation?.city || ''}, ${request.deliveryLocation?.state || ''}`.trim() || 
+            t("user.dashboard.recent.unknownLocation");
+
+          const formatDate = (dateString: string) => {
+            try {
+              return new Date(dateString).toLocaleDateString();
+            } catch {
+              return '';
+            }
+          };
+
+          const getStatusColor = (status: string) => {
+            switch (status) {
+              case 'DELIVERED': return 'text-green-600 bg-green-50';
+              case 'IN_TRANSIT': return 'text-blue-600 bg-blue-50';
+              case 'ASSIGNED': return 'text-yellow-600 bg-yellow-50';
+              case 'LIVE': return 'text-purple-600 bg-purple-50';
+              case 'COMPLETED': return 'text-emerald-600 bg-emerald-50';
+              case 'CANCELLED': return 'text-red-600 bg-red-50';
+              case 'DISPUTED': return 'text-orange-600 bg-orange-50';
+              default: return 'text-gray-600 bg-gray-50';
+            }
+          };
+
+          return (
+            <div key={index} className="border rounded-lg p-4 space-y-3">
+              {/* Vehicle and Status */}
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-sm">{vehicleName}</h4>
+                  <p className="text-xs text-muted-foreground">
+                    {request.vehicleDetails?.color && `Color: ${request.vehicleDetails.color}`}
+                    {request.vehicleDetails?.drivetrain && ` • ${request.vehicleDetails.drivetrain}`}
+                  </p>
+                </div>
+                <div className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
+                  {request.status || t("user.dashboard.recent.fallbackStatus")}
+                </div>
+              </div>
+
+              {/* Route */}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="flex-1">
+                  <span className="font-medium">From:</span> {fromLocation}
+                </div>
+                <div className="flex-1">
+                  <span className="font-medium">To:</span> {toLocation}
+                </div>
+              </div>
+
+              {/* Distance and Deadline */}
+              <div className="flex items-center justify-between text-xs">
+                <div className="text-muted-foreground">
+                  {request.distance && `Distance: ${request.distance.toLocaleString()} km`}
+                  {request.estimatedTime && ` • ~${Math.round(request.estimatedTime / 60)} hrs`}
+                </div>
+                <div className="text-muted-foreground">
+                  {request.deliveryDeadline && `Due: ${formatDate(request.deliveryDeadline)}`}
+                </div>
+              </div>
+
+              {/* Amount and Date */}
+              <div className="flex items-center justify-between pt-2 border-t">
+                <div className="text-sm font-medium">
+                  {request.currentBid?.amount ? `$${request.currentBid.amount.toLocaleString()}` : 
+                   request.amount ? `$${request.amount}` : 
+                   t("user.dashboard.recent.fallbackAmount")}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {request.createdAt ? formatDate(request.createdAt) : ''}
+                </div>
+              </div>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium">
-                {request.vehicleName || t("user.dashboard.recent.fallbackVehicle")}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {request.status || t("user.dashboard.recent.fallbackStatus")}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-medium">
-                {request.amount ? `$${request.amount}` : t("user.dashboard.recent.fallbackAmount")}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {request.date || ''}
-              </p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };

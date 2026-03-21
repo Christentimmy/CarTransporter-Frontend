@@ -35,6 +35,8 @@
     "routeMapDescription": "Pickup and delivery locations for this shipment",
     "viewFullSize": "View Full Size",
     "vehiclePhotoAlt": "Vehicle photo {{index}}",
+    "cancel": "Cancel Auction",
+    "cancelling": "Cancelling...",
     "running": "Running",
     "notRunning": "Not Running",
     "placeYourBid": "Place Your Bid",
@@ -316,11 +318,12 @@
       },
       "recent": {
         "title": "Recent Requests",
-        "description": "Your latest vehicle transport requests",
-        "empty": "No recent requests found",
-        "fallbackVehicle": "Vehicle Transport",
-        "fallbackStatus": "Pending",
-        "fallbackAmount": "N/A"
+        "description": "Your latest shipment requests",
+        "empty": "No recent requests",
+        "fallbackVehicle": "Unknown Vehicle",
+        "fallbackStatus": "Unknown Status",
+        "fallbackAmount": "N/A",
+        "unknownLocation": "Unknown Location"
       }
     }
   },
@@ -366,7 +369,7 @@
         "keysAvailable": "Keys available",
         "weightLabel": "Weight (kg)",
         "weightPlaceholder": "Optional",
-        "dimensionsLabel": "Vehicle Dimensions (meters) - Optional",
+        "dimensionsLabel": "Vehicle Dimensions (inch) - Optional",
         "lengthLabel": "Length",
         "widthLabel": "Width",
         "heightLabel": "Height"
@@ -434,6 +437,7 @@
       "ended": "Ended",
       "assigned": "Assigned",
       "inTransit": "In Transit",
+      "enRoute": "En Route",
       "delivered": "Delivered",
       "completed": "Completed",
       "disputed": "Disputed",
@@ -445,6 +449,7 @@
       "ended": "Ended",
       "assigned": "Assigned",
       "inTransit": "In Transit",
+      "enRoute": "En Route",
       "delivered": "Delivered",
       "completed": "Completed",
       "disputed": "Disputed",
@@ -490,7 +495,9 @@
       "dimensions": "dimensions",
       "accidented": "Accidented",
       "keysAvailable": "Keys Available",
-      "noKeys": "No Keys"
+      "noKeys": "No Keys",
+      "viewDelivery": "View Delivery",
+      "raiseDispute": "Raise Dispute"
     },
     "payment": {
       "title": "Pay for shipment",
@@ -502,6 +509,25 @@
       "loadingForm": "Loading payment form...",
       "processing": "Processing...",
       "payNow": "Pay now"
+    },
+    "delivery": {
+      "title": "Delivery Information",
+      "description": "View the delivery details for this shipment",
+      "keysGivenTo": "Keys Given To",
+      "vehicleDroppedAt": "Vehicle Dropped At",
+      "deliveryPhotos": "Delivery Photos",
+      "notProvided": "Not Provided",
+      "close": "Close"
+    },
+    "dispute": {
+      "title": "Raise a Dispute",
+      "description": "Describe the issue and upload supporting photos",
+      "issue": "Issue Description",
+      "issuePlaceholder": "Please describe the issue with this delivery...",
+      "photos": "Dispute Photos",
+      "cancel": "Cancel",
+      "submit": "Submit Dispute",
+      "submitting": "Submitting..."
     }
   },
   "profile": {
@@ -683,6 +709,7 @@
       "all": "All Status",
       "assigned": "Assigned",
       "inTransit": "In Transit",
+      "enRoute": "En Route",
       "delivered": "Delivered",
       "completed": "Completed",
       "disputed": "Disputed",
@@ -727,6 +754,7 @@
       "update": "Update Status",
       "updating": "Updating...",
       "inTransitInfo": "Marking as \"In Transit\" means you've started the pickup process and the vehicle is now being transported.",
+      "enRouteInfo": "Marking as \"En Route\" means you are on the way to pick up the vehicle.",
       "deliveredInfo": "Marking as \"Delivered\" means the vehicle has been successfully delivered to the destination.",
       "disputedInfo": "Marking as \"Disputed\" indicates there is an issue with this shipment that needs to be resolved."
     },
@@ -734,6 +762,7 @@
       "assigned": "Assigned",
       "ended": "Ended",
       "inTransit": "In Transit",
+      "enRoute": "En Route",
       "delivered": "Delivered",
       "completed": "Completed",
       "disputed": "Disputed",

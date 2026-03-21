@@ -12,6 +12,8 @@ import {
   Loader2,
   Search,
   Filter,
+  Upload,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -107,6 +109,9 @@ const MyShipments = () => {
   const [selectedShipment, setSelectedShipment] = useState<string | null>(null);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const [newStatus, setNewStatus] = useState<string>("");
+  const [keysGivenTo, setKeysGivenTo] = useState<string>("");
+  const [vehicleDroppedAt, setVehicleDroppedAt] = useState<string>("");
+  const [photos, setPhotos] = useState<File[]>([]);
 
   const queryClient = useQueryClient();
 
@@ -116,8 +121,14 @@ const MyShipments = () => {
   });
 
   const { mutateAsync: mutateShipmentStatus, isPending: isUpdatingStatus } = useMutation({
-    mutationFn: ({ shipmentId, status }: { shipmentId: string; status: string }) =>
-      updateShipmentStatus(shipmentId, status),
+    mutationFn: ({ shipmentId, status, keysGivenTo, vehicleDroppedAt, photos }: { 
+      shipmentId: string; 
+      status: string; 
+      keysGivenTo?: string; 
+      vehicleDroppedAt?: string; 
+      photos?: File[] 
+    }) =>
+      updateShipmentStatus(shipmentId, status, keysGivenTo, vehicleDroppedAt, photos),
     onSuccess: async (res) => {
       toast.success(res.message ?? t("myShipments.toast.statusUpdated"), {
         style: { background: "#22c55e", color: "#fff" },
@@ -160,18 +171,38 @@ const MyShipments = () => {
   const handleStatusUpdate = (shipmentId: string, currentStatus: string) => {
     setSelectedShipment(shipmentId);
     // Default to first available option
-    setNewStatus("IN_TRANSIT");
+    setNewStatus("EN_ROUTE");
     setIsStatusDialogOpen(true);
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newPhotos = Array.from(e.target.files);
+      setPhotos([...photos, ...newPhotos]);
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotos(photos.filter((_, i) => i !== index));
   };
 
   const handleStatusSubmit = async () => {
     if (!selectedShipment || !newStatus) return;
 
-    await mutateShipmentStatus({ shipmentId: selectedShipment, status: newStatus });
+    await mutateShipmentStatus({ 
+      shipmentId: selectedShipment, 
+      status: newStatus,
+      keysGivenTo: keysGivenTo || undefined,
+      vehicleDroppedAt: vehicleDroppedAt || undefined,
+      photos: photos.length > 0 ? photos : undefined,
+    });
 
     setIsStatusDialogOpen(false);
     setSelectedShipment(null);
     setNewStatus("");
+    setKeysGivenTo("");
+    setVehicleDroppedAt("");
+    setPhotos([]);
   };
 
   const getStatusBadge = (status: string) => {
@@ -458,18 +489,28 @@ const MyShipments = () => {
                                         <SelectValue placeholder={t("myShipments.statusDialog.selectStatus")} />
                                       </SelectTrigger>
                                       <SelectContent>
+                                        <SelectItem value="EN_ROUTE">
+                                          {t("myShipments.status.enRoute")}
+                                        </SelectItem>
                                         <SelectItem value="IN_TRANSIT">
                                           {t("myShipments.status.inTransit")}
                                         </SelectItem>
                                         <SelectItem value="DELIVERED">
                                           {t("myShipments.status.delivered")}
                                         </SelectItem>
-                                        <SelectItem value="DISPUTED">
+                                        {/* <SelectItem value="DISPUTED">
                                           {t("myShipments.status.disputed")}
-                                        </SelectItem>
+                                        </SelectItem> */}
                                       </SelectContent>
                                     </Select>
                                   </div>
+                                  {newStatus === "EN_ROUTE" && (
+                                    <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800">
+                                      <p className="text-sm text-yellow-900 dark:text-yellow-100">
+                                        {t("myShipments.statusDialog.enRouteInfo")}
+                                      </p>
+                                    </div>
+                                  )}
                                   {newStatus === "IN_TRANSIT" && (
                                     <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800">
                                       <p className="text-sm text-blue-900 dark:text-blue-100">
@@ -482,6 +523,62 @@ const MyShipments = () => {
                                       <p className="text-sm text-green-900 dark:text-green-100">
                                         {t("myShipments.statusDialog.deliveredInfo")}
                                       </p>
+                                    </div>
+                                  )}
+                                  {newStatus === "DELIVERED" && (
+                                    <div className="space-y-4 mt-4">
+                                      <div className="space-y-2">
+                                        <Label htmlFor="keys-given-to">Keys Given To (Optional)</Label>
+                                        <Input
+                                          id="keys-given-to"
+                                          value={keysGivenTo}
+                                          onChange={(e) => setKeysGivenTo(e.target.value)}
+                                          placeholder="Name of person who received the keys"
+                                        />
+                                      </div>
+                                      <div className="space-y-2">
+                                        <Label htmlFor="vehicle-dropped-at">Vehicle Dropped At</Label>
+                                        <Input
+                                          id="vehicle-dropped-at"
+                                          value={vehicleDroppedAt}
+                                          onChange={(e) => setVehicleDroppedAt(e.target.value)}
+                                          placeholder="Specific location where vehicle was dropped"
+                                          required
+                                        />
+                                      </div>
+                                      <div className="space-y-2">
+                                        <Label htmlFor="delivery-photos">Delivery Photos</Label>
+                                        <Input
+                                          id="delivery-photos"
+                                          type="file"
+                                          accept="image/*"
+                                          multiple
+                                          onChange={handlePhotoUpload}
+                                          className="cursor-pointer"
+                                        />
+                                        {photos.length > 0 && (
+                                          <div className="grid grid-cols-2 gap-2 mt-2">
+                                            {photos.map((photo, index) => (
+                                              <div key={index} className="relative">
+                                                <img
+                                                  src={URL.createObjectURL(photo)}
+                                                  alt={`Delivery photo ${index + 1}`}
+                                                  className="h-20 w-full rounded-md object-cover"
+                                                />
+                                                <Button
+                                                  type="button"
+                                                  variant="destructive"
+                                                  size="icon"
+                                                  className="absolute -right-1 -top-1 h-5 w-5"
+                                                  onClick={() => removePhoto(index)}
+                                                >
+                                                  <X className="h-3 w-3" />
+                                                </Button>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
                                   )}
                                   {newStatus === "DISPUTED" && (

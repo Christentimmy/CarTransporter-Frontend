@@ -17,9 +17,13 @@ import {
   XCircle,
   Package,
   Loader2,
+  Upload,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -45,7 +49,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { cancelShipment, getMyShipments, processPayment } from "@/services/shipmentService";
+import { cancelShipment, getMyShipments, processPayment, updateShipmentStatus } from "@/services/shipmentService";
 import type { MyShipment } from "@/types/shipment";
 import { useTranslation } from "react-i18next";
 
@@ -106,6 +110,18 @@ const MyRequests = () => {
   const [isPaymentReady, setIsPaymentReady] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [cancellingShipmentId, setCancellingShipmentId] = useState<string | null>(null);
+  
+  // Delivery info dialog state
+  const [isDeliveryDialogOpen, setIsDeliveryDialogOpen] = useState(false);
+  const [selectedShipmentForDelivery, setSelectedShipmentForDelivery] = useState<MyShipment | null>(null);
+  
+  // Dispute dialog state
+  const [isDisputeDialogOpen, setIsDisputeDialogOpen] = useState(false);
+  const [selectedShipmentForDispute, setSelectedShipmentForDispute] = useState<MyShipment | null>(null);
+  const [disputeIssue, setDisputeIssue] = useState("");
+  const [disputePhotos, setDisputePhotos] = useState<File[]>([]);
+  const [isSubmittingDispute, setIsSubmittingDispute] = useState(false);
+  
   const queryClient = useQueryClient();
   const limit = 10;
 
@@ -150,6 +166,66 @@ const MyRequests = () => {
         {config.label}
       </Badge>
     );
+  };
+
+  const handleDisputePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newPhotos = Array.from(e.target.files);
+      setDisputePhotos([...disputePhotos, ...newPhotos]);
+    }
+  };
+
+  const removeDisputePhoto = (index: number) => {
+    setDisputePhotos(disputePhotos.filter((_, i) => i !== index));
+  };
+
+  const handleViewDelivery = (shipment: MyShipment) => {
+    setSelectedShipmentForDelivery(shipment);
+    setIsDeliveryDialogOpen(true);
+  };
+
+  const handleOpenDispute = (shipment: MyShipment) => {
+    setSelectedShipmentForDispute(shipment);
+    setIsDisputeDialogOpen(true);
+  };
+
+  const handleSubmitDispute = async () => {
+    if (!selectedShipmentForDispute || !disputeIssue.trim()) {
+      toast.error("Please describe the issue", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      return;
+    }
+
+    setIsSubmittingDispute(true);
+    try {
+      await updateShipmentStatus(
+        selectedShipmentForDispute._id,
+        "DISPUTED",
+        undefined,
+        undefined,
+        undefined,
+        disputeIssue,
+        disputePhotos.length > 0 ? disputePhotos : undefined,
+      );
+
+      toast.success("Dispute submitted successfully", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+
+      setIsDisputeDialogOpen(false);
+      setSelectedShipmentForDispute(null);
+      setDisputeIssue("");
+      setDisputePhotos([]);
+      
+      await queryClient.invalidateQueries({ queryKey: ["my-shipments"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to submit dispute", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    } finally {
+      setIsSubmittingDispute(false);
+    }
   };
 
   const parseDate = (dateStr: string) => {
@@ -743,6 +819,30 @@ const MyRequests = () => {
                             </Button>
                           </div>
                         )}
+                        {request.status === "DELIVERED" && (
+                          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                            {request.deliveryInfo && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="w-full sm:w-auto shrink-0"
+                                onClick={() => handleViewDelivery(request)}
+                              >
+                                {t("myRequests.card.viewDelivery")}
+                              </Button>
+                            )}
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => handleOpenDispute(request)}
+                            >
+                              {t("myRequests.card.raiseDispute")}
+                            </Button>
+                          </div>
+                        )}
                     </div>
                   </CardHeader>
                   <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
@@ -994,6 +1094,169 @@ const MyRequests = () => {
               {isProcessingPayment
                 ? t("myRequests.payment.processing")
                 : t("myRequests.payment.payNow")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Delivery Info Dialog */}
+      <Dialog
+        open={isDeliveryDialogOpen}
+        onOpenChange={(open) => {
+          setIsDeliveryDialogOpen(open);
+          if (!open) setSelectedShipmentForDelivery(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("myRequests.delivery.title")}</DialogTitle>
+            <DialogDescription>
+              {t("myRequests.delivery.description")}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedShipmentForDelivery?.deliveryInfo && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-muted-foreground">
+                  {t("myRequests.delivery.keysGivenTo")}
+                </Label>
+                <p className="text-sm text-foreground bg-muted/50 p-2 rounded-md">
+                  {selectedShipmentForDelivery.deliveryInfo.keysGivenTo || t("myRequests.delivery.notProvided")}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-muted-foreground">
+                  {t("myRequests.delivery.vehicleDroppedAt")}
+                </Label>
+                <p className="text-sm text-foreground bg-muted/50 p-2 rounded-md">
+                  {selectedShipmentForDelivery.deliveryInfo.vehicleDroppedAt}
+                </p>
+              </div>
+              {selectedShipmentForDelivery.deliveryInfo.deliveryPhotos && selectedShipmentForDelivery.deliveryInfo.deliveryPhotos.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-muted-foreground">
+                    {t("myRequests.delivery.deliveryPhotos")}
+                  </Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {selectedShipmentForDelivery.deliveryInfo.deliveryPhotos.map((photo, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={photo}
+                          alt={`Delivery photo ${index + 1}`}
+                          className="h-20 w-full rounded-md object-cover border"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsDeliveryDialogOpen(false);
+                setSelectedShipmentForDelivery(null);
+              }}
+            >
+              {t("myRequests.delivery.close")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Dispute Dialog */}
+      <Dialog
+        open={isDisputeDialogOpen}
+        onOpenChange={(open) => {
+          setIsDisputeDialogOpen(open);
+          if (!open) {
+            setSelectedShipmentForDispute(null);
+            setDisputeIssue("");
+            setDisputePhotos([]);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("myRequests.dispute.title")}</DialogTitle>
+            <DialogDescription>
+              {t("myRequests.dispute.description")}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="dispute-issue">{t("myRequests.dispute.issue")}</Label>
+              <Textarea
+                id="dispute-issue"
+                value={disputeIssue}
+                onChange={(e) => setDisputeIssue(e.target.value)}
+                placeholder={t("myRequests.dispute.issuePlaceholder")}
+                rows={4}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dispute-photos">{t("myRequests.dispute.photos")}</Label>
+              <Input
+                id="dispute-photos"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleDisputePhotoUpload}
+                className="cursor-pointer"
+              />
+              {disputePhotos.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {disputePhotos.map((photo, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={URL.createObjectURL(photo)}
+                        alt={`Dispute photo ${index + 1}`}
+                        className="h-20 w-full rounded-md object-cover"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -right-1 -top-1 h-5 w-5"
+                        onClick={() => removeDisputePhoto(index)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsDisputeDialogOpen(false);
+                setSelectedShipmentForDispute(null);
+                setDisputeIssue("");
+                setDisputePhotos([]);
+              }}
+            >
+              {t("myRequests.dispute.cancel")}
+            </Button>
+            <Button
+              type="button"
+              variant="hero"
+              onClick={handleSubmitDispute}
+              disabled={isSubmittingDispute}
+            >
+              {isSubmittingDispute
+                ? t("myRequests.dispute.submitting")
+                : t("myRequests.dispute.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -63,6 +63,16 @@ export function joinAuction(shipmentId: string): void {
 }
 
 /**
+ * Emit cancel-shipment with shipmentId. Call this to cancel a live auction.
+ */
+export function cancelShipment(shipmentId: string): void {
+  const s = getAuctionSocket();
+  if (s) {
+    s.emit("cancel-shipment", { shipmentId });
+  }
+}
+
+/**
  * Disconnect the socket. Call when leaving the auction page.
  */
 export function disconnectAuctionSocket(): void {
@@ -82,5 +92,17 @@ export interface NewBidPayload {
 
 /** Payload for bid-error event (adjust to match backend) */
 export interface BidErrorPayload {
+  message?: string;
+}
+
+/** Payload for cancel-success event */
+export interface CancelSuccessPayload {
+  shipmentId: string;
+  message?: string;
+}
+
+/** Payload for cancel-error event */
+export interface CancelErrorPayload {
+  shipmentId: string;
   message?: string;
 }
