@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { getMyAssignedShipments, updateShipmentStatus } from "@/services/shipmentService";
 import type { AssignedShipment } from "@/types/shipment";
 import { useTranslation } from "react-i18next";
@@ -310,6 +311,7 @@ const MyShipments = () => {
               isEscrowPaidIn &&
               shipment.status !== "COMPLETED" &&
               shipment.status !== "CANCELLED" &&
+              shipment.status !== "DISPUTED" &&
               shipment.status !== "DELIVERED";
 
             const pickupStart = parseDate(shipment.pickupWindow?.start);
@@ -474,122 +476,124 @@ const MyShipments = () => {
                                   {t("myShipments.statusDialog.description")}
                                 </DialogDescription>
                               </DialogHeader>
-                              {selectedShipmentData && (
-                                <div className="space-y-4">
-                                  <div className="space-y-2">
-                                    <Label>{t("myShipments.statusDialog.currentStatus")}</Label>
-                                    <p className="text-sm font-medium">
-                                      {statusConfig[selectedShipmentData.status]?.label}
-                                    </p>
+                              <ScrollArea className="max-h-[60vh]">
+                                {selectedShipmentData && (
+                                  <div className="space-y-4 pr-4">
+                                    <div className="space-y-2">
+                                      <Label>{t("myShipments.statusDialog.currentStatus")}</Label>
+                                      <p className="text-sm font-medium">
+                                        {statusConfig[selectedShipmentData.status]?.label}
+                                      </p>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label htmlFor="new-status">{t("myShipments.statusDialog.newStatus")}</Label>
+                                      <Select value={newStatus} onValueChange={setNewStatus}>
+                                        <SelectTrigger id="new-status">
+                                          <SelectValue placeholder={t("myShipments.statusDialog.selectStatus")} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="EN_ROUTE">
+                                            {t("myShipments.status.enRoute")}
+                                          </SelectItem>
+                                          <SelectItem value="IN_TRANSIT">
+                                            {t("myShipments.status.inTransit")}
+                                          </SelectItem>
+                                          <SelectItem value="DELIVERED">
+                                            {t("myShipments.status.delivered")}
+                                          </SelectItem>
+                                          {/* <SelectItem value="DISPUTED">
+                                            {t("myShipments.status.disputed")}
+                                          </SelectItem> */}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    {newStatus === "EN_ROUTE" && (
+                                      <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800">
+                                        <p className="text-sm text-yellow-900 dark:text-yellow-100">
+                                          {t("myShipments.statusDialog.enRouteInfo")}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {newStatus === "IN_TRANSIT" && (
+                                      <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800">
+                                        <p className="text-sm text-blue-900 dark:text-blue-100">
+                                          {t("myShipments.statusDialog.inTransitInfo")}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {newStatus === "DELIVERED" && (
+                                      <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800">
+                                        <p className="text-sm text-green-900 dark:text-green-100">
+                                          {t("myShipments.statusDialog.deliveredInfo")}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {newStatus === "DELIVERED" && (
+                                      <div className="space-y-4 mt-4">
+                                        <div className="space-y-2">
+                                          <Label htmlFor="keys-given-to">Keys Given To (Optional)</Label>
+                                          <Input
+                                            id="keys-given-to"
+                                            value={keysGivenTo}
+                                            onChange={(e) => setKeysGivenTo(e.target.value)}
+                                            placeholder="Name of person who received the keys"
+                                          />
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Label htmlFor="vehicle-dropped-at">Vehicle Dropped At</Label>
+                                          <Input
+                                            id="vehicle-dropped-at"
+                                            value={vehicleDroppedAt}
+                                            onChange={(e) => setVehicleDroppedAt(e.target.value)}
+                                            placeholder="Specific location where vehicle was dropped"
+                                            required
+                                          />
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Label htmlFor="delivery-photos">Delivery Photos</Label>
+                                          <Input
+                                            id="delivery-photos"
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={handlePhotoUpload}
+                                            className="cursor-pointer"
+                                          />
+                                          {photos.length > 0 && (
+                                            <div className="grid grid-cols-2 gap-2 mt-2">
+                                              {photos.map((photo, index) => (
+                                                <div key={index} className="relative">
+                                                  <img
+                                                    src={URL.createObjectURL(photo)}
+                                                    alt={`Delivery photo ${index + 1}`}
+                                                    className="h-20 w-full rounded-md object-cover"
+                                                  />
+                                                  <Button
+                                                    type="button"
+                                                    variant="destructive"
+                                                    size="icon"
+                                                    className="absolute -right-1 -top-1 h-5 w-5"
+                                                    onClick={() => removePhoto(index)}
+                                                  >
+                                                    <X className="h-3 w-3" />
+                                                  </Button>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {newStatus === "DISPUTED" && (
+                                      <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800">
+                                        <p className="text-sm text-red-900 dark:text-red-100">
+                                          {t("myShipments.statusDialog.disputedInfo")}
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
-                                  <div className="space-y-2">
-                                    <Label htmlFor="new-status">{t("myShipments.statusDialog.newStatus")}</Label>
-                                    <Select value={newStatus} onValueChange={setNewStatus}>
-                                      <SelectTrigger id="new-status">
-                                        <SelectValue placeholder={t("myShipments.statusDialog.selectStatus")} />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="EN_ROUTE">
-                                          {t("myShipments.status.enRoute")}
-                                        </SelectItem>
-                                        <SelectItem value="IN_TRANSIT">
-                                          {t("myShipments.status.inTransit")}
-                                        </SelectItem>
-                                        <SelectItem value="DELIVERED">
-                                          {t("myShipments.status.delivered")}
-                                        </SelectItem>
-                                        {/* <SelectItem value="DISPUTED">
-                                          {t("myShipments.status.disputed")}
-                                        </SelectItem> */}
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  {newStatus === "EN_ROUTE" && (
-                                    <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800">
-                                      <p className="text-sm text-yellow-900 dark:text-yellow-100">
-                                        {t("myShipments.statusDialog.enRouteInfo")}
-                                      </p>
-                                    </div>
-                                  )}
-                                  {newStatus === "IN_TRANSIT" && (
-                                    <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800">
-                                      <p className="text-sm text-blue-900 dark:text-blue-100">
-                                        {t("myShipments.statusDialog.inTransitInfo")}
-                                      </p>
-                                    </div>
-                                  )}
-                                  {newStatus === "DELIVERED" && (
-                                    <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800">
-                                      <p className="text-sm text-green-900 dark:text-green-100">
-                                        {t("myShipments.statusDialog.deliveredInfo")}
-                                      </p>
-                                    </div>
-                                  )}
-                                  {newStatus === "DELIVERED" && (
-                                    <div className="space-y-4 mt-4">
-                                      <div className="space-y-2">
-                                        <Label htmlFor="keys-given-to">Keys Given To (Optional)</Label>
-                                        <Input
-                                          id="keys-given-to"
-                                          value={keysGivenTo}
-                                          onChange={(e) => setKeysGivenTo(e.target.value)}
-                                          placeholder="Name of person who received the keys"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="vehicle-dropped-at">Vehicle Dropped At</Label>
-                                        <Input
-                                          id="vehicle-dropped-at"
-                                          value={vehicleDroppedAt}
-                                          onChange={(e) => setVehicleDroppedAt(e.target.value)}
-                                          placeholder="Specific location where vehicle was dropped"
-                                          required
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="delivery-photos">Delivery Photos</Label>
-                                        <Input
-                                          id="delivery-photos"
-                                          type="file"
-                                          accept="image/*"
-                                          multiple
-                                          onChange={handlePhotoUpload}
-                                          className="cursor-pointer"
-                                        />
-                                        {photos.length > 0 && (
-                                          <div className="grid grid-cols-2 gap-2 mt-2">
-                                            {photos.map((photo, index) => (
-                                              <div key={index} className="relative">
-                                                <img
-                                                  src={URL.createObjectURL(photo)}
-                                                  alt={`Delivery photo ${index + 1}`}
-                                                  className="h-20 w-full rounded-md object-cover"
-                                                />
-                                                <Button
-                                                  type="button"
-                                                  variant="destructive"
-                                                  size="icon"
-                                                  className="absolute -right-1 -top-1 h-5 w-5"
-                                                  onClick={() => removePhoto(index)}
-                                                >
-                                                  <X className="h-3 w-3" />
-                                                </Button>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-                                  {newStatus === "DISPUTED" && (
-                                    <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800">
-                                      <p className="text-sm text-red-900 dark:text-red-100">
-                                        {t("myShipments.statusDialog.disputedInfo")}
-                                      </p>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
+                                )}
+                              </ScrollArea>
                               <DialogFooter>
                                 <Button
                                   type="button"
