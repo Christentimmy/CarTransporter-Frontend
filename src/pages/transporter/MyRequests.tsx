@@ -445,9 +445,9 @@ const TransporterMyRequests = () => {
             <SelectItem value="all">
               {t("myRequests.filters.allStatus")}
             </SelectItem>
-            <SelectItem value="DRAFT">
+            {/* <SelectItem value="DRAFT">
               {t("myRequests.filters.draft")}
-            </SelectItem>
+            </SelectItem> */}
             <SelectItem value="LIVE">{t("myRequests.filters.live")}</SelectItem>
             <SelectItem value="ENDED">
               {t("myRequests.filters.ended")}

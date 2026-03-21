@@ -664,7 +664,7 @@
     "empty": {
       "title": "Aucune demande trouvée",
       "adjustSearch": "Essayez d'ajuster votre recherche",
-      "noRequests": "Aucune demande en direct ou brouillon disponible pour le moment"
+      "noRequests": "Aucune requête en direct n'est disponible pour le moment."
     },
     "card": {
       "from": "De",

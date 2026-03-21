@@ -35,48 +35,7 @@ import { getProfile } from "@/services/profileService";
 import type { ListShipmentItem } from "@/types/shipment";
 import { AuctionMap } from "@/components/AuctionMap";
 
-// Mock data - replace with API call
-const mockAuctionData = {
-  _id: "1",
-  vehicleDetails: {
-    make: "Toyota",
-    model: "Camry",
-    year: 2024,
-    isRunning: true,
-    weight: 1500,
-    size: {
-      length: 4.9,
-      width: 1.8,
-      height: 1.4,
-    },
-  },
-  pickupLocation: {
-    address: "123 Main St",
-    city: "New York",
-    state: "NY",
-    country: "USA",
-    zipCode: "10001",
-  },
-  deliveryLocation: {
-    address: "456 Oak Ave",
-    city: "Los Angeles",
-    state: "CA",
-    country: "USA",
-    zipCode: "90001",
-  },
-  distance: 2789,
-  estimatedTime: 2880, // minutes
-  pickupWindow: {
-    start: new Date("2024-02-15"),
-    end: new Date("2024-02-17"),
-  },
-  deliveryDeadline: new Date("2024-02-25"),
-  status: "LIVE",
-  auctionStartedAt: new Date("2024-02-10T10:00:00"),
-  auctionEndsAt: new Date("2024-02-14T18:00:00"),
-  instantAcceptPrice: 1200,
-  photos: [],
-};
+
 
 // Mock bids - replace with API call (sorted by amount ascending - lowest first)
 const mockBids = [
@@ -193,12 +152,12 @@ const Auction = () => {
   const auctionEndTime =
     auctionData.auctionEndsAt != null
       ? new Date(auctionData.auctionEndsAt)
-      : mockAuctionData.auctionEndsAt;
+      : new Date();
 
   const auctionStartTime =
     auctionData.auctionStartedAt != null
       ? new Date(auctionData.auctionStartedAt)
-      : mockAuctionData.auctionStartedAt;
+      : new Date();
 
   const instantAcceptPrice =
     typeof (auctionData as { instantAcceptPrice?: unknown }).instantAcceptPrice === "number"
@@ -472,7 +431,11 @@ const Auction = () => {
             <CardHeader>
               <div className="flex items-center gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-primary/10">
-                  <Truck className="h-8 w-8 text-primary" />
+                  <img
+                    src="/logo.png"
+                    alt="BID4TOW"
+                    className="h-10 w-10 object-contain"
+                  />
                 </div>
                 <div className="flex-1">
                   <CardTitle className="text-2xl">

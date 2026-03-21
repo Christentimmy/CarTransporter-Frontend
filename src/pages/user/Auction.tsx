@@ -470,7 +470,11 @@ const Auction = () => {
             <CardHeader>
               <div className="flex items-center gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-primary/10">
-                  <Truck className="h-8 w-8 text-primary" />
+                  <img
+                    src="/logo.png"
+                    alt="BID4TOW"
+                    className="h-10 w-10 object-contain"
+                  />
                 </div>
                 <div className="flex-1">
                   <CardTitle className="text-2xl">

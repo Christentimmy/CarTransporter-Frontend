@@ -667,7 +667,7 @@
     "empty": {
       "title": "No requests found",
       "adjustSearch": "Try adjusting your search",
-      "noRequests": "No live or draft requests available at the moment"
+      "noRequests": "No live requests available at the moment"
     },
     "card": {
       "from": "From",

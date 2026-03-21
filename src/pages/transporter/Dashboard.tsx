@@ -92,8 +92,8 @@ const Dashboard = () => {
         {requests.map((request) => (
           <div 
             key={request._id} 
-            className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/30 transition-colors group cursor-pointer"
-            onClick={() => window.location.href = `/transporter/auction/${request._id}`}
+            className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/30 transition-colors group"
+            // onClick={() => window.location.href = `/transporter/auction/${request._id}`}
           >
             <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary" />
             <div className="flex-1 min-w-0">
