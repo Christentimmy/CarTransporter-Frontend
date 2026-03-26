@@ -113,6 +113,10 @@ const MyShipments = () => {
   const [keysGivenTo, setKeysGivenTo] = useState<string>("");
   const [vehicleDroppedAt, setVehicleDroppedAt] = useState<string>("");
   const [photos, setPhotos] = useState<File[]>([]);
+  const [issue, setIssue] = useState<string>("");
+  const [disputePhotos, setDisputePhotos] = useState<File[]>([]);
+  const [isDisputeDialogOpen, setIsDisputeDialogOpen] = useState(false);
+  const [viewingDisputeShipment, setViewingDisputeShipment] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -122,14 +126,16 @@ const MyShipments = () => {
   });
 
   const { mutateAsync: mutateShipmentStatus, isPending: isUpdatingStatus } = useMutation({
-    mutationFn: ({ shipmentId, status, keysGivenTo, vehicleDroppedAt, photos }: { 
+    mutationFn: ({ shipmentId, status, keysGivenTo, vehicleDroppedAt, photos, issue, disputePhotos }: { 
       shipmentId: string; 
       status: string; 
       keysGivenTo?: string; 
       vehicleDroppedAt?: string; 
-      photos?: File[] 
+      photos?: File[];
+      issue?: string;
+      disputePhotos?: File[];
     }) =>
-      updateShipmentStatus(shipmentId, status, keysGivenTo, vehicleDroppedAt, photos),
+      updateShipmentStatus(shipmentId, status, keysGivenTo, vehicleDroppedAt, photos, issue, disputePhotos),
     onSuccess: async (res) => {
       toast.success(res.message ?? t("myShipments.toast.statusUpdated"), {
         style: { background: "#22c55e", color: "#fff" },
@@ -183,8 +189,24 @@ const MyShipments = () => {
     }
   };
 
+  const handleDisputePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newPhotos = Array.from(e.target.files);
+      setDisputePhotos([...disputePhotos, ...newPhotos]);
+    }
+  };
+
   const removePhoto = (index: number) => {
     setPhotos(photos.filter((_, i) => i !== index));
+  };
+
+  const removeDisputePhoto = (index: number) => {
+    setDisputePhotos(disputePhotos.filter((_, i) => i !== index));
+  };
+
+  const handleViewDispute = (shipmentId: string) => {
+    setViewingDisputeShipment(shipmentId);
+    setIsDisputeDialogOpen(true);
   };
 
   const handleStatusSubmit = async () => {
@@ -196,6 +218,8 @@ const MyShipments = () => {
       keysGivenTo: keysGivenTo || undefined,
       vehicleDroppedAt: vehicleDroppedAt || undefined,
       photos: photos.length > 0 ? photos : undefined,
+      issue: issue || undefined,
+      disputePhotos: disputePhotos.length > 0 ? disputePhotos : undefined,
     });
 
     setIsStatusDialogOpen(false);
@@ -204,6 +228,8 @@ const MyShipments = () => {
     setKeysGivenTo("");
     setVehicleDroppedAt("");
     setPhotos([]);
+    setIssue("");
+    setDisputePhotos([]);
   };
 
   const getStatusBadge = (status: string) => {
@@ -218,6 +244,7 @@ const MyShipments = () => {
   };
 
   const selectedShipmentData = shipments.find((s) => s._id === selectedShipment);
+  const viewingDisputeShipmentData = shipments.find((s) => s._id === viewingDisputeShipment);
 
   if (isLoading) {
     return (
@@ -501,9 +528,9 @@ const MyShipments = () => {
                                           <SelectItem value="DELIVERED">
                                             {t("myShipments.status.delivered")}
                                           </SelectItem>
-                                          {/* <SelectItem value="DISPUTED">
+                                          <SelectItem value="DISPUTED">
                                             {t("myShipments.status.disputed")}
-                                          </SelectItem> */}
+                                          </SelectItem>
                                         </SelectContent>
                                       </Select>
                                     </div>
@@ -591,6 +618,55 @@ const MyShipments = () => {
                                         </p>
                                       </div>
                                     )}
+                                    {newStatus === "DISPUTED" && (
+                                      <div className="space-y-4 mt-4">
+                                        <div className="space-y-2">
+                                          <Label htmlFor="issue-description">Issue Description</Label>
+                                          <textarea
+                                            id="issue-description"
+                                            value={issue}
+                                            onChange={(e) => setIssue(e.target.value)}
+                                            placeholder="Please describe the issue in detail"
+                                            rows={4}
+                                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                                            required
+                                          />
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Label htmlFor="dispute-photos">Dispute Photos (Evidence)</Label>
+                                          <Input
+                                            id="dispute-photos"
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={handleDisputePhotoUpload}
+                                            className="cursor-pointer"
+                                          />
+                                          {disputePhotos.length > 0 && (
+                                            <div className="grid grid-cols-2 gap-2 mt-2">
+                                              {disputePhotos.map((photo, index) => (
+                                                <div key={index} className="relative">
+                                                  <img
+                                                    src={URL.createObjectURL(photo)}
+                                                    alt={`Dispute photo ${index + 1}`}
+                                                    className="h-20 w-full rounded-md object-cover"
+                                                  />
+                                                  <Button
+                                                    type="button"
+                                                    variant="destructive"
+                                                    size="icon"
+                                                    className="absolute -right-1 -top-1 h-5 w-5"
+                                                    onClick={() => removeDisputePhoto(index)}
+                                                  >
+                                                    <X className="h-3 w-3" />
+                                                  </Button>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
                               </ScrollArea>
@@ -602,6 +678,11 @@ const MyShipments = () => {
                                     setIsStatusDialogOpen(false);
                                     setSelectedShipment(null);
                                     setNewStatus("");
+                                    setKeysGivenTo("");
+                                    setVehicleDroppedAt("");
+                                    setPhotos([]);
+                                    setIssue("");
+                                    setDisputePhotos([]);
                                   }}
                                 >
                                   {t("myShipments.statusDialog.cancel")}
@@ -613,6 +694,72 @@ const MyShipments = () => {
                                   disabled={isUpdatingStatus}
                                 >
                                   {isUpdatingStatus ? t("myShipments.statusDialog.updating") : t("myShipments.statusDialog.update")}
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        )}
+                        {shipment.status === "DISPUTED" && (
+                          <Dialog
+                            open={isDisputeDialogOpen && viewingDisputeShipment === shipment._id}
+                            onOpenChange={setIsDisputeDialogOpen}
+                          >
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                onClick={() => handleViewDispute(shipment._id)}
+                                className="w-full sm:w-auto"
+                              >
+                                View Dispute
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Dispute Details</DialogTitle>
+                                <DialogDescription>
+                                  Review the dispute information for this shipment
+                                </DialogDescription>
+                              </DialogHeader>
+                              {viewingDisputeShipmentData?.disputeInfo && (
+                                <div className="space-y-4">
+                                  {viewingDisputeShipmentData.disputeInfo.issue && (
+                                    <div className="space-y-2">
+                                      <Label>Issue Description</Label>
+                                      <div className="p-3 rounded-lg dark:bg-gray-900 border">
+                                        <p className="text-sm">{viewingDisputeShipmentData.disputeInfo.issue}</p>
+                                      </div>
+                                    </div>
+                                  )}
+                                  {viewingDisputeShipmentData.disputeInfo.disputePhotos && 
+                                   viewingDisputeShipmentData.disputeInfo.disputePhotos.length > 0 && (
+                                    <div className="space-y-2">
+                                      <Label>Dispute Photos</Label>
+                                      <div className="grid grid-cols-2 gap-2">
+                                        {viewingDisputeShipmentData.disputeInfo.disputePhotos.map((photo, index) => (
+                                          <div key={index} className="relative">
+                                            <img
+                                              src={photo}
+                                              alt={`Dispute photo ${index + 1}`}
+                                              className="h-20 w-full rounded-md object-cover cursor-pointer"
+                                              onClick={() => window.open(photo, '_blank')}
+                                            />
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              <DialogFooter>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setIsDisputeDialogOpen(false);
+                                    setViewingDisputeShipment(null);
+                                  }}
+                                >
+                                  Close
                                 </Button>
                               </DialogFooter>
                             </DialogContent>
