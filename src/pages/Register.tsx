@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2, Globe } from "lucide-react";
+import { ArrowLeft, Loader2, Globe, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,8 @@ const Register = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>("");
 
   const nextLanguage = i18n.language?.startsWith("fr") ? "en" : "fr";
   const languageToggleLabel = i18n.language?.startsWith("fr") ? "EN" : "FR";
@@ -38,6 +40,7 @@ const Register = () => {
       region: {
         country: "",
         state: "",
+        city: "",
         postalCode: "",
       },
       insurance: {
@@ -51,14 +54,79 @@ const Register = () => {
   const role = watch("role");
   const isTransporter = role === "transporter";
 
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatarFile(null);
+    setAvatarPreview("");
+  };
+
   const onSubmit = async (data: RegisterPayload) => {
+    if (!avatarFile) {
+      toast.error("Profile picture is required", {
+        style: {
+          background: '#ef4444',
+          color: '#ffffff',
+        },
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
       // Only send insurance details for transporters
       if (data.role !== "transporter") {
         data.insurance = undefined;
       }
-      const response = await authService.register(data);
+      // Only send user_type for users
+      if (data.role !== "user") {
+        data.user_type = undefined;
+      }
+      
+      const formData = new FormData();
+      formData.append("full_name", data.full_name);
+      formData.append("email", data.email);
+      formData.append("phone_number", data.phone_number);
+      formData.append("password", data.password);
+      formData.append("role", data.role);
+      formData.append("avatar", avatarFile);
+      
+      if (data.user_type) {
+        formData.append("user_type", data.user_type);
+      }
+      
+      formData.append("region[country]", data.region.country);
+      formData.append("region[state]", data.region.state);
+      formData.append("region[city]", data.region.city);
+      formData.append("region[postalCode]", data.region.postalCode);
+      
+      if (data.company_name) {
+        formData.append("company_name", data.company_name);
+      }
+      if (data.business_address) {
+        formData.append("business_address", data.business_address);
+      }
+      if (data.tax_number) {
+        formData.append("tax_number", data.tax_number);
+      }
+      
+      if (data.insurance) {
+        formData.append("insurance[name]", data.insurance.name);
+        formData.append("insurance[policyNumber]", data.insurance.policyNumber);
+        formData.append("insurance[expiryDate]", data.insurance.expiryDate);
+      }
+      
+      const response = await authService.register(formData);
       
       toast.success("Registration successful! Please check your email for the verification code.", {
         style: { background: '#10b981', color: '#ffffff' },
@@ -135,9 +203,50 @@ const Register = () => {
             <h1 className="font-display text-3xl font-bold text-center mb-2">
               {t("auth.register.createAccount")}
             </h1>
-            <p className="text-center text-muted-foreground mb-8">
+            <p className="text-center text-muted-foreground mb-6">
               {t("auth.register.subtitle")}
             </p>
+
+            {/* Profile Picture Upload */}
+            <div className="space-y-2 mb-6">
+              <Label htmlFor="avatar">Profile Picture *</Label>
+              <div className="flex items-center gap-4">
+                {avatarPreview ? (
+                  <div className="relative">
+                    <img
+                      src={avatarPreview}
+                      alt="Profile preview"
+                      className="w-20 h-20 rounded-full object-cover border-2 border-border"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute -top-2 -right-2 h-6 w-6"
+                      onClick={removeAvatar}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-full border-2 border-dashed border-border flex items-center justify-center bg-muted">
+                    <Upload className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <Input
+                    id="avatar"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="cursor-pointer"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Upload a profile picture (required)
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* Register Form */}
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
@@ -226,6 +335,114 @@ const Register = () => {
                 )}
               </div>
 
+              {/* Account Type for Users */}
+              <AnimatePresence>
+                {!isTransporter && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-2"
+                  >
+                    <Label htmlFor="user_type">Account Type *</Label>
+                    <Select
+                      onValueChange={(value) => {
+                        register("user_type").onChange({ target: { value, name: "user_type" } });
+                      }}
+                    >
+                      <SelectTrigger id="user_type" className="w-full">
+                        <SelectValue placeholder="Select account type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="personal">Personal</SelectItem>
+                        <SelectItem value="company">Company</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Specify if this is for personal or business use
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Region - Required for both users and transporters */}
+              <div className="space-y-4">
+                {/* <Label>Location Information *</Label> */}
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="region_country">Country *</Label>
+                    <Select
+                      value={watch("region.country") || ""}
+                      onValueChange={(value) => {
+                        register("region.country", {
+                          required: "Country is required",
+                        }).onChange({ target: { value, name: "region.country" } });
+                      }}
+                    >
+                      <SelectTrigger id="region_country" className="w-full">
+                        <SelectValue placeholder="Select country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USA">USA</SelectItem>
+                        <SelectItem value="Canada">Canada</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.region?.country && (
+                      <p className="text-sm text-red-500">{errors.region.country.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="region_state">State/Province *</Label>
+                    <Input
+                      id="region_state"
+                      type="text"
+                      placeholder="Enter state or province"
+                      className="w-full"
+                      {...register("region.state", {
+                        required: "State/Province is required",
+                      })}
+                    />
+                    {errors.region?.state && (
+                      <p className="text-sm text-red-500">{errors.region.state.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="region_city">City *</Label>
+                    <Input
+                      id="region_city"
+                      type="text"
+                      placeholder="Enter city"
+                      className="w-full"
+                      {...register("region.city", {
+                        required: "City is required",
+                      })}
+                    />
+                    {errors.region?.city && (
+                      <p className="text-sm text-red-500">{errors.region.city.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="region_postalCode">Postal Code *</Label>
+                    <Input
+                      id="region_postalCode"
+                      type="text"
+                      placeholder="Enter postal code"
+                      className="w-full"
+                      {...register("region.postalCode", {
+                        required: "Postal code is required",
+                      })}
+                    />
+                    {errors.region?.postalCode && (
+                      <p className="text-sm text-red-500">{errors.region.postalCode.message}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               {/* Conditional Fields for Transporter */}
               <AnimatePresence>
                 {isTransporter && (
@@ -285,64 +502,6 @@ const Register = () => {
                       {errors.tax_number && (
                         <p className="text-sm text-red-500">{errors.tax_number.message}</p>
                       )}
-                    </div>
-
-                    {/* Region */}
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                      <div className="space-y-2">
-                        <Label htmlFor="region_country">{t("auth.register.country")}</Label>
-                        <Select
-                          value={watch("region.country") || ""}
-                          onValueChange={(value) => {
-                            register("region.country", {
-                              required: isTransporter ? t("auth.register.errors.countryRequired") : false,
-                            }).onChange({ target: { value, name: "region.country" } });
-                          }}
-                        >
-                          <SelectTrigger id="region_country" className="w-full">
-                            <SelectValue placeholder={t("auth.register.countryPlaceholder")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="USA">USA</SelectItem>
-                            <SelectItem value="Canada">Canada</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        {errors.region?.country && (
-                          <p className="text-sm text-red-500">{errors.region.country.message}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="region_state">{t("auth.register.stateProvince")}</Label>
-                        <Input
-                          id="region_state"
-                          type="text"
-                          placeholder={t("auth.register.stateProvincePlaceholder")}
-                          className="w-full"
-                          {...register("region.state", {
-                            required: isTransporter ? t("auth.register.errors.stateRequired") : false,
-                          })}
-                        />
-                        {errors.region?.state && (
-                          <p className="text-sm text-red-500">{errors.region.state.message}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="region_postalCode">{t("auth.register.postalCode")}</Label>
-                        <Input
-                          id="region_postalCode"
-                          type="text"
-                          placeholder={t("auth.register.postalCodePlaceholder")}
-                          className="w-full"
-                          {...register("region.postalCode", {
-                            required: isTransporter ? t("auth.register.errors.postalCodeRequired") : false,
-                          })}
-                        />
-                        {errors.region?.postalCode && (
-                          <p className="text-sm text-red-500">{errors.region.postalCode.message}</p>
-                        )}
-                      </div>
                     </div>
 
                     {/* Insurance */}

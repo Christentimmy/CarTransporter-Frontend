@@ -25,8 +25,10 @@ export interface RegisterPayload {
   company_name?: string;
   business_address?: string;
   tax_number?: string;
-  region?: Region;
+  region: Region;
   insurance?: Insurance;
+  avatar: File;
+  user_type?: "personal" | "company";
 }
 
 export interface LoginPayload {
@@ -67,14 +69,20 @@ class AuthService {
     return AuthService.instance;
   }
 
-  public async register(userData: RegisterPayload): Promise<AuthResponse> {
+  public async register(
+    userData: RegisterPayload | FormData,
+  ): Promise<AuthResponse> {
     try {
+      const isFormData = userData instanceof FormData;
+
       const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
+        headers: isFormData
+          ? {}
+          : {
+              "Content-Type": "application/json",
+            },
+        body: isFormData ? userData : JSON.stringify(userData),
       });
 
       if (!response.ok) {

@@ -7,6 +7,7 @@ export type UserStatus = "approved" | "rejected" | "pending" | "banned" | null;
 export interface Region {
   country: string;
   state: string;
+  city: string;
   postalCode: string;
 }
 
