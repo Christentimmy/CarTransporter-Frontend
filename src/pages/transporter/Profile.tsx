@@ -16,6 +16,9 @@ import {
   Edit,
   Lock,
   FileText,
+  Upload,
+  X,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,8 +46,12 @@ const TransporterProfile = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>("");
   const [formData, setFormData] = useState({
+    full_name: "",
     email: "",
+    avatar: "",
     phone_number: "",
     company_name: "",
     business_address: "",
@@ -52,6 +59,7 @@ const TransporterProfile = () => {
     region: {
       country: "",
       state: "",
+      city: "",
       postalCode: "",
     },
     insurance: {
@@ -86,14 +94,17 @@ const TransporterProfile = () => {
     if (user) {
       setFormData((prev) => ({
         ...prev,
+        full_name: user.full_name || "",
         email: user.email || "",
         phone_number: user.phone_number?.toString() || "",
         company_name: user.company_name || "",
         business_address: user.business_address || "",
         tax_number: user.tax_number || "",
+        avatar: user.avatar || "",
         region: {
           country: user.region?.country || "",
           state: user.region?.state || "",
+          city: user.region?.city || "",
           postalCode: user.region?.postalCode || "",
         },
         insurance: {
@@ -104,6 +115,12 @@ const TransporterProfile = () => {
             : "",
         },
       }));
+      // Set avatar preview from user data
+      if (user.avatar) {
+        setAvatarPreview(user.avatar);
+      } else {
+        setAvatarPreview("");
+      }
     }
   }, [user]);
 
@@ -128,13 +145,32 @@ const TransporterProfile = () => {
     super_admin: { label: "Super Admin", icon: Shield },
   };
 
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatarFile(null);
+    setAvatarPreview("");
+  };
+
   const updateProfileMutation = useMutation({
-    mutationFn: (payload: UpdateProfilePayload) => updateProfile(payload),
+    mutationFn: (payload: UpdateProfilePayload | FormData) => updateProfile(payload),
     onSuccess: async () => {
       toast.success(t("transporterProfile.toast.profileUpdated"), {
         style: { background: "#22c55e", color: "#fff" },
       });
       setIsEditing(false);
+      setAvatarFile(null);
+      setAvatarPreview("");
       await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
@@ -166,23 +202,19 @@ const TransporterProfile = () => {
     e.preventDefault();
     if (!user) return;
 
-    const payload: UpdateProfilePayload = {};
-    if (formData.phone_number !== user.phone_number) {
-      payload.phone_number = formData.phone_number;
-    }
-    if (formData.company_name !== (user.company_name || "")) {
-      payload.company_name = formData.company_name || undefined;
-    }
-    if (formData.business_address !== (user.business_address || "")) {
-      payload.business_address = formData.business_address || undefined;
-    }
-    if (formData.tax_number !== (user.tax_number || "")) {
-      payload.tax_number = formData.tax_number || undefined;
-    }
+    // Check if avatar file is uploaded or any other fields changed
+    const hasAvatarFile = avatarFile !== null;
+    const hasOtherChanges = 
+      formData.full_name !== (user.full_name || "") ||
+      formData.phone_number !== user.phone_number ||
+      formData.company_name !== (user.company_name || "") ||
+      formData.business_address !== (user.business_address || "") ||
+      formData.tax_number !== (user.tax_number || "");
 
     const currentRegion = {
       country: user.region?.country || "",
       state: user.region?.state || "",
+      city: user.region?.city || "",
       postalCode: user.region?.postalCode || "",
     };
     const newRegion = formData.region;
@@ -190,17 +222,9 @@ const TransporterProfile = () => {
     const regionChanged =
       currentRegion.country !== newRegion.country ||
       currentRegion.state !== newRegion.state ||
+      currentRegion.city !== newRegion.city ||
       currentRegion.postalCode !== newRegion.postalCode;
 
-    if (regionChanged) {
-      payload.region = {
-        country: newRegion.country,
-        state: newRegion.state,
-        postalCode: newRegion.postalCode,
-      };
-    }
-
-    // Check if insurance data changed
     const currentInsurance = {
       name: user.insurance?.name || "",
       policyNumber: user.insurance?.policyNumber || "",
@@ -215,14 +239,11 @@ const TransporterProfile = () => {
       currentInsurance.policyNumber !== newInsurance.policyNumber ||
       currentInsurance.expiryDate !== newInsurance.expiryDate;
 
-    if (insuranceChanged) {
-      payload.insurance = {
-        name: newInsurance.name,
-        policyNumber: newInsurance.policyNumber,
-        ...(newInsurance.expiryDate
-          ? { expiryDate: newInsurance.expiryDate }
-          : {}),
-      };
+    const hasChanges = hasAvatarFile || hasOtherChanges || regionChanged || insuranceChanged;
+
+    if (!hasChanges) {
+      setIsEditing(false);
+      return;
     }
 
     const emailChanged = formData.email !== user.email;
@@ -233,12 +254,87 @@ const TransporterProfile = () => {
       return;
     }
 
-    if (Object.keys(payload).length === 0) {
-      setIsEditing(false);
-      return;
-    }
+    // Use FormData if avatar file is present
+    if (hasAvatarFile) {
+      const formDataToSend = new FormData();
+      
+      if (formData.full_name !== (user.full_name || "")) {
+        formDataToSend.append("full_name", formData.full_name);
+      }
+      if (formData.phone_number !== user.phone_number) {
+        formDataToSend.append("phone_number", formData.phone_number);
+      }
+      if (formData.company_name !== (user.company_name || "")) {
+        formDataToSend.append("company_name", formData.company_name);
+      }
+      if (formData.business_address !== (user.business_address || "")) {
+        formDataToSend.append("business_address", formData.business_address);
+      }
+      if (formData.tax_number !== (user.tax_number || "")) {
+        formDataToSend.append("tax_number", formData.tax_number);
+      }
+      
+      if (regionChanged) {
+        formDataToSend.append("region[country]", newRegion.country);
+        formDataToSend.append("region[state]", newRegion.state);
+        formDataToSend.append("region[city]", newRegion.city);
+        formDataToSend.append("region[postalCode]", newRegion.postalCode);
+      }
+      
+      if (insuranceChanged) {
+        formDataToSend.append("insurance[name]", newInsurance.name);
+        formDataToSend.append("insurance[policyNumber]", newInsurance.policyNumber);
+        if (newInsurance.expiryDate) {
+          formDataToSend.append("insurance[expiryDate]", newInsurance.expiryDate);
+        }
+      }
+      
+      // Add avatar file
+      if (avatarFile) {
+        formDataToSend.append("avatar", avatarFile);
+      }
+      
+      updateProfileMutation.mutate(formDataToSend);
+    } else {
+      // Use regular JSON payload for non-file updates
+      const payload: UpdateProfilePayload = {};
+      if (formData.full_name !== (user.full_name || "")) {
+        payload.full_name = formData.full_name || undefined;
+      }
+      if (formData.phone_number !== user.phone_number) {
+        payload.phone_number = formData.phone_number;
+      }
+      if (formData.company_name !== (user.company_name || "")) {
+        payload.company_name = formData.company_name || undefined;
+      }
+      if (formData.business_address !== (user.business_address || "")) {
+        payload.business_address = formData.business_address || undefined;
+      }
+      if (formData.tax_number !== (user.tax_number || "")) {
+        payload.tax_number = formData.tax_number || undefined;
+      }
 
-    updateProfileMutation.mutate(payload);
+      if (regionChanged) {
+        payload.region = {
+          country: newRegion.country,
+          state: newRegion.state,
+          city: newRegion.city,
+          postalCode: newRegion.postalCode,
+        };
+      }
+
+      if (insuranceChanged) {
+        payload.insurance = {
+          name: newInsurance.name,
+          policyNumber: newInsurance.policyNumber,
+          ...(newInsurance.expiryDate
+            ? { expiryDate: newInsurance.expiryDate }
+            : {}),
+        };
+      }
+
+      updateProfileMutation.mutate(payload);
+    }
   };
 
   const handleVerifyEmailOtp = async () => {
@@ -278,6 +374,7 @@ const TransporterProfile = () => {
       const currentRegion = {
         country: user.region?.country || "",
         state: user.region?.state || "",
+        city: user.region?.city || "",
         postalCode: user.region?.postalCode || "",
       };
       const newRegion = formData.region;
@@ -285,13 +382,15 @@ const TransporterProfile = () => {
       const regionChanged =
         currentRegion.country !== newRegion.country ||
         currentRegion.state !== newRegion.state ||
+        currentRegion.city !== newRegion.city ||
         currentRegion.postalCode !== newRegion.postalCode;
 
       if (regionChanged) {
-        if (newRegion.country || newRegion.state || newRegion.postalCode) {
+        if (newRegion.country || newRegion.state || newRegion.city || newRegion.postalCode) {
           payload.region = {
             country: newRegion.country,
             state: newRegion.state,
+            city: newRegion.city,
             postalCode: newRegion.postalCode,
           };
         } else {
@@ -328,6 +427,8 @@ const TransporterProfile = () => {
 
   const handleCancel = () => {
     setFormData({
+      full_name: user?.full_name || "",
+      avatar: user?.avatar || "",
       email: user?.email || "",
       phone_number: user?.phone_number?.toString() || "",
       company_name: user?.company_name || "",
@@ -336,6 +437,7 @@ const TransporterProfile = () => {
       region: {
         country: user?.region?.country || "",
         state: user?.region?.state || "",
+        city: user?.region?.city || "",
         postalCode: user?.region?.postalCode || "",
       },
       insurance: {
@@ -346,6 +448,9 @@ const TransporterProfile = () => {
           : "",
       },
     });
+    // Reset avatar states
+    setAvatarFile(null);
+    setAvatarPreview(user?.avatar || "");
     setIsEditing(false);
   };
 
@@ -437,9 +542,18 @@ const TransporterProfile = () => {
             <Button variant="outline" onClick={handleCancel}>
               {t("transporterProfile.cancel")}
             </Button>
-            <Button variant="hero" onClick={handleSubmit}>
-              <Save className="mr-2 h-4 w-4" />
-              {t("transporterProfile.saveChanges")}
+            <Button variant="hero" onClick={handleSubmit} disabled={updateProfileMutation.isPending}>
+              {updateProfileMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {/* {t("transporterProfile.saving")} */}
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  {t("transporterProfile.saveChanges")}
+                </>
+              )}
             </Button>
           </div>
         )}
@@ -523,6 +637,72 @@ const TransporterProfile = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+            {/* Avatar Display */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                {(avatarPreview || user?.avatar) ? (
+                  <img
+                    src={avatarPreview || user?.avatar}
+                    alt="Profile"
+                    className="w-20 h-20 rounded-full object-cover border-2 border-border"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full border-2 border-dashed border-border flex items-center justify-center bg-muted">
+                    <User className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                )}
+                {isEditing && (
+                  <div className="absolute -bottom-1 -right-1">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="w-8 h-8 p-0 rounded-full cursor-pointer opacity-0 hover:opacity-100"
+                      id="avatar-upload"
+                    />
+                    <label 
+                      htmlFor="avatar-upload" 
+                      className="absolute inset-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90"
+                    >
+                      <Upload className="h-4 w-4 text-white" />
+                    </label>
+                  </div>
+                )}
+                {isEditing && (avatarPreview || user?.avatar) && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute -top-1 -right-1 h-6 w-6"
+                    onClick={removeAvatar}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-lg">{user?.full_name || "N/A"}</p>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
+                {isEditing && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Click camera icon to change profile picture
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="full_name">Full Name</Label>
+              <Input
+                id="full_name"
+                type="text"
+                value={formData.full_name}
+                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                disabled={!isEditing}
+                placeholder="Enter your full name"
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">{t("transporterProfile.personalInfo.email")}</Label>
               <Input
@@ -654,6 +834,24 @@ const TransporterProfile = () => {
                     }
                     disabled={!isEditing}
                     placeholder={t("transporterProfile.businessInfo.statePlaceholder")}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="region_city" className="text-xs text-muted-foreground">
+                    City
+                  </Label>
+                  <Input
+                    id="region_city"
+                    value={formData.region.city}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        region: { ...formData.region, city: e.target.value },
+                      })
+                    }
+                    disabled={!isEditing}
+                    placeholder="Enter city"
                   />
                 </div>
 

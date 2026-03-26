@@ -19,6 +19,8 @@ export interface Insurance {
 
 export interface UserProfile {
   _id: string;
+  full_name: string;
+  avatar?: string;
   email: string;
   phone_number: string;
   region?: Region | null;
@@ -58,6 +60,8 @@ export const getProfile = async (): Promise<GetProfileResponse> => {
 };
 
 export type UpdateProfilePayload = {
+  full_name?: string;
+  avatar?: string;
   email?: string;
   phone_number?: string;
   company_name?: string;
@@ -73,15 +77,21 @@ export interface UpdateProfileResponse {
 }
 
 export const updateProfile = async (
-  payload: UpdateProfilePayload,
+  payload: UpdateProfilePayload | FormData,
 ): Promise<UpdateProfileResponse> => {
+  const isFormData = payload instanceof FormData;
+
   const response = await fetch(API_ENDPOINTS.USER.UPDATE_PROFILE, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeader(),
-    },
-    body: JSON.stringify(payload),
+    headers: isFormData
+      ? {
+          ...getAuthHeader(),
+        }
+      : {
+          "Content-Type": "application/json",
+          ...getAuthHeader(),
+        },
+    body: isFormData ? payload : JSON.stringify(payload),
   });
 
   if (!response.ok) {

@@ -15,6 +15,9 @@ import {
   Save,
   Edit,
   Lock,
+  Upload,
+  X,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,8 +45,12 @@ const Profile = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>("");
   const [formData, setFormData] = useState({
+    full_name: "",
     email: "",
+    avatar: "",
     phone_number: "",
     company_name: "",
     business_address: "",
@@ -51,6 +58,7 @@ const Profile = () => {
     region: {
       country: "",
       state: "",
+      city: "",
       postalCode: "",
     },
   });
@@ -80,29 +88,57 @@ const Profile = () => {
     if (user) {
       setFormData((prev) => ({
         ...prev,
+        full_name: user.full_name || "",
         email: user.email || "",
         phone_number: user.phone_number?.toString() || "",
         company_name: user.company_name || "",
         business_address: user.business_address || "",
         tax_number: user.tax_number || "",
+        avatar: user.avatar || "",
         region: {
           country: user.region?.country || "",
           state: user.region?.state || "",
+          city: user.region?.city || "",
           postalCode: user.region?.postalCode || "",
         },
       }));
+      // Set avatar preview from user data
+      if (user.avatar) {
+        setAvatarPreview(user.avatar);
+      } else {
+        setAvatarPreview("");
+      }
     }
   }, [user]);
 
   const isTransporter = user?.role === "transporter";
 
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatarFile(null);
+    setAvatarPreview("");
+  };
+
   const updateProfileMutation = useMutation({
-    mutationFn: (payload: UpdateProfilePayload) => updateProfile(payload),
+    mutationFn: (payload: UpdateProfilePayload | FormData) => updateProfile(payload),
     onSuccess: async () => {
       toast.success(t("profile.toast.profileUpdated"), {
         style: { background: "#22c55e", color: "#fff" },
       });
       setIsEditing(false);
+      setAvatarFile(null);
+      setAvatarPreview("");
       await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
     onError: (err) => {
@@ -148,23 +184,19 @@ const Profile = () => {
     e.preventDefault();
     if (!user) return;
 
-    const payload: UpdateProfilePayload = {};
-    if (formData.phone_number !== user.phone_number) {
-      payload.phone_number = formData.phone_number;
-    }
-    if (formData.company_name !== (user.company_name || "")) {
-      payload.company_name = formData.company_name || undefined;
-    }
-    if (formData.business_address !== (user.business_address || "")) {
-      payload.business_address = formData.business_address || undefined;
-    }
-    if (formData.tax_number !== (user.tax_number || "")) {
-      payload.tax_number = formData.tax_number || undefined;
-    }
+    // Check if avatar file is uploaded or any other fields changed
+    const hasAvatarFile = avatarFile !== null;
+    const hasOtherChanges = 
+      formData.full_name !== (user.full_name || "") ||
+      formData.phone_number !== user.phone_number ||
+      formData.company_name !== (user.company_name || "") ||
+      formData.business_address !== (user.business_address || "") ||
+      formData.tax_number !== (user.tax_number || "");
 
     const currentRegion = {
       country: user.region?.country || "",
       state: user.region?.state || "",
+      city: user.region?.city || "",
       postalCode: user.region?.postalCode || "",
     };
     const newRegion = formData.region;
@@ -172,18 +204,14 @@ const Profile = () => {
     const regionChanged =
       currentRegion.country !== newRegion.country ||
       currentRegion.state !== newRegion.state ||
+      currentRegion.city !== newRegion.city ||
       currentRegion.postalCode !== newRegion.postalCode;
 
-    if (regionChanged) {
-      if (newRegion.country || newRegion.state || newRegion.postalCode) {
-        payload.region = {
-          country: newRegion.country,
-          state: newRegion.state,
-          postalCode: newRegion.postalCode,
-        };
-      } else {
-        payload.region = undefined;
-      }
+    const hasChanges = hasAvatarFile || hasOtherChanges || regionChanged;
+
+    if (!hasChanges) {
+      setIsEditing(false);
+      return;
     }
 
     const emailChanged = formData.email !== user.email;
@@ -194,12 +222,73 @@ const Profile = () => {
       return;
     }
 
-    if (Object.keys(payload).length === 0) {
-      setIsEditing(false);
-      return;
-    }
+    // Use FormData if avatar file is present
+    if (hasAvatarFile) {
+      const formDataToSend = new FormData();
+      
+      if (formData.full_name !== (user.full_name || "")) {
+        formDataToSend.append("full_name", formData.full_name);
+      }
+      if (formData.phone_number !== user.phone_number) {
+        formDataToSend.append("phone_number", formData.phone_number);
+      }
+      if (formData.company_name !== (user.company_name || "")) {
+        formDataToSend.append("company_name", formData.company_name);
+      }
+      if (formData.business_address !== (user.business_address || "")) {
+        formDataToSend.append("business_address", formData.business_address);
+      }
+      if (formData.tax_number !== (user.tax_number || "")) {
+        formDataToSend.append("tax_number", formData.tax_number);
+      }
+      
+      if (regionChanged) {
+        formDataToSend.append("region[country]", newRegion.country);
+        formDataToSend.append("region[state]", newRegion.state);
+        formDataToSend.append("region[city]", newRegion.city);
+        formDataToSend.append("region[postalCode]", newRegion.postalCode);
+      }
+      
+      // Add avatar file
+      if (avatarFile) {
+        formDataToSend.append("avatar", avatarFile);
+      }
+      
+      updateProfileMutation.mutate(formDataToSend);
+    } else {
+      // Use regular JSON payload for non-file updates
+      const payload: UpdateProfilePayload = {};
+      if (formData.full_name !== (user.full_name || "")) {
+        payload.full_name = formData.full_name || undefined;
+      }
+      if (formData.phone_number !== user.phone_number) {
+        payload.phone_number = formData.phone_number;
+      }
+      if (formData.company_name !== (user.company_name || "")) {
+        payload.company_name = formData.company_name || undefined;
+      }
+      if (formData.business_address !== (user.business_address || "")) {
+        payload.business_address = formData.business_address || undefined;
+      }
+      if (formData.tax_number !== (user.tax_number || "")) {
+        payload.tax_number = formData.tax_number || undefined;
+      }
 
-    updateProfileMutation.mutate(payload);
+      if (regionChanged) {
+        if (newRegion.country || newRegion.state || newRegion.city || newRegion.postalCode) {
+          payload.region = {
+            country: newRegion.country,
+            state: newRegion.state,
+            city: newRegion.city,
+            postalCode: newRegion.postalCode,
+          };
+        } else {
+          payload.region = undefined;
+        }
+      }
+
+      updateProfileMutation.mutate(payload);
+    }
   };
 
   const handleVerifyEmailOtp = async () => {
@@ -239,6 +328,7 @@ const Profile = () => {
       const currentRegion = {
         country: user.region?.country || "",
         state: user.region?.state || "",
+        city: user.region?.city || "",
         postalCode: user.region?.postalCode || "",
       };
       const newRegion = formData.region;
@@ -246,13 +336,15 @@ const Profile = () => {
       const regionChanged =
         currentRegion.country !== newRegion.country ||
         currentRegion.state !== newRegion.state ||
+        currentRegion.city !== newRegion.city ||
         currentRegion.postalCode !== newRegion.postalCode;
 
       if (regionChanged) {
-        if (newRegion.country || newRegion.state || newRegion.postalCode) {
+        if (newRegion.country || newRegion.state || newRegion.city || newRegion.postalCode) {
           payload.region = {
             country: newRegion.country,
             state: newRegion.state,
+            city: newRegion.city,
             postalCode: newRegion.postalCode,
           };
         } else {
@@ -289,17 +381,23 @@ const Profile = () => {
 
   const handleCancel = () => {
     setFormData({
+      full_name: user?.full_name || "",
       email: user?.email || "",
       phone_number: user?.phone_number?.toString() || "",
       company_name: user?.company_name || "",
       business_address: user?.business_address || "",
       tax_number: user?.tax_number || "",
+      avatar: user?.avatar || "",
       region: {
         country: user?.region?.country || "",
         state: user?.region?.state || "",
+        city: user?.region?.city || "",
         postalCode: user?.region?.postalCode || "",
       },
     });
+    // Reset avatar states
+    setAvatarFile(null);
+    setAvatarPreview(user?.avatar || "");
     setIsEditing(false);
   };
 
@@ -391,9 +489,18 @@ const Profile = () => {
             <Button variant="outline" onClick={handleCancel}>
               {t("profile.cancel")}
             </Button>
-            <Button variant="hero" onClick={handleSubmit}>
-              <Save className="mr-2 h-4 w-4" />
-              {t("profile.saveChanges")}
+            <Button variant="hero" onClick={handleSubmit} disabled={updateProfileMutation.isPending}>
+              {updateProfileMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {/* {t("profile.saving")} */}
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  {t("profile.saveChanges")}
+                </>
+              )}
             </Button>
           </div>
         )}
@@ -475,6 +582,72 @@ const Profile = () => {
             <CardDescription className="text-sm">{t("profile.personalInfo.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+            {/* Avatar Display */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                {(avatarPreview || user?.avatar) ? (
+                  <img
+                    src={avatarPreview || user?.avatar}
+                    alt="Profile"
+                    className="w-20 h-20 rounded-full object-cover border-2 border-border"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full border-2 border-dashed border-border flex items-center justify-center bg-muted">
+                    <User className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                )}
+                {isEditing && (
+                  <div className="absolute -bottom-1 -right-1">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="w-8 h-8 p-0 rounded-full cursor-pointer opacity-0 hover:opacity-100"
+                      id="avatar-upload"
+                    />
+                    <label 
+                      htmlFor="avatar-upload" 
+                      className="absolute inset-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90"
+                    >
+                      <Upload className="h-4 w-4 text-white" />
+                    </label>
+                  </div>
+                )}
+                {isEditing && (avatarPreview || user?.avatar) && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute -top-1 -right-1 h-6 w-6"
+                    onClick={removeAvatar}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-lg">{user?.full_name || "N/A"}</p>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
+                {isEditing && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Click camera icon to change profile picture
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="full_name">Full Name</Label>
+              <Input
+                id="full_name"
+                type="text"
+                value={formData.full_name}
+                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                disabled={!isEditing}
+                placeholder="Enter your full name"
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">{t("profile.personalInfo.email")}</Label>
               <Input
@@ -507,6 +680,101 @@ const Profile = () => {
                   {t("profile.personalInfo.phoneNotVerified")}
                 </p>
               )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Region Information */}
+        <Card>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <Building2 className="h-5 w-5" />
+              Region Information
+            </CardTitle>
+            <CardDescription className="text-sm">Manage your location details</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
+            <div className="space-y-2">
+              <Label htmlFor="region_country">Region</Label>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="region_country" className="text-xs text-muted-foreground">
+                    Country
+                  </Label>
+                  <Select
+                    value={formData.region.country}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        region: { ...formData.region, country: value },
+                      })
+                    }
+                    disabled={!isEditing}
+                  >
+                    <SelectTrigger id="region_country">
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USA">USA</SelectItem>
+                      <SelectItem value="Canada">Canada</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="region_state" className="text-xs text-muted-foreground">
+                    State
+                  </Label>
+                  <Input
+                    id="region_state"
+                    value={formData.region.state}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        region: { ...formData.region, state: e.target.value },
+                      })
+                    }
+                    disabled={!isEditing}
+                    placeholder="Enter state"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="region_city" className="text-xs text-muted-foreground">
+                    City
+                  </Label>
+                  <Input
+                    id="region_city"
+                    value={formData.region.city}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        region: { ...formData.region, city: e.target.value },
+                      })
+                    }
+                    disabled={!isEditing}
+                    placeholder="Enter city"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="region_postalCode" className="text-xs text-muted-foreground">
+                    Postal Code
+                  </Label>
+                  <Input
+                    id="region_postalCode"
+                    value={formData.region.postalCode}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        region: { ...formData.region, postalCode: e.target.value },
+                      })
+                    }
+                    disabled={!isEditing}
+                    placeholder="Enter postal code"
+                  />
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -554,71 +822,6 @@ const Profile = () => {
                     disabled={!isEditing}
                     placeholder={t("profile.businessInfo.taxNumberPlaceholder")}
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="region_country">{t("profile.businessInfo.region")}</Label>
-                  <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="region_country" className="text-xs text-muted-foreground">
-                        {t("profile.businessInfo.country")}
-                      </Label>
-                      <Select
-                        value={formData.region.country}
-                        onValueChange={(value) =>
-                          setFormData({
-                            ...formData,
-                            region: { ...formData.region, country: value },
-                          })
-                        }
-                        disabled={!isEditing}
-                      >
-                        <SelectTrigger id="region_country">
-                        placeholder={t("profile.businessInfo.countryPlaceholder")}
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="USA">USA</SelectItem>
-                          <SelectItem value="Canada">Canada</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label htmlFor="region_state" className="text-xs text-muted-foreground">
-                        {t("profile.businessInfo.state")}
-                      </Label>
-                      <Input
-                        id="region_state"
-                        value={formData.region.state}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            region: { ...formData.region, state: e.target.value },
-                          })
-                        }
-                        disabled={!isEditing}
-                        placeholder={t("profile.businessInfo.statePlaceholder")}
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label htmlFor="region_postalCode" className="text-xs text-muted-foreground">
-                        {t("profile.businessInfo.postalCode")}
-                      </Label>
-                      <Input
-                        id="region_postalCode"
-                        value={formData.region.postalCode}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            region: { ...formData.region, postalCode: e.target.value },
-                          })
-                        }
-                        disabled={!isEditing}
-                        placeholder={t("profile.businessInfo.postalCodePlaceholder")}
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
             </CardContent>
