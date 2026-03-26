@@ -122,6 +122,10 @@ const MyRequests = () => {
   const [disputePhotos, setDisputePhotos] = useState<File[]>([]);
   const [isSubmittingDispute, setIsSubmittingDispute] = useState(false);
   
+  // View dispute dialog state
+  const [isViewDisputeDialogOpen, setIsViewDisputeDialogOpen] = useState(false);
+  const [viewingDisputeShipment, setViewingDisputeShipment] = useState<MyShipment | null>(null);
+  
   const queryClient = useQueryClient();
   const limit = 10;
 
@@ -187,6 +191,11 @@ const MyRequests = () => {
   const handleOpenDispute = (shipment: MyShipment) => {
     setSelectedShipmentForDispute(shipment);
     setIsDisputeDialogOpen(true);
+  };
+
+  const handleViewDispute = (shipment: MyShipment) => {
+    setViewingDisputeShipment(shipment);
+    setIsViewDisputeDialogOpen(true);
   };
 
   const handleSubmitDispute = async () => {
@@ -843,6 +852,19 @@ const MyRequests = () => {
                             </Button>
                           </div>
                         )}
+                        {request.status === "DISPUTED" && (
+                          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => handleViewDispute(request)}
+                            >
+                              View Dispute
+                            </Button>
+                          </div>
+                        )}
                     </div>
                   </CardHeader>
                   <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
@@ -1257,6 +1279,60 @@ const MyRequests = () => {
               {isSubmittingDispute
                 ? t("myRequests.dispute.submitting")
                 : t("myRequests.dispute.submit")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* View Dispute Dialog */}
+      <Dialog open={isViewDisputeDialogOpen} onOpenChange={setIsViewDisputeDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Dispute Details</DialogTitle>
+            <DialogDescription>
+              Review the dispute information for this shipment
+            </DialogDescription>
+          </DialogHeader>
+          {viewingDisputeShipment?.disputeInfo && (
+            <div className="space-y-4">
+              {viewingDisputeShipment.disputeInfo.issue && (
+                <div className="space-y-2">
+                  <Label>Issue Description</Label>
+                  <div className="p-3 rounded-lg border bg-background">
+                    <p className="text-sm">{viewingDisputeShipment.disputeInfo.issue}</p>
+                  </div>
+                </div>
+              )}
+              {viewingDisputeShipment.disputeInfo.disputePhotos && 
+               viewingDisputeShipment.disputeInfo.disputePhotos.length > 0 && (
+                <div className="space-y-2">
+                  <Label>Dispute Photos</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {viewingDisputeShipment.disputeInfo.disputePhotos.map((photo, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={photo}
+                          alt={`Dispute photo ${index + 1}`}
+                          className="h-20 w-full rounded-md object-cover cursor-pointer"
+                          onClick={() => window.open(photo, '_blank')}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsViewDisputeDialogOpen(false);
+                setViewingDisputeShipment(null);
+              }}
+            >
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
