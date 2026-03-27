@@ -49,7 +49,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { cancelShipment, getMyShipments, processPayment, resolveDispute, updateShipmentStatus } from "@/services/shipmentService";
+import { cancelShipment, getMyShipments, processPayment, resolveDispute, updateShipmentStatus, viewShipmentAssignedTo } from "@/services/shipmentService";
 import type { MyShipment } from "@/types/shipment";
 import { useTranslation } from "react-i18next";
 
@@ -129,6 +129,11 @@ const MyRequests = () => {
   // Resolve dispute state
   const [isResolvingDispute, setIsResolvingDispute] = useState(false);
   
+  // View company dialog state
+  const [isViewCompanyDialogOpen, setIsViewCompanyDialogOpen] = useState(false);
+  const [companyInfo, setCompanyInfo] = useState<any>(null);
+  const [isLoadingCompany, setIsLoadingCompany] = useState(false);
+  
   const queryClient = useQueryClient();
   const limit = 10;
 
@@ -199,6 +204,22 @@ const MyRequests = () => {
   const handleViewDispute = (shipment: MyShipment) => {
     setViewingDisputeShipment(shipment);
     setIsViewDisputeDialogOpen(true);
+  };
+
+  const handleViewCompany = async (shipment: MyShipment) => {
+    setIsLoadingCompany(true);
+    setIsViewCompanyDialogOpen(true);
+    try {
+      const response = await viewShipmentAssignedTo({ shipmentId: shipment._id });
+      setCompanyInfo(response.data);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to fetch company information", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      setIsViewCompanyDialogOpen(false);
+    } finally {
+      setIsLoadingCompany(false);
+    }
   };
 
   const handleResolveDispute = async (shipment: MyShipment) => {
@@ -822,8 +843,7 @@ const MyRequests = () => {
                         </Link>
                       )}
 
-                      {request.status === "ASSIGNED" &&
-                        request.escrowStatus !== "PAID_IN_ESCROW" && (
+                      {request.status === "ASSIGNED" && (
                           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                             <Button
                               type="button"
@@ -848,6 +868,15 @@ const MyRequests = () => {
                               {cancellingShipmentId === request._id
                                 ? t("myRequests.card.cancelling")
                                 : t("myRequests.card.cancel")}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => handleViewCompany(request)}
+                            >
+                              Show Company
                             </Button>
                           </div>
                         )}
@@ -1370,6 +1399,67 @@ const MyRequests = () => {
               onClick={() => {
                 setIsViewDisputeDialogOpen(false);
                 setViewingDisputeShipment(null);
+              }}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Company Dialog */}
+      <Dialog open={isViewCompanyDialogOpen} onOpenChange={setIsViewCompanyDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Company Information</DialogTitle>
+            <DialogDescription>
+              View details of the company this shipment is assigned to.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {isLoadingCompany ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="ml-2 text-muted-foreground">Loading company information...</p>
+              </div>
+            ) : companyInfo ? (
+              <>
+                <div className="space-y-2">
+                  <Label>Company Name</Label>
+                  <div className="p-3 border rounded-md bg-muted/50">
+                    <p className="text-sm">{companyInfo.company_name}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Business Address</Label>
+                  <div className="p-3 border rounded-md bg-muted/50">
+                    <p className="text-sm">{companyInfo.business_address}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Email</Label>
+                  <div className="p-3 border rounded-md bg-muted/50">
+                    <p className="text-sm">{companyInfo.email}</p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Failed to load company information</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsViewCompanyDialogOpen(false);
+                setCompanyInfo(null);
               }}
             >
               Close

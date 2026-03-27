@@ -17,9 +17,13 @@ import {
   XCircle,
   Package,
   Loader2,
+  Upload,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -45,7 +49,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { getMyShipments, processPayment } from "@/services/shipmentService";
+import { getMyShipments, processPayment, resolveDispute, updateShipmentStatus, viewShipmentAssignedTo } from "@/services/shipmentService";
 import type { MyShipment } from "@/types/shipment";
 import { useTranslation } from "react-i18next";
 
@@ -105,6 +109,30 @@ const TransporterMyRequests = () => {
     useState<MyShipment | null>(null);
   const [isPaymentReady, setIsPaymentReady] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  
+  // Dispute dialog state
+  const [isDisputeDialogOpen, setIsDisputeDialogOpen] = useState(false);
+  const [selectedShipmentForDispute, setSelectedShipmentForDispute] = useState<MyShipment | null>(null);
+  const [disputeIssue, setDisputeIssue] = useState("");
+  const [disputePhotos, setDisputePhotos] = useState<File[]>([]);
+  const [isSubmittingDispute, setIsSubmittingDispute] = useState(false);
+  
+  // View dispute dialog state
+  const [isViewDisputeDialogOpen, setIsViewDisputeDialogOpen] = useState(false);
+  const [viewingDisputeShipment, setViewingDisputeShipment] = useState<MyShipment | null>(null);
+  
+  // Resolve dispute state
+  const [isResolvingDispute, setIsResolvingDispute] = useState(false);
+  
+  // View delivery dialog state
+  const [isViewDeliveryDialogOpen, setIsViewDeliveryDialogOpen] = useState(false);
+  const [viewingDeliveryShipment, setViewingDeliveryShipment] = useState<MyShipment | null>(null);
+  
+  // View company dialog state
+  const [isViewCompanyDialogOpen, setIsViewCompanyDialogOpen] = useState(false);
+  const [companyInfo, setCompanyInfo] = useState<any>(null);
+  const [isLoadingCompany, setIsLoadingCompany] = useState(false);
+  
   const queryClient = useQueryClient();
   const limit = 10;
 
@@ -360,6 +388,107 @@ const TransporterMyRequests = () => {
       );
     } finally {
       setIsProcessingPayment(false);
+    }
+  };
+
+  const handleDisputePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newPhotos = Array.from(e.target.files);
+      setDisputePhotos([...disputePhotos, ...newPhotos]);
+    }
+  };
+
+  const removeDisputePhoto = (index: number) => {
+    setDisputePhotos(disputePhotos.filter((_, i) => i !== index));
+  };
+
+  const handleOpenDispute = (shipment: MyShipment) => {
+    setSelectedShipmentForDispute(shipment);
+    setIsDisputeDialogOpen(true);
+  };
+
+  const handleViewDispute = (shipment: MyShipment) => {
+    setViewingDisputeShipment(shipment);
+    setIsViewDisputeDialogOpen(true);
+  };
+
+  const handleViewDelivery = (shipment: MyShipment) => {
+    setViewingDeliveryShipment(shipment);
+    setIsViewDeliveryDialogOpen(true);
+  };
+
+  const handleViewCompany = async (shipment: MyShipment) => {
+    setIsLoadingCompany(true);
+    setIsViewCompanyDialogOpen(true);
+    try {
+      const response = await viewShipmentAssignedTo({ shipmentId: shipment._id });
+      setCompanyInfo(response.data);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to fetch company information", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      setIsViewCompanyDialogOpen(false);
+    } finally {
+      setIsLoadingCompany(false);
+    }
+  };
+
+  const handleResolveDispute = async (shipment: MyShipment) => {
+    setIsResolvingDispute(true);
+    try {
+      await resolveDispute({ shipmentId: shipment._id });
+      
+      toast.success("Dispute resolved successfully", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+      
+      // Invalidate queries to refresh the data
+      await queryClient.invalidateQueries({ queryKey: ["my-shipments"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to resolve dispute", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    } finally {
+      setIsResolvingDispute(false);
+    }
+  };
+
+  const handleSubmitDispute = async () => {
+    if (!selectedShipmentForDispute || !disputeIssue.trim()) {
+      toast.error("Please describe the issue", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      return;
+    }
+
+    setIsSubmittingDispute(true);
+    try {
+      await updateShipmentStatus(
+        selectedShipmentForDispute._id,
+        "DISPUTED",
+        undefined,
+        undefined,
+        undefined,
+        disputeIssue,
+        disputePhotos.length > 0 ? disputePhotos : undefined,
+      );
+
+      toast.success("Dispute submitted successfully", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+
+      setIsDisputeDialogOpen(false);
+      setSelectedShipmentForDispute(null);
+      setDisputeIssue("");
+      setDisputePhotos([]);
+      
+      await queryClient.invalidateQueries({ queryKey: ["my-shipments"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to submit dispute", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    } finally {
+      setIsSubmittingDispute(false);
     }
   };
 
@@ -703,6 +832,74 @@ const TransporterMyRequests = () => {
                             {t("myRequests.card.payNow")}
                           </Button>
                         )}
+                        
+                        {/* Show Company button for ASSIGNED status */}
+                        {request.status === "ASSIGNED" && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full sm:w-auto shrink-0"
+                            onClick={() => handleViewCompany(request)}
+                          >
+                            Show Company
+                          </Button>
+                        )}
+                        
+                        {/* Dispute buttons for DELIVERED and DISPUTED statuses */}
+                        {request.status === "DELIVERED" && (
+                          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => handleViewDelivery(request)}
+                            >
+                              View Delivery
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="hero"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => handleOpenDispute(request)}
+                            >
+                              Raise Dispute
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {request.status === "DISPUTED" && (
+                          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => handleViewDispute(request)}
+                            >
+                              View Dispute
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="hero"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => handleResolveDispute(request)}
+                              disabled={isResolvingDispute}
+                            >
+                              {isResolvingDispute ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Resolving...
+                                </>
+                              ) : (
+                                "Resolve Dispute"
+                              )}
+                            </Button>
+                          </div>
+                        )}
                     </div>
                   </CardHeader>
                   <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
@@ -954,6 +1151,290 @@ const TransporterMyRequests = () => {
               {isProcessingPayment
                 ? t("myRequests.payment.processing")
                 : t("myRequests.payment.payNow")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Raise Dispute Dialog */}
+      <Dialog open={isDisputeDialogOpen} onOpenChange={setIsDisputeDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Raise Dispute</DialogTitle>
+            <DialogDescription>
+              Please describe the issue and upload any supporting photos.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="dispute-issue">Issue Description</Label>
+              <Textarea
+                id="dispute-issue"
+                placeholder="Please describe the issue in detail..."
+                value={disputeIssue}
+                onChange={(e) => setDisputeIssue(e.target.value)}
+                rows={4}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="dispute-photos">Supporting Photos *</Label>
+              <Input
+                id="dispute-photos"
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleDisputePhotoUpload}
+              />
+              {disputePhotos.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">Photo Preview:</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {disputePhotos.map((photo, index) => (
+                      <div key={index} className="relative border rounded-md overflow-hidden">
+                        <img
+                          src={URL.createObjectURL(photo)}
+                          alt={`Dispute photo ${index + 1}`}
+                          className="w-full h-24 object-cover"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-1 right-1 h-6 w-6 p-0"
+                          onClick={() => removeDisputePhoto(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {disputePhotos.length === 0 && (
+                <p className="text-sm text-destructive">At least one photo is required</p>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsDisputeDialogOpen(false);
+                setSelectedShipmentForDispute(null);
+                setDisputeIssue("");
+                setDisputePhotos([]);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="hero"
+              onClick={handleSubmitDispute}
+              disabled={isSubmittingDispute || !disputeIssue.trim() || disputePhotos.length === 0}
+            >
+              {isSubmittingDispute ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Dispute"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Dispute Dialog */}
+      <Dialog open={isViewDisputeDialogOpen} onOpenChange={setIsViewDisputeDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Dispute Details</DialogTitle>
+            <DialogDescription>
+              Review the dispute information and supporting documents.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {viewingDisputeShipment?.disputeInfo && (
+              <div className="space-y-2">
+                <Label>Issue Description</Label>
+                <div className="p-3 border rounded-md bg-muted/50">
+                  <p className="text-sm">{viewingDisputeShipment.disputeInfo.issue}</p>
+                </div>
+              </div>
+            )}
+
+            {viewingDisputeShipment?.disputeInfo.disputePhotos && viewingDisputeShipment.disputeInfo.disputePhotos.length > 0 && (
+              <div className="space-y-2">
+                <Label>Supporting Photos</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {viewingDisputeShipment.disputeInfo.disputePhotos.map((photo, index) => (
+                    <div key={index} className="border rounded-md overflow-hidden">
+                      <img
+                        src={photo}
+                        alt={`Dispute photo ${index + 1}`}
+                        className="w-full h-32 object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!viewingDisputeShipment?.disputeInfo.issue && viewingDisputeShipment?.disputeInfo.disputePhotos?.length === 0 && (
+              <div className="text-center py-4">
+                <p className="text-muted-foreground">No dispute details available</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsViewDisputeDialogOpen(false);
+                setViewingDisputeShipment(null);
+              }}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Delivery Dialog */}
+      <Dialog open={isViewDeliveryDialogOpen} onOpenChange={setIsViewDeliveryDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delivery Details</DialogTitle>
+            <DialogDescription>
+              Review the delivery information and photos.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {viewingDeliveryShipment?.deliveryInfo?.keysGivenTo && (
+              <div className="space-y-2">
+                <Label>Keys Given To</Label>
+                <div className="p-3 border rounded-md bg-muted/50">
+                  <p className="text-sm">{viewingDeliveryShipment.deliveryInfo.keysGivenTo}</p>
+                </div>
+              </div>
+            )}
+
+            {viewingDeliveryShipment?.deliveryInfo?.vehicleDroppedAt && (
+              <div className="space-y-2">
+                <Label>Vehicle Dropped At</Label>
+                <div className="p-3 border rounded-md bg-muted/50">
+                  <p className="text-sm">{viewingDeliveryShipment.deliveryInfo.vehicleDroppedAt}</p>
+                </div>
+              </div>
+            )}
+
+            {viewingDeliveryShipment?.deliveryInfo?.deliveryPhotos && viewingDeliveryShipment.deliveryInfo.deliveryPhotos.length > 0 && (
+              <div className="space-y-2">
+                <Label>Delivery Photos</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {viewingDeliveryShipment.deliveryInfo.deliveryPhotos.map((photo, index) => (
+                    <div key={index} className="border rounded-md overflow-hidden">
+                      <img
+                        src={photo}
+                        alt={`Delivery photo ${index + 1}`}
+                        className="w-full h-32 object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!viewingDeliveryShipment?.deliveryInfo?.keysGivenTo && 
+             !viewingDeliveryShipment?.deliveryInfo?.vehicleDroppedAt && 
+             viewingDeliveryShipment?.deliveryInfo?.deliveryPhotos?.length === 0 && (
+              <div className="text-center py-4">
+                <p className="text-muted-foreground">No delivery details available</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsViewDeliveryDialogOpen(false);
+                setViewingDeliveryShipment(null);
+              }}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Company Dialog */}
+      <Dialog open={isViewCompanyDialogOpen} onOpenChange={setIsViewCompanyDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Company Information</DialogTitle>
+            <DialogDescription>
+              View details of the company this shipment is assigned to.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {isLoadingCompany ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="ml-2 text-muted-foreground">Loading company information...</p>
+              </div>
+            ) : companyInfo ? (
+              <>
+                <div className="space-y-2">
+                  <Label>Company Name</Label>
+                  <div className="p-3 border rounded-md bg-muted/50">
+                    <p className="text-sm">{companyInfo.company_name}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Business Address</Label>
+                  <div className="p-3 border rounded-md bg-muted/50">
+                    <p className="text-sm">{companyInfo.business_address}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Email</Label>
+                  <div className="p-3 border rounded-md bg-muted/50">
+                    <p className="text-sm">{companyInfo.email}</p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Failed to load company information</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsViewCompanyDialogOpen(false);
+                setCompanyInfo(null);
+              }}
+            >
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>

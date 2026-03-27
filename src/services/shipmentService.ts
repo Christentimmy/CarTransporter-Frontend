@@ -318,6 +318,20 @@ export interface ResolveDisputeResponse {
   message?: string;
 }
 
+export interface ViewShipmentAssignedToRequest {
+  shipmentId: string;
+}
+
+export interface ViewShipmentAssignedToResponse {
+  success: boolean;
+  message?: string;
+  data: {
+    company_name: string;
+    business_address: string;
+    email: string;
+  };
+}
+
 export const processPayment = async (
   data: ProcessPaymentRequest,
 ): Promise<ProcessPaymentResponse> => {
@@ -353,6 +367,26 @@ export const resolveDispute = async (
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.message || "Failed to resolve dispute");
+  }
+
+  return response.json();
+};
+
+export const viewShipmentAssignedTo = async (
+  data: ViewShipmentAssignedToRequest,
+): Promise<ViewShipmentAssignedToResponse> => {
+  const response = await fetch(API_ENDPOINTS.USER.VIEW_SHIPMENT_ASSIGNED_TO, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to fetch company information");
   }
 
   return response.json();
