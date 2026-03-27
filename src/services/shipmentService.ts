@@ -309,6 +309,15 @@ export interface ProcessPaymentResponse {
   paymentId?: string;
 }
 
+export interface ResolveDisputeRequest {
+  shipmentId: string;
+}
+
+export interface ResolveDisputeResponse {
+  success: boolean;
+  message?: string;
+}
+
 export const processPayment = async (
   data: ProcessPaymentRequest,
 ): Promise<ProcessPaymentResponse> => {
@@ -324,6 +333,26 @@ export const processPayment = async (
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.message || "Payment processing failed");
+  }
+
+  return response.json();
+};
+
+export const resolveDispute = async (
+  data: ResolveDisputeRequest,
+): Promise<ResolveDisputeResponse> => {
+  const response = await fetch(API_ENDPOINTS.USER.RESOLVE_DISPUTE, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to resolve dispute");
   }
 
   return response.json();

@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
     LIST_SHIPMENTS: `${API_BASE_URL}/user/list-shipments`,
     GET_SHIPMENT_BIDS: `${API_BASE_URL}/user/get-shipment-bids`,
     ACCEPT_BID: `${API_BASE_URL}/user/accept-bid`,
+    RESOLVE_DISPUTE: `${API_BASE_URL}/user/resolve-dispute`,
     UPDATE_SHIPMENT_STATUS: `${API_BASE_URL}/user/update-shipment-status`,
     CANCEL_SHIPMENT: `${API_BASE_URL}/user/cancel-shipment`,
     PROCESS_PAYMENT: `${API_BASE_URL}/payments/pay`,

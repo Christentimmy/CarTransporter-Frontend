@@ -49,7 +49,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { cancelShipment, getMyShipments, processPayment, updateShipmentStatus } from "@/services/shipmentService";
+import { cancelShipment, getMyShipments, processPayment, resolveDispute, updateShipmentStatus } from "@/services/shipmentService";
 import type { MyShipment } from "@/types/shipment";
 import { useTranslation } from "react-i18next";
 
@@ -126,6 +126,9 @@ const MyRequests = () => {
   const [isViewDisputeDialogOpen, setIsViewDisputeDialogOpen] = useState(false);
   const [viewingDisputeShipment, setViewingDisputeShipment] = useState<MyShipment | null>(null);
   
+  // Resolve dispute state
+  const [isResolvingDispute, setIsResolvingDispute] = useState(false);
+  
   const queryClient = useQueryClient();
   const limit = 10;
 
@@ -196,6 +199,26 @@ const MyRequests = () => {
   const handleViewDispute = (shipment: MyShipment) => {
     setViewingDisputeShipment(shipment);
     setIsViewDisputeDialogOpen(true);
+  };
+
+  const handleResolveDispute = async (shipment: MyShipment) => {
+    setIsResolvingDispute(true);
+    try {
+      await resolveDispute({ shipmentId: shipment._id });
+      
+      toast.success("Dispute resolved successfully", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+      
+      // Invalidate queries to refresh the data
+      await queryClient.invalidateQueries({ queryKey: ["my-shipments"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to resolve dispute", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    } finally {
+      setIsResolvingDispute(false);
+    }
   };
 
   const handleSubmitDispute = async () => {
@@ -862,6 +885,23 @@ const MyRequests = () => {
                               onClick={() => handleViewDispute(request)}
                             >
                               View Dispute
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="hero"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => handleResolveDispute(request)}
+                              disabled={isResolvingDispute}
+                            >
+                              {isResolvingDispute ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Resolving...
+                                </>
+                              ) : (
+                                "Resolve Dispute"
+                              )}
                             </Button>
                           </div>
                         )}

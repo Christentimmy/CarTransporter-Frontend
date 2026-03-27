@@ -558,7 +558,7 @@ const MyShipments = () => {
                                     {newStatus === "DELIVERED" && (
                                       <div className="space-y-4 mt-4">
                                         <div className="space-y-2">
-                                          <Label htmlFor="keys-given-to">Keys Given To (Optional)</Label>
+                                          <Label htmlFor="keys-given-to">Keys Given To</Label>
                                           <Input
                                             id="keys-given-to"
                                             value={keysGivenTo}
