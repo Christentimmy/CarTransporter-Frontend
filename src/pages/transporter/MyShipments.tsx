@@ -88,6 +88,11 @@ const statusConfig: Record<
     variant: "destructive",
     icon: XCircle,
   },
+  EN_ROUTE: {
+    label: "En route",
+    variant: "default",
+    icon: XCircle,
+  }
 };
 
 const getStatusBadge = (status: string) => {

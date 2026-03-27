@@ -67,6 +67,7 @@ const statusConfig: Record<
     icon: typeof Clock;
   }
 > = {
+  EN_ROUTE: { label: "En Route", variant: "default", icon: Clock },
   DRAFT: { label: "Draft", variant: "outline", icon: Clock },
   LIVE: { label: "Live", variant: "default", icon: Clock },
   ENDED: { label: "Ended", variant: "secondary", icon: XCircle },
@@ -207,6 +208,7 @@ const MyRequests = () => {
   };
 
   const handleViewCompany = async (shipment: MyShipment) => {
+    setCompanyInfo(null);
     setIsLoadingCompany(true);
     setIsViewCompanyDialogOpen(true);
     try {
@@ -869,17 +871,22 @@ const MyRequests = () => {
                                 ? t("myRequests.card.cancelling")
                                 : t("myRequests.card.cancel")}
                             </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="w-full sm:w-auto shrink-0"
-                              onClick={() => handleViewCompany(request)}
-                            >
-                              Show Company
-                            </Button>
                           </div>
                         )}
+
+                      {/* Show Company button - hidden for ENDED and CANCELLED */}
+                      {request.status !== "ENDED" && request.status !== "CANCELLED" && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="w-full sm:w-auto shrink-0"
+                          onClick={() => handleViewCompany(request)}
+                        >
+                          Show Company
+                        </Button>
+                      )}
+
                         {request.status === "DELIVERED" && (
                           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                             {request.deliveryInfo && (

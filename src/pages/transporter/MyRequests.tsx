@@ -833,8 +833,8 @@ const TransporterMyRequests = () => {
                           </Button>
                         )}
                         
-                        {/* Show Company button for ASSIGNED status */}
-                        {request.status === "ASSIGNED" && (
+                        {/* Show Company button - hidden for ENDED and CANCELLED */}
+                        {request.status !== "ENDED" && request.status !== "CANCELLED" && (
                           <Button
                             type="button"
                             variant="outline"
