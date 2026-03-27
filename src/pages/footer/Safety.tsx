@@ -88,28 +88,28 @@ const Safety = () => {
     {
       title: t("safety.tips.beforeTransport.title"),
       tips: [
-        "Research transporter credentials and reviews",
-        "Verify transporter identity and licenses",
-        "Meet transporter in person when possible",
-        "Read reviews from other users"
+        t("safety.tips.beforeTransport.tips.research"),
+        t("safety.tips.beforeTransport.tips.verifyCredentials"),
+        t("safety.tips.beforeTransport.tips.meetInPerson"),
+        t("safety.tips.beforeTransport.tips.readReviews")
       ]
     },
     {
       title: t("safety.tips.duringTransport.title"),
       tips: [
-        "Maintain regular contact with transporter",
-        "Track shipment progress in real-time",
-        "Take photos before handover and after delivery",
-        "Remove valuable personal items from vehicle"
+        t("safety.tips.duringTransport.tips.stayInContact"),
+        t("safety.tips.duringTransport.tips.trackShipment"),
+        t("safety.tips.duringTransport.tips.takePhotos"),
+        t("safety.tips.duringTransport.tips.secureBelongings")
       ]
     },
     {
       title: t("safety.tips.afterTransport.title"),
       tips: [
-        "Thoroughly inspect vehicle upon delivery",
-        "Document any issues immediately with photos",
-        "Confirm delivery condition matches agreement",
-        "Leave honest review to help community"
+        t("safety.tips.afterTransport.tips.inspectVehicle"),
+        t("safety.tips.afterTransport.tips.documentIssues"),
+        t("safety.tips.afterTransport.tips.confirmDelivery"),
+        t("safety.tips.afterTransport.tips.leaveReview")
       ]
     }
   ];

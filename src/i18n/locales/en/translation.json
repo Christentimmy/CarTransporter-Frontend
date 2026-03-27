@@ -73,7 +73,7 @@
       "headlineHighlight1": "Smarter.",
       "headline2": "Bid",
       "headlineHighlight2": "Faster.",
-      "subheadline": "A reverse-bidding platform connecting car owners, insurance companies, car auctions, and auto clubs with trusted transport companies. Post your vehicle, watch bids compete, and get the lowest price. A 10% service fee applies to both users and transporters on the winning bid (discounts available for major accounts).",
+      "subheadline": "A reverse-bidding platform connecting car owners, insurance companies, car auctions, and auto clubs with trusted transport companies. Post your vehicle, watch bids compete, and get the lowest price.",
       "stats": {
         "carsTransported": "Cars Transported",
         "verifiedTransporters": "Verified Transporters",
@@ -1608,6 +1608,32 @@
     "actions": {
       "signIn": "Sign In",
       "getStarted": "Get Started"
+    }
+  },
+  "fee": {
+    "title": "Service Fees",
+    "subtitle": "Transparent pricing structure for our platform services",
+    "platformFeeStructure": "Platform Fee Structure",
+    "highlight": "A 10% service fee applies to both users and transporters on the winning bid (discounts available for major accounts).",
+    "howItWorks": {
+      "title": "How It Works",
+      "points": {
+        "0": "The service fee is calculated as 10% of the winning bid amount",
+        "1": "This fee applies to both the user (vehicle owner) and the transporter",
+        "2": "The fee is automatically processed when the shipment is completed",
+        "3": "Major accounts may be eligible for discounted rates"
+      }
+    },
+    "example": {
+      "title": "Example Calculation",
+      "winningBidAmount": "Winning bid amount:",
+      "serviceFee": "Service fee (10%):",
+      "totalPaidByUser": "Total paid by user:",
+      "amountReceivedByTransporter": "Amount received by transporter:"
+    },
+    "majorAccounts": {
+      "title": "Major Account Discounts",
+      "description": "For businesses with high volume shipping needs, we offer discounted service fee rates. Contact our sales team to learn more about enterprise pricing options and custom solutions tailored to your business requirements."
     }
   }
 }

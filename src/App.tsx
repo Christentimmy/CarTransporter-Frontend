@@ -30,6 +30,7 @@ import Safety from "./pages/footer/Safety";
 import FAQ from "./pages/footer/FAQ";
 import TermsOfService from "./pages/footer/TermsOfService";
 import PrivacyPolicy from "./pages/footer/PrivacyPolicy";
+import Fee from "./pages/footer/Fee";
 import AuctionAsUser from "./pages/transporter/AuctionAsUser";
 import TransporterMyRequests from "./pages/transporter/MyRequests";
 
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/faq" element={<FAQ />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/fee" element={<Fee />} />
 
           {/* Protected Routes */}
           <Route path="/*" element={

@@ -73,7 +73,7 @@
       "headlineHighlight1": "Plus intelligemment.",
       "headline2": "Enchérissez",
       "headlineHighlight2": "Plus vite.",
-      "subheadline": "Plateforme d'enchères inversées mettant en relation propriétaires de véhicules, compagnies d'assurance, salles de vente aux enchères et clubs automobiles avec des transporteurs de confiance. Publiez votre annonce, suivez les offres et obtenez le meilleur prix. Une commission de 10 % est prélevée sur le prix d'adjudication, à la fois pour les utilisateurs et les transporteurs (réductions pour les comptes importants).",
+      "subheadline": "Plateforme d'enchères inversées mettant en relation propriétaires de véhicules, compagnies d'assurance, salles de vente aux enchères et clubs automobiles avec des transporteurs de confiance. Publiez votre annonce, suivez les offres et obtenez le meilleur prix.",
       "stats": {
         "carsTransported": "Voitures transportées",
         "verifiedTransporters": "Transporteurs vérifiés",
@@ -1609,6 +1609,32 @@
     "actions": {
       "signIn": "Se Connecter",
       "getStarted": "Commencer"
+    }
+  },
+  "fee": {
+    "title": "Frais de service",
+    "subtitle": "Structure tarifaire transparente pour les services de notre plateforme",
+    "platformFeeStructure": "Structure des frais de plateforme",
+    "highlight": "Des frais de service de 10 % s’appliquent aux utilisateurs et aux transporteurs sur l’offre gagnante (réductions disponibles pour les comptes importants).",
+    "howItWorks": {
+      "title": "Comment ça marche",
+      "points": {
+        "0": "Les frais de service sont calculés à 10 % du montant de l’offre gagnante",
+        "1": "Ces frais s’appliquent à la fois à l’utilisateur (propriétaire du véhicule) et au transporteur",
+        "2": "Les frais sont traités automatiquement lorsque l’expédition est terminée",
+        "3": "Les comptes importants peuvent bénéficier de tarifs réduits"
+      }
+    },
+    "example": {
+      "title": "Exemple de calcul",
+      "winningBidAmount": "Montant de l’offre gagnante :",
+      "serviceFee": "Frais de service (10 %) :",
+      "totalPaidByUser": "Total payé par l’utilisateur :",
+      "amountReceivedByTransporter": "Montant reçu par le transporteur :"
+    },
+    "majorAccounts": {
+      "title": "Réductions pour comptes importants",
+      "description": "Pour les entreprises ayant des besoins d’expédition à fort volume, nous proposons des taux de frais de service réduits. Contactez notre équipe commerciale pour en savoir plus sur les options de tarification entreprise et les solutions personnalisées adaptées à vos besoins."
     }
   }
 }
