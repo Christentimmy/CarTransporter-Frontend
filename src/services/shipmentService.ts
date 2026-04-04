@@ -298,6 +298,41 @@ export const createShipment = async (data: FormData) => {
   return response.json();
 };
 
+export interface ViewShipmentClientRequest {
+  shipmentId: string;
+}
+
+export interface ViewShipmentClientResponse {
+  message: string;
+  data: {
+    email: string;
+    phone_number: string;
+    avatar: string;
+  };
+}
+
+export const viewShipmentClient = async (
+  data: ViewShipmentClientRequest,
+): Promise<ViewShipmentClientResponse> => {
+  const response = await fetch(
+    `${API_ENDPOINTS.USER.VIEW_SHIPMENT_CLIENT}/${data.shipmentId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to fetch client information");
+  }
+
+  return response.json();
+};
+
 export interface ProcessPaymentRequest {
   shipmentId: string;
   sourceId: string;

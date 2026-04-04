@@ -817,8 +817,7 @@ const TransporterMyRequests = () => {
                         </Link>
                       )}
 
-                      {request.status === "ASSIGNED" &&
-                        request.escrowStatus !== "PAID_IN_ESCROW" && (
+                      {request.status === "ASSIGNED" && request.escrowStatus === "NONE"  && (
                           <Button
                             type="button"
                             variant="hero"
@@ -834,7 +833,11 @@ const TransporterMyRequests = () => {
                         )}
                         
                         {/* Show Company button - hidden for ENDED and CANCELLED */}
-                        {request.status !== "ENDED" && request.status !== "CANCELLED" && (
+                        {request.status !== "ENDED" && 
+                       request.status !== "CANCELLED" && 
+                       request.status !== "DRAFT" && 
+                       request.status !== "LIVE" && 
+                       !(request.status === "ASSIGNED" && request.escrowStatus === "NONE") && (
                           <Button
                             type="button"
                             variant="outline"

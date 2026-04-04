@@ -25,6 +25,7 @@ export const API_ENDPOINTS = {
     UPDATE_SHIPMENT_STATUS: `${API_BASE_URL}/user/update-shipment-status`,
     CANCEL_SHIPMENT: `${API_BASE_URL}/user/cancel-shipment`,
     VIEW_SHIPMENT_ASSIGNED_TO: `${API_BASE_URL}/user/view-shipment-asigned-to`,
+    VIEW_SHIPMENT_CLIENT: `${API_BASE_URL}/user/view-shipment-client`,
     PROCESS_PAYMENT: `${API_BASE_URL}/payments/pay`,
     LIST_PAYMENT_METHODS: `${API_BASE_URL}/user/list-payment-methods`,
     ADD_PAYMENT_METHOD: `${API_BASE_URL}/user/add-payment-method`,

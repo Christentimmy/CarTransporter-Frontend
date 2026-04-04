@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getMyAssignedShipments, updateShipmentStatus } from "@/services/shipmentService";
+import { getMyAssignedShipments, updateShipmentStatus, viewShipmentClient } from "@/services/shipmentService";
 import type { AssignedShipment } from "@/types/shipment";
 import { useTranslation } from "react-i18next";
 
@@ -122,6 +122,11 @@ const MyShipments = () => {
   const [disputePhotos, setDisputePhotos] = useState<File[]>([]);
   const [isDisputeDialogOpen, setIsDisputeDialogOpen] = useState(false);
   const [viewingDisputeShipment, setViewingDisputeShipment] = useState<string | null>(null);
+  
+  // View client dialog state
+  const [isViewClientDialogOpen, setIsViewClientDialogOpen] = useState(false);
+  const [clientInfo, setClientInfo] = useState<any>(null);
+  const [isLoadingClient, setIsLoadingClient] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -212,6 +217,23 @@ const MyShipments = () => {
   const handleViewDispute = (shipmentId: string) => {
     setViewingDisputeShipment(shipmentId);
     setIsDisputeDialogOpen(true);
+  };
+
+  const handleViewClient = async (shipmentId: string) => {
+    setClientInfo(null);
+    setIsLoadingClient(true);
+    setIsViewClientDialogOpen(true);
+    try {
+      const response = await viewShipmentClient({ shipmentId });
+      setClientInfo(response.data);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to fetch client information", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+      setIsViewClientDialogOpen(false);
+    } finally {
+      setIsLoadingClient(false);
+    }
   };
 
   const handleStatusSubmit = async () => {
@@ -487,6 +509,21 @@ const MyShipments = () => {
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 items-start sm:items-end">
+                        {/* Show Client button - conditional display */}
+                        {shipment.status !== "ENDED" && 
+                         shipment.status !== "CANCELLED" && 
+                         shipment.status !== "DRAFT" && 
+                         shipment.status !== "LIVE" && 
+                         !(shipment.status === "ASSIGNED" && shipment.escrowStatus === "NONE") && (
+                          <Button
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                            onClick={() => handleViewClient(shipment._id)}
+                          >
+                            Show Client
+                          </Button>
+                        )}
+
                         {canUpdateStatus && (
                           <Dialog
                             open={isStatusDialogOpen && selectedShipment === shipment._id}
@@ -800,6 +837,77 @@ const MyShipments = () => {
           })}
         </div>
       )}
+
+      {/* View Client Dialog */}
+      <Dialog open={isViewClientDialogOpen} onOpenChange={setIsViewClientDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Client Information</DialogTitle>
+            <DialogDescription>
+              View details of client for this shipment.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {isLoadingClient ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="ml-2 text-muted-foreground">Loading client information...</p>
+              </div>
+            ) : clientInfo ? (
+              <>
+                <div className="space-y-2">
+                  <Label>Email</Label>
+                  <div className="p-3 border rounded-md bg-muted/50">
+                    <p className="text-sm">{clientInfo.email}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Phone Number</Label>
+                  <div className="p-3 border rounded-md bg-muted/50">
+                    <p className="text-sm">{clientInfo.phone_number}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Avatar</Label>
+                  <div className="flex items-center gap-3">
+                    {clientInfo.avatar ? (
+                      <img
+                        src={clientInfo.avatar}
+                        alt="Client avatar"
+                        className="w-16 h-16 rounded-full object-cover border"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                        <span className="text-muted-foreground">No avatar</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Failed to load client information</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsViewClientDialogOpen(false);
+                setClientInfo(null);
+              }}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
