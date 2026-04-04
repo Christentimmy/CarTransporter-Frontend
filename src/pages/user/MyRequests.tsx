@@ -874,8 +874,12 @@ const MyRequests = () => {
                           </div>
                         )}
 
-                      {/* Show Company button - hidden for ENDED and CANCELLED */}
-                      {request.status !== "ENDED" && request.status !== "CANCELLED" && (
+                      {/* Show Company button - conditional display */}
+                      {request.status !== "ENDED" && 
+                       request.status !== "CANCELLED" && 
+                       request.status !== "DRAFT" && 
+                       request.status !== "LIVE" && 
+                       !(request.status === "ASSIGNED" && request.escrowStatus === "NONE") && (
                         <Button
                           type="button"
                           variant="outline"

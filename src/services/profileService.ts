@@ -9,6 +9,7 @@ export interface Region {
   state: string;
   city: string;
   postalCode: string;
+  address: string;
 }
 
 export interface Insurance {
