@@ -239,6 +239,28 @@ const MyShipments = () => {
   const handleStatusSubmit = async () => {
     if (!selectedShipment || !newStatus) return;
 
+    // Validation for DELIVERED status
+    if (newStatus === "DELIVERED") {
+      if (!keysGivenTo || keysGivenTo.trim() === "") {
+        toast.error("Keys Given To is required for delivered status", {
+          style: { background: "#ef4444", color: "#fff" },
+        });
+        return;
+      }
+      if (!vehicleDroppedAt || vehicleDroppedAt.trim() === "") {
+        toast.error("Vehicle Dropped At is required for delivered status", {
+          style: { background: "#ef4444", color: "#fff" },
+        });
+        return;
+      }
+      if (!photos || photos.length === 0) {
+        toast.error("Delivery photos are required for delivered status", {
+          style: { background: "#ef4444", color: "#fff" },
+        });
+        return;
+      }
+    }
+
     await mutateShipmentStatus({ 
       shipmentId: selectedShipment, 
       status: newStatus,
@@ -600,7 +622,7 @@ const MyShipments = () => {
                                     {newStatus === "DELIVERED" && (
                                       <div className="space-y-4 mt-4">
                                         <div className="space-y-2">
-                                          <Label htmlFor="keys-given-to">Keys Given To</Label>
+                                          <Label htmlFor="keys-given-to">Keys Given To *</Label>
                                           <Input
                                             id="keys-given-to"
                                             value={keysGivenTo}
@@ -609,17 +631,16 @@ const MyShipments = () => {
                                           />
                                         </div>
                                         <div className="space-y-2">
-                                          <Label htmlFor="vehicle-dropped-at">Vehicle Dropped At</Label>
+                                          <Label htmlFor="vehicle-dropped-at">Vehicle Dropped At *</Label>
                                           <Input
                                             id="vehicle-dropped-at"
                                             value={vehicleDroppedAt}
                                             onChange={(e) => setVehicleDroppedAt(e.target.value)}
                                             placeholder="Specific location where vehicle was dropped"
-                                            required
                                           />
                                         </div>
                                         <div className="space-y-2">
-                                          <Label htmlFor="delivery-photos">Delivery Photos</Label>
+                                          <Label htmlFor="delivery-photos">Delivery Photos *</Label>
                                           <Input
                                             id="delivery-photos"
                                             type="file"
@@ -628,6 +649,7 @@ const MyShipments = () => {
                                             onChange={handlePhotoUpload}
                                             className="cursor-pointer"
                                           />
+                                          <p className="text-xs text-muted-foreground">At least one photo is required</p>
                                           {photos.length > 0 && (
                                             <div className="grid grid-cols-2 gap-2 mt-2">
                                               {photos.map((photo, index) => (
