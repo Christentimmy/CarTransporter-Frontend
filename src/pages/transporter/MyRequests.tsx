@@ -1417,6 +1417,24 @@ const TransporterMyRequests = () => {
                     <p className="text-sm">{companyInfo.email}</p>
                   </div>
                 </div>
+
+                {companyInfo.phone_number && (
+                  <div className="space-y-2">
+                    <Label>Phone Number</Label>
+                    <div className="p-3 border rounded-md bg-muted/50">
+                      <p className="text-sm">{companyInfo.phone_number}</p>
+                    </div>
+                  </div>
+                )}
+
+                {companyInfo.insurance_name && (
+                  <div className="space-y-2">
+                    <Label>Insurance Name</Label>
+                    <div className="p-3 border rounded-md bg-muted/50">
+                      <p className="text-sm">{companyInfo.insurance_name}</p>
+                    </div>
+                  </div>
+                )}
               </>
             ) : (
               <div className="text-center py-8">

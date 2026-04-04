@@ -329,6 +329,8 @@ export interface ViewShipmentAssignedToResponse {
     company_name: string;
     business_address: string;
     email: string;
+    insurance_name?: string;
+    phone_number?: string;
   };
 }
 
