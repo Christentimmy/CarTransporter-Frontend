@@ -110,7 +110,11 @@ const Register = () => {
       formData.append("region[state]", data.region.state);
       formData.append("region[city]", data.region.city);
       formData.append("region[postalCode]", data.region.postalCode);
-      formData.append("region[address]", data.region.address);
+      
+      // Only append address for non-transporter roles
+      if (!isTransporter) {
+        formData.append("region[address]", data.region.address);
+      }
       
       if (data.company_name) {
         formData.append("company_name", data.company_name);
@@ -443,19 +447,31 @@ const Register = () => {
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="region_address">Address</Label>
-                    <Input
-                      id="region_address"
-                      type="text"
-                      placeholder="e.g., 3434 Newman street"
-                      className="w-full"
-                      {...register("region.address")}
-                    />
-                    {errors.region?.address && (
-                      <p className="text-sm text-red-500">{errors.region.address.message}</p>
-                    )}
-                  </div>
+                  {/* Address field - only for users, not transporters */}
+              <AnimatePresence>
+                {!isTransporter && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="space-y-2">
+                      <Label htmlFor="region_address">Address</Label>
+                      <Input
+                        id="region_address"
+                        type="text"
+                        placeholder="e.g., 3434 Newman street"
+                        className="w-full"
+                        {...register("region.address")}
+                      />
+                      {errors.region?.address && (
+                        <p className="text-sm text-red-500">{errors.region.address.message}</p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
                 </div>
               </div>
 
