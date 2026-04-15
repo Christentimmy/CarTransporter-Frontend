@@ -707,6 +707,7 @@ const Auction = () => {
                     type="number"
                     value={bidAmount}
                     onChange={(e) => setBidAmount(e.target.value)}
+                    onWheel={(e) => e.currentTarget.blur()}
                     placeholder={t("auction.bidPlaceholder")}
                     max={lowestBid > 0 ? lowestBid - 0.01 : undefined}
                     step="0.01"

@@ -60,6 +60,7 @@ const Profile = () => {
       state: "",
       city: "",
       postalCode: "",
+      address: "",
     },
   });
 
@@ -100,6 +101,7 @@ const Profile = () => {
           state: user.region?.state || "",
           city: user.region?.city || "",
           postalCode: user.region?.postalCode || "",
+          address: user.region?.address || "",
         },
       }));
       // Set avatar preview from user data
@@ -198,6 +200,7 @@ const Profile = () => {
       state: user.region?.state || "",
       city: user.region?.city || "",
       postalCode: user.region?.postalCode || "",
+      address: user.region?.address || "",
     };
     const newRegion = formData.region;
 
@@ -205,7 +208,8 @@ const Profile = () => {
       currentRegion.country !== newRegion.country ||
       currentRegion.state !== newRegion.state ||
       currentRegion.city !== newRegion.city ||
-      currentRegion.postalCode !== newRegion.postalCode;
+      currentRegion.postalCode !== newRegion.postalCode ||
+      currentRegion.address !== newRegion.address;
 
     const hasChanges = hasAvatarFile || hasOtherChanges || regionChanged;
 
@@ -275,12 +279,13 @@ const Profile = () => {
       }
 
       if (regionChanged) {
-        if (newRegion.country || newRegion.state || newRegion.city || newRegion.postalCode) {
+        if (newRegion.country || newRegion.state || newRegion.city || newRegion.postalCode || newRegion.address) {
           payload.region = {
             country: newRegion.country,
             state: newRegion.state,
             city: newRegion.city,
             postalCode: newRegion.postalCode,
+            address: newRegion.address,
           };
         } else {
           payload.region = undefined;
@@ -330,6 +335,7 @@ const Profile = () => {
         state: user.region?.state || "",
         city: user.region?.city || "",
         postalCode: user.region?.postalCode || "",
+        address: user.region?.address || "",
       };
       const newRegion = formData.region;
 
@@ -337,15 +343,17 @@ const Profile = () => {
         currentRegion.country !== newRegion.country ||
         currentRegion.state !== newRegion.state ||
         currentRegion.city !== newRegion.city ||
-        currentRegion.postalCode !== newRegion.postalCode;
+        currentRegion.postalCode !== newRegion.postalCode ||
+        currentRegion.address !== newRegion.address;
 
       if (regionChanged) {
-        if (newRegion.country || newRegion.state || newRegion.city || newRegion.postalCode) {
+        if (newRegion.country || newRegion.state || newRegion.city || newRegion.postalCode || newRegion.address) {
           payload.region = {
             country: newRegion.country,
             state: newRegion.state,
             city: newRegion.city,
             postalCode: newRegion.postalCode,
+            address: newRegion.address,
           };
         } else {
           payload.region = undefined;
@@ -392,6 +400,7 @@ const Profile = () => {
         country: user?.region?.country || "",
         state: user?.region?.state || "",
         city: user?.region?.city || "",
+        address: user.region?.address || "",
         postalCode: user?.region?.postalCode || "",
       },
     });
@@ -774,6 +783,25 @@ const Profile = () => {
                     placeholder="Enter postal code"
                   />
                 </div>
+              </div>
+              
+              {/* Address field - full width */}
+              <div className="space-y-1.5">
+                <Label htmlFor="region_address" className="text-xs text-muted-foreground">
+                  Address
+                </Label>
+                <Input
+                  id="region_address"
+                  value={formData.region.address}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      region: { ...formData.region, address: e.target.value },
+                    })
+                  }
+                  disabled={!isEditing}
+                  placeholder="Enter street address"
+                />
               </div>
             </div>
           </CardContent>
