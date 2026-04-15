@@ -14,6 +14,8 @@ import {
   Filter,
   Upload,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,6 +130,11 @@ const MyShipments = () => {
   const [clientInfo, setClientInfo] = useState<any>(null);
   const [isLoadingClient, setIsLoadingClient] = useState(false);
 
+  // View vehicle photos dialog state
+  const [isViewPhotosDialogOpen, setIsViewPhotosDialogOpen] = useState(false);
+  const [vehiclePhotos, setVehiclePhotos] = useState<string[]>([]);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError, error } = useQuery({
@@ -234,6 +241,12 @@ const MyShipments = () => {
     } finally {
       setIsLoadingClient(false);
     }
+  };
+
+  const handleViewVehiclePhotos = (photos: string[]) => {
+    setVehiclePhotos(photos);
+    setCurrentPhotoIndex(0);
+    setIsViewPhotosDialogOpen(true);
   };
 
   const handleStatusSubmit = async () => {
@@ -532,7 +545,7 @@ const MyShipments = () => {
                       </div>
                       <div className="flex flex-col gap-2 items-start sm:items-end">
                         {/* Show Client button - conditional display */}
-                        {shipment.status !== "ENDED" && 
+                        {/* {shipment.status !== "ENDED" && 
                          shipment.status !== "CANCELLED" && 
                          shipment.status !== "DRAFT" && 
                          shipment.status !== "LIVE" && 
@@ -543,6 +556,17 @@ const MyShipments = () => {
                             onClick={() => handleViewClient(shipment._id)}
                           >
                             Show Client
+                          </Button>
+                        )} */}
+
+                        {/* View Vehicle Photos button */}
+                        {shipment.photos && shipment.photos.length > 0 && (
+                          <Button
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                            onClick={() => handleViewVehiclePhotos(shipment.photos)}
+                          >
+                            View Vehicle Photos
                           </Button>
                         )}
 
@@ -923,6 +947,86 @@ const MyShipments = () => {
               onClick={() => {
                 setIsViewClientDialogOpen(false);
                 setClientInfo(null);
+              }}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Vehicle Photos Dialog */}
+      <Dialog open={isViewPhotosDialogOpen} onOpenChange={setIsViewPhotosDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>Vehicle Photos</DialogTitle>
+            <DialogDescription>
+              View all photos of the vehicle you are transporting
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {vehiclePhotos.length > 0 ? (
+              <>
+                <div className="relative">
+                  <img
+                    src={vehiclePhotos[currentPhotoIndex]}
+                    alt={`Vehicle photo ${currentPhotoIndex + 1}`}
+                    className="w-full h-auto max-h-[60vh] object-contain rounded-lg"
+                  />
+                  {vehiclePhotos.length > 1 && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background"
+                        onClick={() => setCurrentPhotoIndex((prev) => prev === 0 ? vehiclePhotos.length - 1 : prev - 1)}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background"
+                        onClick={() => setCurrentPhotoIndex((prev) => prev === vehiclePhotos.length - 1 ? 0 : prev + 1)}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
+                
+                {vehiclePhotos.length > 1 && (
+                  <div className="flex justify-center gap-2">
+                    {vehiclePhotos.map((_, index) => (
+                      <Button
+                        key={index}
+                        variant={index === currentPhotoIndex ? "default" : "outline"}
+                        size="sm"
+                        className="w-2 h-2 p-0"
+                        onClick={() => setCurrentPhotoIndex(index)}
+                      />
+                    ))}
+                  </div>
+                )}
+                
+                <p className="text-center text-sm text-muted-foreground">
+                  Photo {currentPhotoIndex + 1} of {vehiclePhotos.length}
+                </p>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No photos available</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsViewPhotosDialogOpen(false);
+                setVehiclePhotos([]);
+                setCurrentPhotoIndex(0);
               }}
             >
               Close

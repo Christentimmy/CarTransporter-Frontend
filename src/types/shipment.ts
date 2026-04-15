@@ -217,8 +217,7 @@ export interface AssignedShipment {
   startedAt?: string;
   completedAt?: string;
   lastPayment?: string;
-
-    deliveryInfo?: {
+  deliveryInfo?: {
     keysGivenTo?: string;
     vehicleDroppedAt?: string;
     deliveryPhotos?: string[];

@@ -224,6 +224,23 @@ const MyRequests = () => {
     }
   };
 
+  const handleMarkAsCompleted = async (shipmentId: string) => {
+    try {
+      await updateShipmentStatus(shipmentId, "COMPLETED");
+      
+      toast.success("Shipment marked as completed", {
+        style: { background: "#22c55e", color: "#fff" },
+      });
+      
+      // Invalidate queries to refresh the data
+      await queryClient.invalidateQueries({ queryKey: ["my-shipments"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to mark shipment as completed", {
+        style: { background: "#ef4444", color: "#fff" },
+      });
+    }
+  };
+
   const handleResolveDispute = async (shipment: MyShipment) => {
     setIsResolvingDispute(true);
     try {
@@ -904,6 +921,15 @@ const MyRequests = () => {
                                 {t("myRequests.card.viewDelivery")}
                               </Button>
                             )}
+                            <Button
+                              type="button"
+                              variant="hero"
+                              size="sm"
+                              className="w-full sm:w-auto shrink-0"
+                              onClick={() => handleMarkAsCompleted(request._id)}
+                            >
+                              Mark as Completed
+                            </Button>
                             <Button
                               type="button"
                               variant="outline"
