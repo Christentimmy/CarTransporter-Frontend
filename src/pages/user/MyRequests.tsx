@@ -1171,7 +1171,7 @@ const MyRequests = () => {
                   <span>GST ({gstTaxPercent}%)</span>
                   <span>
                     {selectedShipmentForPayment.currentBid?.amount != null
-                      ? `$${(selectedShipmentForPayment.currentBid.amount * (gstTaxPercent / 100)).toFixed(2)}`
+                      ? `$${((selectedShipmentForPayment.currentBid.amount * 1.1) * (gstTaxPercent / 100)).toFixed(2)}`
                       : "—"}
                   </span>
                 </div>
@@ -1179,7 +1179,7 @@ const MyRequests = () => {
                   <span>QST ({qstTaxPercent}%)</span>
                   <span>
                     {selectedShipmentForPayment.currentBid?.amount != null
-                      ? `$${(selectedShipmentForPayment.currentBid.amount * (qstTaxPercent / 100)).toFixed(2)}`
+                      ? `$${((selectedShipmentForPayment.currentBid.amount * 1.1) * (qstTaxPercent / 100)).toFixed(2)}`
                       : "—"}
                   </span>
                 </div>
@@ -1190,11 +1190,9 @@ const MyRequests = () => {
                   <span className="font-semibold">
                     {selectedShipmentForPayment.currentBid?.amount != null
                       ? `$${(
-                          selectedShipmentForPayment.currentBid.amount * 1.1 +
-                          selectedShipmentForPayment.currentBid.amount *
-                            (gstTaxPercent / 100) +
-                          selectedShipmentForPayment.currentBid.amount *
-                            (qstTaxPercent / 100)
+                          (selectedShipmentForPayment.currentBid.amount * 1.1) +
+                          (selectedShipmentForPayment.currentBid.amount * 1.1) * (gstTaxPercent / 100) +
+                          (selectedShipmentForPayment.currentBid.amount * 1.1) * (qstTaxPercent / 100)
                         ).toFixed(2)}`
                       : "—"}
                   </span>
