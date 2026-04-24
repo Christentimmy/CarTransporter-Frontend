@@ -545,11 +545,11 @@ const MyShipments = () => {
                       </div>
                       <div className="flex flex-col gap-2 items-start sm:items-end">
                         {/* Show Client button - conditional display */}
-                        {/* {shipment.status !== "ENDED" && 
+                        {shipment.status !== "ENDED" && 
                          shipment.status !== "CANCELLED" && 
                          shipment.status !== "DRAFT" && 
                          shipment.status !== "LIVE" && 
-                         !(shipment.status === "ASSIGNED" && shipment.escrowStatus === "NONE") && (
+                         !(shipment.status === "ASSIGNED" && shipment.escrowStatus !== "NONE") && (
                           <Button
                             variant="outline"
                             className="w-full sm:w-auto"
@@ -557,7 +557,7 @@ const MyShipments = () => {
                           >
                             Show Client
                           </Button>
-                        )} */}
+                        )}
 
                         {/* View Vehicle Photos button */}
                         {shipment.photos && shipment.photos.length > 0 && (
