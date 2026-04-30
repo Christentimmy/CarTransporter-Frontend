@@ -549,7 +549,7 @@ const MyShipments = () => {
                          shipment.status !== "CANCELLED" && 
                          shipment.status !== "DRAFT" && 
                          shipment.status !== "LIVE" && 
-                         !(shipment.status === "ASSIGNED" && shipment.escrowStatus !== "NONE") && (
+                         !(shipment.status === "ASSIGNED" && shipment.escrowStatus === "NONE") && (
                           <Button
                             variant="outline"
                             className="w-full sm:w-auto"
