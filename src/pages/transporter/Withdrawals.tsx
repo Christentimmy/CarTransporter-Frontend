@@ -382,7 +382,7 @@ const Withdrawals = () => {
                       step="0.01"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="pl-6"
+                      className="pl-6 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder={t("withdrawals.newWithdrawal.amountPlaceholder")}
                     />
                   </div>

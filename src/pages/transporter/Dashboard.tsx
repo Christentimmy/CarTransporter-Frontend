@@ -55,7 +55,7 @@ const Dashboard = () => {
     },
     {
       title: t("transporterDashboard.stats.totalBalance"),
-      value: dashboardData?.totalBalance != null ? `$${dashboardData.totalBalance.toLocaleString()}` : "$0",
+      value: dashboardData?.totalBalance != null ? `$${dashboardData.totalBalance.toLocaleString('en-US')}` : "$0",
       description: t("transporterDashboard.stats.balanceDescription"),
       icon: DollarSign,
       color: "text-purple-500",

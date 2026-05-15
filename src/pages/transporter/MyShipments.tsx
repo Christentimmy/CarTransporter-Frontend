@@ -828,7 +828,7 @@ const MyShipments = () => {
                                             <img
                                               src={photo}
                                               alt={`Dispute photo ${index + 1}`}
-                                              className="h-20 w-full rounded-md object-cover cursor-pointer"
+                                              className="h-48 w-full rounded-md object-cover cursor-pointer"
                                               onClick={() => window.open(photo, '_blank')}
                                             />
                                           </div>
